@@ -1,0 +1,8 @@
+bots type messages instantly, wont say they are typing
+bots are registered recently before joining
+bots don't chit-chat
+bots don't handle voice chat requests
+bots of one person probably have the same time zone
+bots will sometimes say undefined, false, etc.
+
+have links to activate/confirm things in order to track ips?

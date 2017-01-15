@@ -1,0 +1,15 @@
+d begin
+d begin [YES] (if they've already started)
+
+
+
+
+
+explore
+scavenge
+attack [#attack number]
+
+
+
+send back the duration they have to wait with the command result!
+

@@ -1,0 +1,9 @@
+if(weapon.hasAttack(attackTitle)){
+    weapon.getAttackDamage(attack,opponent)
+}
+
+-> Goblin attacks!
+* players have an opportunity to block or attack or heal
+-> Goblin kneels down for a big attack!
+* players have an opportunity to block or attack or heal
+->Goblin leaps forward and attacks!

@@ -1,0 +1,16 @@
+Bot(game)
+    interact with players
+    commands which connect with other services
+
+Game()
+    API for playing
+this.userService
+this.dbService
+
+userService(db)
+    authentication
+    permissions
+
+
+dbService
+    persistence (store/load)

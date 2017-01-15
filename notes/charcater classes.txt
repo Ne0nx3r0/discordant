@@ -1,0 +1,2 @@
+beastmaster - focuses on using pets
+pets can fight with players

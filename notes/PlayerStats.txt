@@ -1,0 +1,21 @@
+player state:
+    class
+    current area
+    level
+    experience
+    ring 1
+    ring 2
+    armor
+    hat
+    weapon left
+    shield | weapon right
+    strength
+    endurance
+    intelligence
+    spirit
+    luck
+
+
+    chaos spells use int+spr
+    spells uses int
+    legends use spirit

@@ -1,0 +1,31 @@
+dark souls-esque weapon upgrading
+item finding
+slender man stalker
+timeouts for attacking based on weapon held
+monster attacks back unless you flee
+each server (channel?) has different resources based on server/channel ID
+co-op adventuring?
+boss fights
+rare items
+multiple attack types per weapon
+
+damage types
+monsters weak to damage types
+
+offload as much as possible (items, etc.) from the database to other sources, database only stores user state
+
+
+Potential names:
+Discordant 
+Dissonant
+
+
+easter eggs requiring work
+
+
+separate user management but let users authenticate with discord
+
+consumable weapon/attacks like bombs
+
+    
+    weapon requirements?

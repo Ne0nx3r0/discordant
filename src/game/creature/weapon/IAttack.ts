@@ -1,6 +1,6 @@
 class AttackStep{
     message:string;
-    cooldown:number;
+    duration:number;
 }
 
 class Attack{
