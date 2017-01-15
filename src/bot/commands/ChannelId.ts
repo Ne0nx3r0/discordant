@@ -1,4 +1,5 @@
 import Command from './Command';
+import Game from '../../game/Game';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -10,7 +11,7 @@ export default class ChannelId extends Command{
         );
     }
 
-    run(params,message,game,client){
+    run(params:Array<string>,message:any,game:Game){
         message.channel.sendMessage('Channel ID: '+message.channel.id);
     }
 }

@@ -1,7 +1,11 @@
 import Game from '../game/Game';
 import Command from './commands/Command';
+import * as Commands from "./commands/Commands";
 
+const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
+
+const COMMAND_PREFIX:string = 'd';
 
 export default class DiscordBot{
     client: any;
@@ -13,12 +17,52 @@ export default class DiscordBot{
 
         this.client = new Discord.Client();
 
-        this.addCommand(require('./commands/ChannelId.js'));
+        this.commands = new Map();
 
-        console.log(this.commands);
+        Object.keys(Commands).forEach((commandName)=>{
+            this.commands.set(commandName.toUpperCase(),new Commands[commandName]);
+        });
+
+        this.client.on('message',this.handleMessage.bind(this))
+
+        this.client.on('ready',this.handleReady);
+
+        this.client.login(authToken);
     }
 
-    addCommand(c:Command){
-        this.commands.set(c.name,c);
+    handleReady(){
+        console.log('Bot: logged in');
+
+        this.client.channels
+            .get('263031267535224834')//discordant server general
+            .sendMessage('I\'m online!');
+    }
+
+    handleMessage(message:any){
+        // Ignore self
+        if(message.author.id == this.client.id){
+            return;
+        }
+
+        // Ignore bots
+        if(message.author.bot){
+            return;
+        }
+
+        if(!message.content.startsWith(COMMAND_PREFIX)){
+            return;
+        }
+
+        const messageRaw = message.content.substr(COMMAND_PREFIX.length);
+
+        const params = SpawnArgs(messageRaw,{ removequotes: 'always' });
+
+        const commandName = params[0].toUpperCase();
+
+        const command:Command = this.commands.get(commandName);
+
+        if(command){
+            command.run(params,message,this.game);
+        }
     }
 }

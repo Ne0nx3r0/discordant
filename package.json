@@ -9,6 +9,7 @@
   "author": "Ne0nx3r0",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.0.0"
+    "discord.js": "^11.0.0",
+    "spawn-args": "^0.2.0"
   }
 }

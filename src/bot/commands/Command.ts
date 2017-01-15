@@ -1,17 +1,19 @@
+import Game from '../../game/Game';
+
 export default class Command{
     name:String;
     description:String;
     usage:String;
     permissionNode:String;
 
-    constructor(name,description,usage,permissionNode){
+    constructor(name:string,description:string,usage:string,permissionNode:string){
         this.name = name;
         this.description = description;
         this.usage = usage;
         this.permissionNode = permissionNode;
     }
 
-    run(params,message,game,client){
+    run(params:Array<string>,message:any,game:Game){
         throw 'Run method not implemented for command '+this.name;        
     }
 
