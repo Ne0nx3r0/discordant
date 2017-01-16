@@ -1,17 +1,25 @@
 import DamageType from './DamageType';
 
-export default class DamageSet{
-    PHYSICAL:number;
-    FIRE:number;
-    COLD:number;
-    THUNDER:number;
-    CHAOS:number;
+interface IDamagesObj{
+    Physical?:number;
+    Fire?:number;
+    Cold?:number;
+    Thunder?:number;
+    Chaos?:number;
+}
 
-    constructor(damages?:any){
-        this.PHYSICAL = damages.PHYSICAL || 0;
-        this.FIRE = damages.FIRE || 0;
-        this.COLD = damages.COLD || 0;
-        this.THUNDER = damages.THUNDER || 0;
-        this.CHAOS = damages.CHAOS || 0;
+export default class DamageSet{
+    Physical:number;
+    Fire:number;
+    Cold:number;
+    Thunder:number;
+    Chaos:number;
+
+    constructor(damages?:IDamagesObj){
+        this.Physical = damages.Physical || 0;
+        this.Fire = damages.Fire || 0;
+        this.Cold = damages.Cold || 0;
+        this.Thunder = damages.Thunder || 0;
+        this.Chaos = damages.Chaos || 0;
     }
 }

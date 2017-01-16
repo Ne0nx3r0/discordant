@@ -7,3 +7,9 @@ if(weapon.hasAttack(attackTitle)){
 -> Goblin kneels down for a big attack!
 * players have an opportunity to block or attack or heal
 ->Goblin leaps forward and attacks!
+
+
+
+dattack some attack 1
+dattack 1
+dattack

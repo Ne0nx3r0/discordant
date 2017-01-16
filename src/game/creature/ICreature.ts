@@ -1,7 +1,8 @@
 import CreatureType from './CreatureType';
 import DamageSet from './damage/DamageSet';
+import Weapon from './weapon/Weapon';
 
-export default interface ICreature {
+interface ICreature{
     id:number;
     title:string;
     description:string;
@@ -10,6 +11,9 @@ export default interface ICreature {
     currentHP:number;
     primaryWeapon:Weapon;
     offhandWeapon:Weapon;
+    resistances: DamageSet;
 
-    getResistances(): DamageSet;
+    getStat(stat:string):number;
 }
+
+export default ICreature;
