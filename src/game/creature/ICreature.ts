@@ -12,8 +12,6 @@ interface ICreature{
     primaryWeapon:Weapon;
     offhandWeapon:Weapon;
     resistances: DamageSet;
-
-    getStat(stat:string):number;
 }
 
 export default ICreature;

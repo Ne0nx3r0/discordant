@@ -1,0 +1,6 @@
+beastmaster - focuses on using pets
+pets can fight with players
+
+
+thief - can backstab using luck (if they block they don't take damage)
+maybe thiefish weapons? Dunno
