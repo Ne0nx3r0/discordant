@@ -10,6 +10,8 @@ const weaponIdLookup:Map<number,Weapon> = new Map();
 
 //see bottom for lookup caching
 
+let idCardinality = 1;
+
 const Weapons = {
     getByTitle(title:string):Weapon{
         return weaponTitleLookup.get(title);
@@ -18,7 +20,7 @@ const Weapons = {
         return weaponIdLookup.get(id);
     },
     BareHands: new Weapon(
-        1,
+        idCardinality++,
         'Bare Hands',
         'When you bring knuckles to a knife fight',
         [
