@@ -1,13 +1,13 @@
-import DamageSet from '../damage/DamageSet';
-import ICreature from '../ICreature';
+import DamageSet from '../../damage/DamageSet';
+import Creature from '../../creature/Creature';
 import Weapon from './Weapon';
 
 interface DamageFunc{
     (     
-        attacker:ICreature,
-        defender:ICreature,
+        attacker:Creature,
+        defender:Creature,
         weapon:Weapon,
-        master?:ICreature
+        master?:Creature
     ):DamageSet;
 }
 
@@ -22,7 +22,7 @@ export default class AttackStep{
         this.damageFunc = damageFunc;
     }
 
-    getDamages(attacker:ICreature,defender:ICreature,weapon:Weapon,master?:ICreature){
+    getDamages(attacker:Creature,defender:Creature,weapon:Weapon,master?:Creature){
         return this.damageFunc(attacker,defender,weapon,master);
     }
 }

@@ -1,0 +1,1 @@
+market should rely on things that can be made by some players but not by others

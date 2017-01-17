@@ -11,7 +11,23 @@ interface EquipmentBag{
     weaponOffhand?: Weapon;
 }
 
-export type EquipmentSlot = 'hat' | 'armor' | 'amulet' | 'ring' | 'weapon';
+export enum EquipmentSlotType{
+    Hat,
+    Armor,
+    Ring,
+    Amulet,
+    Weapon
+}
+
+export enum ItemEquipSlot{
+    Hat,
+    Armor,
+    Amulet,
+    RingLeft,
+    RingRight,
+    WeaponPrimary,
+    WeaponOffhand,
+};
 
 export default class CreatureEquipment{
     hat: ItemEquippable;

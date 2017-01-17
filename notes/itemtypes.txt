@@ -1,0 +1,4 @@
+Generic
+    Equippable
+        Clothing
+        Weapons

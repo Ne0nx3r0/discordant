@@ -1,12 +1,16 @@
+import Attributes from './Attributes';
+
 export default class AttributeSet{
     Strength:number;
+    Agility:number;
     Vitality:number;
     Endurance:number;
     Spirit:number;
     Luck:number;
 
-    constructor(str:number,vit:number,end:number,kno:number,spr:number,lck:number){
-        this.Strength = str;// increases physical attack, carry weight(?)
+    constructor(str:number,agl,vit:number,end:number,kno:number,spr:number,lck:number){
+        this.Strength = str;//requierd to use heavy weapons, 
+        this.Agility = agl;//required to use light weapons, increases dodge
         this.Vitality = vit;// increases hp
         this.Endurance = end;// increases fire/cold/thunder resistance
         this.Spirit = spr;// required to use legends

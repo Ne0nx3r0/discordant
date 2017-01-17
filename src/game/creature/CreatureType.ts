@@ -1,4 +1,4 @@
-import DamageSet from './damage/DamageSet';
+import DamageSet from '../damage/DamageSet';
 
 export default class CreatureType{
     id:number;

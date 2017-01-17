@@ -1,8 +1,10 @@
 import CreatureType from './CreatureType';
-import DamageSet from './damage/DamageSet';
+import DamageSet from '../damage/DamageSet';
 import Weapon from '../item/weapon/Weapon';
 import AttributeSet from './AttributeSet';
 import CreatureEquipment from './CreatureEquipment';
+import IStatSet from './IStatSet';
+import ItemEquippable from '../item/ItemEquippable';
 
 interface ICreatureBag{
     id:number;
@@ -18,6 +20,8 @@ export default class Creature{
     description:string;
     attributes:AttributeSet;
     equipment:CreatureEquipment;
+    hpCurrent:number;
+    stats:IStatSet;
 
     constructor(creatureBag:ICreatureBag){
         this.id = creatureBag.id;
@@ -25,35 +29,46 @@ export default class Creature{
         this.description = creatureBag.description;
         this.attributes = creatureBag.attributes;
         this.equipment = creatureBag.equipment;
+
+        this.updateStats();
+
+        this.hpCurrent = this.stats.HPTotal;
     }
 
+    updateStats(){
+        const stats:IStatSet = {
+            Strength:this.attributes.Strength,
+            Agility:this.attributes.Agility,
+            Vitality:this.attributes.Vitality,
+            Endurance:this.attributes.Endurance,
+            Spirit:this.attributes.Spirit,
+            Luck:this.attributes.Luck,
+            ResistancePhysical:0,
+            ResistanceFire:0,
+            ResistanceCold:0,
+            ResistanceThunder:0,
+            ResistanceChaos:0,
+            HPTotal:this.attributes.Vitality*10,
+        };
 
+        if(this.equipment.armor) this.equipment.armor.onAddBonuses(stats);
+        if(this.equipment.hat) this.equipment.hat.onAddBonuses(stats);
+        if(this.equipment.ringLeft) this.equipment.ringLeft.onAddBonuses(stats);
+        if(this.equipment.ringRight) this.equipment.ringRight.onAddBonuses(stats);
+        if(this.equipment.amulet) this.equipment.amulet.onAddBonuses(stats);
 
-    get totalHP():number{
-        return this.getStat('vitality') * 10;
+        this.stats = stats;
     }
 
-    get resistances():DamageSet{
-        //Players involve stats but creatures only use their skin (armor)
+    equipItem(item:ItemEquippable,slot:ItemEquipSlot){
 
-        const resistances = new DamageSet();
 
-        this.equipment.armor.addResistance(this,resistances);
-        this.equipment.amulet.addResistance(this,resistances);
-        this.equipment.ringLeft.addResistance(this,resistances);
-        this.equipment.ringRight.addResistance(this,resistances);
-        this.equipment.hat.addResistance(this,resistances);
-
-        return resistances;
+        this.updateStats();
     }
 
-    getStat(name:string):number{
-        const attribute = this.attributes[name];
+    unEquipItem(slot:ItemEquipSlot){
 
-        if(attribute){
-            return attribute + this.class.attributes[name];
-        }
 
-        return -1;
+        this.updateStats();
     }
 }

@@ -1,16 +1,39 @@
 import Weapon from './Weapon';
-import Attack from './Attack';
-import AttackStep from './AttackStep';
-import DamageSet from '../damage/DamageSet';
-import ICreature from '../ICreature';
-import DamageScaling from '../damage/DamageScaling';
+import WeaponAttack from './WeaponAttack';
+import WeaponAttackStep from './WeaponAttackStep';
+import DamageSet from '../../damage/DamageSet';
+import Creature from '../../creature/Creature';
+import DamageScaling from '../../damage/DamageScaling';
+import ItemId from '../ItemId';
 
 const weaponTitleLookup:Map<string,Weapon> = new Map();
 const weaponIdLookup:Map<number,Weapon> = new Map();
 
 //see bottom for lookup caching
 
-let idCardinality = 1;
+const scalesByStr = function(baseDamage:number){
+    return function(attacker:Creature,defender:Creature,weapon:Weapon,master?:Creature){
+        const resistances:DamageSet = defender.resistances;  
+
+        const physicalDamage = DamageScaling.ByAttribute(baseDamage,attacker.getStat('strength'));
+
+        return new DamageSet({
+            Physical: physicalDamage * (1-resistances.Physical)
+        });
+    }
+}
+
+const scalesByDexterity = function(baseDamage:number){
+    return function(attacker:Creature,defender:Creature,weapon:Weapon,master?:Creature){
+        const resistances:DamageSet = defender.resistances;  
+
+        const physicalDamage = DamageScaling.ByAttribute(baseDamage,attacker.getStat('dexterity'));
+
+        return new DamageSet({
+            Physical: physicalDamage * (1-resistances.Physical)
+        });
+    }
+}
 
 const Weapons = {
     getByTitle(title:string):Weapon{
@@ -20,37 +43,29 @@ const Weapons = {
         return weaponIdLookup.get(id);
     },
     BareHands: new Weapon(
-        idCardinality++,
+        ItemId.BareHands,
         'Bare Hands',
         'When you bring knuckles to a knife fight',
         {},//no use requirements
         [
-            new Attack(
+            new WeaponAttack(
                 'swing',
                 [
-                    new AttackStep(
+                    new WeaponAttackStep(
                         '{attacker} swings at {defender}',
                         5000,
-                        function(attacker:ICreature,defender:ICreature,weapon:Weapon,master?:ICreature){
-                            const resistances:DamageSet = defender.resistances;  
-
-                            const physicalDamage = DamageScaling.ByAttribute(10,attacker.getStat('strength'));
-
-                            return new DamageSet({
-                                Physical: physicalDamage * (1-resistances.Physical)
-                            });
-                        }
+                        scalesByStr(10)
                     )
                 ],
                 0.5
             ),
-            new Attack(
+            new WeaponAttack(
                 'jab',
                 [
-                    new AttackStep(
+                    new WeaponAttackStep(
                         '{attacker} swings at {defender}',
                         5000,
-                        function(attacker:ICreature,defender:ICreature,weapon:Weapon,master?:ICreature){
+                        function(attacker:Creature,defender:Creature,weapon:Weapon,master?:Creature){
                             const resistances:DamageSet = defender.resistances;  
 
                             const physicalDamage = DamageScaling.ByAttribute(10,attacker.getStat('a'));
