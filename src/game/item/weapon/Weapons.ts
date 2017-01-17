@@ -23,6 +23,7 @@ const Weapons = {
         idCardinality++,
         'Bare Hands',
         'When you bring knuckles to a knife fight',
+        {},//no use requirements
         [
             new Attack(
                 'swing',

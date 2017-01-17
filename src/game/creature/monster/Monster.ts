@@ -7,7 +7,7 @@ export default class Monster implements ICreature{
     id:number;
     title:string;
     description:string;
-    type:CreatureType;
+    creatureSkin:CreatureType;
     totalHP:number;
     currentHP:number;
     primaryWeapon:Weapon;

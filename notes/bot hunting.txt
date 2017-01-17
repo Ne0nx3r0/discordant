@@ -4,5 +4,8 @@ bots don't chit-chat
 bots don't handle voice chat requests
 bots of one person probably have the same time zone
 bots will sometimes say undefined, false, etc.
+bots will continue sending commands even when the commands are being ignored
+bots process text in characters not visually; if the format changes bots will malfunction for a bit
+bots dont handle unexpected messages/message types
 
 have links to activate/confirm things in order to track ips?

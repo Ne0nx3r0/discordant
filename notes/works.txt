@@ -1,0 +1,28 @@
+Creature
+    PCs
+    Monsters
+        Standard
+        Mock Players    
+        Bosses
+    Pets
+    Players
+
+
+Legends
+    Long ago a great hero or a terrible villain committed an act which had such a profound impact on the memory of the world that the very memory of their deed calls fragments of it into existance. 
+
+    Over the eons spirit chasers hunted down the ghosts and demons who remember these deeds and transcribed them onto stone tablets so that they might be called upon at will.
+- spirit requirements
+- damage scales with spirit
+
+Tablets
+    Weapons with 1-5 legends transcribed on them
+    One can be held in each hand
+
+
+
+Weapon use requirements:
+    attributeScore
+    classId
+
+Long ago a great hero or a terrible villain committed an act which had such a profound impact on the memory of the world that the very memory of their deed calls fragments of it into existance. Over the eons spirit chasers hunted down the ghosts who remember these deeds and transcribed them onto stone tablets so that they might be called upon at will.

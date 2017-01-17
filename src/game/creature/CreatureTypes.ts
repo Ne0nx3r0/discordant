@@ -15,11 +15,11 @@ addCreatureType(new CreatureType(
     0,
     'Human',
     new DamageSet({
-        [DamageType.PHYSICAL]: 0,
-        [DamageType.FIRE]: 0,
-        [DamageType.COLD]: 0,
-        [DamageType.THUNDER]: 0,
-        [DamageType.CHAOS]: 0,
+        Physical: 0,
+        Fire: 0,
+        Cold: 0,
+        Thunder: 0,
+        Chaos: 0,
     })
 ));
 
@@ -27,11 +27,11 @@ addCreatureType(new CreatureType(
     1,
     'Beast',
     new DamageSet({
-        [DamageType.PHYSICAL]: 0.20,
-        [DamageType.FIRE]: -0.30,
-        [DamageType.COLD]: 0.20,
-        [DamageType.THUNDER]: -0.30,
-        [DamageType.CHAOS]: 0,
+        Physical: 0.20,
+        Fire: -0.30,
+        Cold: 0.20,
+        Thunder: -0.30,
+        Chaos: 0,
     })
 ));
 
@@ -39,11 +39,11 @@ addCreatureType(new CreatureType(
     2,
     'Demon',
     {
-        [DamageType.PHYSICAL]: 0.50,
-        [DamageType.FIRE]: 0.50,
-        [DamageType.COLD]: -0.50,
-        [DamageType.THUNDER]: -0.50,
-        [DamageType.CHAOS]: 0,
+        Physical: 0.50,
+        Fire: 0.50,
+        Cold: -0.50,
+        Thunder: -0.50,
+        Chaos: 0,
     }
 ));
 
@@ -51,10 +51,10 @@ addCreatureType(new CreatureType(
     3,
     'Ghost',
     {
-        [DamageType.PHYSICAL]: 1,
-        [DamageType.FIRE]: -0.50,
-        [DamageType.COLD]: 0.50,
-        [DamageType.THUNDER]: -0.50,
-        [DamageType.CHAOS]: 0,
+        Physical: 1,
+        Fire: -0.50,
+        Cold: 0.50,
+        Thunder: -0.50,
+        Chaos: 0,
     }
 ));
