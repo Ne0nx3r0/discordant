@@ -1,12 +1,12 @@
-import ItemBase from '../item/ItemBase';
+import ItemEquippable from '../item/ItemEquippable';
 import Weapon from '../item/weapon/Weapon';
 
 interface EquipmentBag{
-    hat?: ItemBase;
-    armor?: ItemBase;
-    amulet?: ItemBase;
-    ringLeft?: ItemBase;
-    ringRight?: ItemBase;
+    hat?: ItemEquippable;
+    armor?: ItemEquippable;
+    amulet?: ItemEquippable;
+    ringLeft?: ItemEquippable;
+    ringRight?: ItemEquippable;
     weaponPrimary?: Weapon;
     weaponOffhand?: Weapon;
 }
@@ -14,11 +14,11 @@ interface EquipmentBag{
 export type EquipmentSlot = 'hat' | 'armor' | 'amulet' | 'ring' | 'weapon';
 
 export default class CreatureEquipment{
-    hat: ItemBase;
-    armor: ItemBase;
-    amulet: ItemBase;
-    ringLeft: ItemBase;
-    ringRight: ItemBase;
+    hat: ItemEquippable;
+    armor: ItemEquippable;
+    amulet: ItemEquippable;
+    ringLeft: ItemEquippable;
+    ringRight: ItemEquippable;
     weaponPrimary: Weapon;
     weaponOffhand: Weapon;
 

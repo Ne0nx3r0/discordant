@@ -16,7 +16,7 @@ export default class Weapon extends ItemEquippable{
     useRequirements:useRequirements;
 
     constructor(id:number,title:string,description:string,useRequirements:useRequirements,attacks:Array<Attack>){
-        super(id,title,description);
+        super(id,title,description,'weapon');
 
         this.attacks = attacks;
         this.useRequirements = useRequirements || {};

@@ -1,7 +1,7 @@
 import CreatureType from './CreatureType';
 import DamageSet from './damage/DamageSet';
 import Weapon from '../item/weapon/Weapon';
-import AttributeSet from './player/AttributeSet';
+import AttributeSet from './AttributeSet';
 import CreatureEquipment from './CreatureEquipment';
 
 interface ICreatureBag{
@@ -38,7 +38,11 @@ export default class Creature{
 
         const resistances = new DamageSet();
 
-        this.equipment.armor
+        this.equipment.armor.addResistance(this,resistances);
+        this.equipment.amulet.addResistance(this,resistances);
+        this.equipment.ringLeft.addResistance(this,resistances);
+        this.equipment.ringRight.addResistance(this,resistances);
+        this.equipment.hat.addResistance(this,resistances);
 
         return resistances;
     }

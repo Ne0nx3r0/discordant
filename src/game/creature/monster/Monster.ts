@@ -1,27 +1,29 @@
-import ICreature from '../ICreature';
+import Creature from '../Creature';
 import CreatureType from '../CreatureType';
-import Weapon from '../weapon/Weapon';
+import Weapon from '../../item/weapon/Weapon';
 import DamageSet from '../damage/DamageSet';
+import CreatureSkin from '../../item/skins/CreatureSkin';
+import AttributeSet from '../AttributeSet';
+import CreatureEquipment from '../CreatureEquipment';
+import ItemEquippable from '../../item/ItemEquippable';
 
-export default class Monster implements ICreature{
-    id:number;
-    title:string;
-    description:string;
-    creatureSkin:CreatureType;
-    totalHP:number;
-    currentHP:number;
-    primaryWeapon:Weapon;
-    offhandWeapon:Weapon;
-
-    constructor(){
+export default class Monster extends Creature{
+    constructor(id:number,title:string,description:string,attributes:AttributeSet,equipment){
+        super({
+            id: id,
+            title: title,
+            description: description,
+            attributes: attributes,
+            equipment: equipment,
+        });
 
         this.attackWeightsTotal = this.attackWeights.reduce(function(total,current){
             return total.chance + current.chance;
         });
     }
 
-    get resistances():DamageSet{
-        return this.type.resistances;
+    get creatureSkin():ItemEquippable{
+        return this.equipment.armor;
     }
 
     getRandomAttack(){
