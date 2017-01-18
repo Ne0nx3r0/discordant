@@ -1,5 +1,5 @@
-import ItemEquippable from '../item/ItemEquippable';
-import Weapon from '../item/weapon/Weapon';
+import ItemEquippable from './ItemEquippable';
+import Weapon from './weapon/Weapon';
 
 interface EquipmentBag{
     hat?: ItemEquippable;
@@ -16,7 +16,7 @@ export enum EquipmentSlotType{
     Armor,
     Ring,
     Amulet,
-    Weapon
+    Weapon,
 }
 
 export enum ItemEquipSlot{

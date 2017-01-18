@@ -1,5 +1,5 @@
 import CreatureType from './CreatureType';
-import DamageSet from '../damage/DamageSet';
+import DamageSet from '../damage/IDamageSet';
 import Weapon from '../item/weapon/Weapon';
 import AttributeSet from './AttributeSet';
 import CreatureEquipment from './CreatureEquipment';

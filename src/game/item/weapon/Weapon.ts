@@ -1,4 +1,4 @@
-import Attack from './Attack';
+import WeaponAttack from './WeaponAttack';
 import Creature from '../../creature/Creature';
 import ItemEquippable from '../ItemEquippable';
 
@@ -12,10 +12,10 @@ interface useRequirements{
 }
 
 export default class Weapon extends ItemEquippable{
-    attacks:Array<Attack>;
+    attacks:Array<WeaponAttack>;
     useRequirements:useRequirements;
 
-    constructor(id:number,title:string,description:string,useRequirements:useRequirements,attacks:Array<Attack>){
+    constructor(id:number,title:string,description:string,useRequirements:useRequirements,attacks:Array<WeaponAttack>){
         super(id,title,description,'weapon');
 
         this.attacks = attacks;
