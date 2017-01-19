@@ -5,46 +5,38 @@ interface EquipmentBag{
     hat?: ItemEquippable;
     armor?: ItemEquippable;
     amulet?: ItemEquippable;
-    ringLeft?: ItemEquippable;
-    ringRight?: ItemEquippable;
-    weaponPrimary?: Weapon;
-    weaponOffhand?: Weapon;
+    earring?: ItemEquippable;
+    ring?: ItemEquippable;
+    primaryWeapon?: Weapon;
+    offhandWeapon?: Weapon;
 }
 
-export enum EquipmentSlotType{
+export enum EquipmentSlot{
     Hat,
     Armor,
+    Amulet,
     Ring,
-    Amulet,
+    Earing,
     Weapon,
+    Offhand,
 }
-
-export enum ItemEquipSlot{
-    Hat,
-    Armor,
-    Amulet,
-    RingLeft,
-    RingRight,
-    WeaponPrimary,
-    WeaponOffhand,
-};
 
 export default class CreatureEquipment{
     hat: ItemEquippable;
     armor: ItemEquippable;
     amulet: ItemEquippable;
-    ringLeft: ItemEquippable;
-    ringRight: ItemEquippable;
-    weaponPrimary: Weapon;
-    weaponOffhand: Weapon;
+    ring: ItemEquippable;
+    earring: ItemEquippable;
+    primaryWeapon: Weapon;
+    offhandWeapon: Weapon;
 
     constructor(equipmentBag:EquipmentBag){
         this.hat = equipmentBag.hat;
         this.armor = equipmentBag.armor;
         this.amulet = equipmentBag.amulet;
-        this.ringLeft = equipmentBag.ringLeft;
-        this.ringRight = equipmentBag.ringRight;
-        this.weaponPrimary = equipmentBag.weaponPrimary;
-        this.weaponOffhand = equipmentBag.weaponOffhand;
+        this.ring = equipmentBag.ring;
+        this.earring = equipmentBag.earring;
+        this.primaryWeapon = equipmentBag.primaryWeapon;
+        this.offhandWeapon = equipmentBag.offhandWeapon;
     }
 }

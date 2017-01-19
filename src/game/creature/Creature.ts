@@ -2,7 +2,8 @@ import CreatureType from './CreatureType';
 import DamageSet from '../damage/IDamageSet';
 import Weapon from '../item/weapon/Weapon';
 import AttributeSet from './AttributeSet';
-import CreatureEquipment from './CreatureEquipment';
+import CreatureEquipment from '../item/CreatureEquipment';
+import {EquipmentSlot} from '../item/CreatureEquipment';
 import IStatSet from './IStatSet';
 import ItemEquippable from '../item/ItemEquippable';
 
@@ -53,21 +54,23 @@ export default class Creature{
 
         if(this.equipment.armor) this.equipment.armor.onAddBonuses(stats);
         if(this.equipment.hat) this.equipment.hat.onAddBonuses(stats);
-        if(this.equipment.ringLeft) this.equipment.ringLeft.onAddBonuses(stats);
-        if(this.equipment.ringRight) this.equipment.ringRight.onAddBonuses(stats);
+        if(this.equipment.ring) this.equipment.ring.onAddBonuses(stats);
+        if(this.equipment.earring) this.equipment.earring.onAddBonuses(stats);
         if(this.equipment.amulet) this.equipment.amulet.onAddBonuses(stats);
 
         this.stats = stats;
     }
 
-    equipItem(item:ItemEquippable,slot:ItemEquipSlot){
-
+    equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{
+        const unequippedItem = 
 
         this.updateStats();
+
+        return 
     }
 
-    unEquipItem(slot:ItemEquipSlot){
-
+    unEquipItem(slot:EquipmentSlot):ItemEquippable{
+        const removedItem = 
 
         this.updateStats();
     }
