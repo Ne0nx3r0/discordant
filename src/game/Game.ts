@@ -27,7 +27,7 @@ export default class Game{
         uid:'123212233'+Math.round(Math.random()*10),
             discriminator:9228,
             username:'Testy',
-            class: CharacterClasses.get(1)6+
+            class: CharacterClasses.get(1)
             
         })
         .then((pc)=>{
@@ -71,6 +71,8 @@ export default class Game{
         return new Promise((resolve,reject)=>{
             try{
                 const con = this.db.getClient();
+
+                con.query('TRUNCATE player;',[],function(err,res){console.log(err,res);});
 
                 con.query(queryStr, queryValues, insertResult.bind(this));
 
