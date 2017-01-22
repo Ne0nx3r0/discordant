@@ -1,15 +1,15 @@
-import AttributeSet from './AttributeSet';
+import AttributeSet from '../AttributeSet';
 
 export default class CharacterClass {
     id:number;
     title:string;
     description:string;
-    attributes:AttributeSet;
+    startingAttributes:AttributeSet;
 
-    constructor(id,title,description,attributeSet){
+    constructor(id:number,title:string,description:string,startingAttributes:AttributeSet){
         this.id = id;
         this.title = title;
         this.description = description;
-        this.attributes = attributeSet;
+        this.startingAttributes = startingAttributes;
     }
 }

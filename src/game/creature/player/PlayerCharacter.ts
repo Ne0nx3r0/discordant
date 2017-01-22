@@ -1,12 +1,12 @@
 import Creature from '../Creature';
-import DamageSet from '../damage/DamageSet';
+import DamageSet from '../../damage/IDamageSet';
 import CurrentBattleData from '../../battle/CurrentBattleData';
 import CreatureType from '../CreatureType';
 import CharacterClass from './CharacterClass';
-import AttributeSet from './AttributeSet';
+import AttributeSet from '../AttributeSet';
 import Weapon from '../../item/weapon/Weapon';
 import Weapons from '../../item/weapon/Weapons';
-import CreatureEquipment from '../CreatureEquipment';
+import CreatureEquipment from '../../item/CreatureEquipment';
 
 interface PCConfig{
     id:number,
@@ -50,15 +50,4 @@ export default class PlayerCharacter extends Creature{
     get inBattle():boolean{
         return this.currentBattleData?true:false;
     }
-
-    get resistances():DamageSet{
-        const endurance = this.getStat('endurance');
-        const enduranceResist = Math.min(endurance/100,0.9);
-        const luckResist = Math.min(endurance/200 + this.getStat('luck')/200,0.7);
-        
-        this.equipment.amulet
-
-        return ;
-    }
-
 }

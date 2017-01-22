@@ -8,7 +8,7 @@ export default class AttributeSet{
     Spirit:number;
     Luck:number;
 
-    constructor(str:number,agl,vit:number,end:number,kno:number,spr:number,lck:number){
+    constructor(str:number,agl:number,vit:number,end:number,spr:number,lck:number){
         this.Strength = str;//requierd to use heavy weapons, 
         this.Agility = agl;//required to use light weapons, increases dodge
         this.Vitality = vit;// increases hp

@@ -25,7 +25,7 @@ export default class DiscordBot{
 
         this.client.on('message',this.handleMessage.bind(this))
 
-        this.client.on('ready',this.handleReady);
+        this.client.on('ready',this.handleReady.bind(this));
 
         this.client.login(authToken);
     }

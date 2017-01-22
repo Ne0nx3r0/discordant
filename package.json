@@ -4,13 +4,15 @@
   "description": "Pet project",
   "main": "Index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js"
   },
   "author": "Ne0nx3r0",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.0.0",
+    "pg": "^6.1.2",
     "spawn-args": "^0.2.0",
-    "typescript": "^2.1.5"
+    "typescript": "^2.1.5",
+    "winston": "^2.3.1"
   }
 }

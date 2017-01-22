@@ -1,12 +1,12 @@
 import CharacterClass from './CharacterClass';
-import AttributeSet from './AttributeSet';
+import AttributeSet from '../AttributeSet';
 
 const classes = new Map();
 
 export default classes;
 
 function addClass(c){
-    classes.set(c.title.toUpperCase(),c);
+    classes.set(c.id,c);
 }
 
 addClass(new CharacterClass(

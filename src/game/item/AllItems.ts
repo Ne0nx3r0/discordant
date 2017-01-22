@@ -7,8 +7,12 @@ export default class AllItems{
     constructor(){
         this.items = new Map();
 
-        Weapons.forEach(function(weapon){
+        Weapons.forEach((weapon)=>{
             this.items.set(weapon.id,weapon);
         });
+    }
+
+    get(id:number):ItemBase{
+        return this.items.get(id);
     }
 }
