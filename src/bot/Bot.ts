@@ -62,6 +62,8 @@ export default class DiscordBot{
         const command:Command = this.commands.get(commandName);
 
         if(command){
+            params.shift();
+            
             command.run(params,message,this.game);
         }
     }

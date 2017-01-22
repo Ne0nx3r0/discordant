@@ -7,7 +7,7 @@ import CreatureEquipment from './item/CreatureEquipment';
 import AttributeSet from './creature/AttributeSet';
 const winston = require('winston');
 
-interface IPlayerBag{
+interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
     discriminator:number;
     username:string;
@@ -24,23 +24,9 @@ export default class Game{
         this.cachedPlayers = new Map();
 
         this.items = new AllItems();
-
-        this.registerPlayerCharacter({
-        uid:'123212233'+Math.round(Math.random()*10),
-            discriminator:9228,
-            username:'Testy',
-            class: CharacterClasses.get(1)
-            
-        })
-        .then((pc)=>{
-            console.log('then',JSON.stringify(pc));
-        })
-        .catch((err)=>{
-            console.log('catch',err);
-        });
     }
 
-    registerPlayerCharacter(playerBag:IPlayerBag){
+    registerPlayerCharacter(playerBag:IPlayerRegisterBag){
         const queryStr = `
             INSERT INTO player (
                     uid,
@@ -81,8 +67,6 @@ export default class Game{
 
             try{
                 const con = this.db.getClient();
-
-                con.query('TRUNCATE player;',[],function(err,res){console.log(err,res);});
 
                 con.query(queryStr, queryValues, insertResult.bind(this));
 
@@ -142,6 +126,13 @@ export default class Game{
                     }
 
                     const row = result.rows[0];
+
+                    if(!row){
+                        //not found
+                        resolve();
+
+                        return;
+                    }
 
                     const pc = new PlayerCharacter({
                         id: row.id,

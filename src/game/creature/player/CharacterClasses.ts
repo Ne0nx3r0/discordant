@@ -1,7 +1,8 @@
 import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
+import Collection from '../../../util/Collection';
 
-const classes = new Map();
+const classes = new Collection();
 
 export default classes;
 
@@ -15,4 +16,3 @@ addClass(new CharacterClass(
     'Your path is your own, but you will receive no help along the way.',
     new AttributeSet(10,10,10,10,10,10)
 ));
-

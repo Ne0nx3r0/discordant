@@ -9,7 +9,7 @@ class Discordant {
 
         const game:Game = new Game(db);
 
-       // const bot:Bot = new Bot(game,Config.GameBotAuthToken);
+        const bot:Bot = new Bot(game,Config.GameBotAuthToken);
 
         return 0;
     }
