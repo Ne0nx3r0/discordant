@@ -17,9 +17,11 @@ interface IPlayerBag{
 export default class Game{
     items:AllItems;
     db:DatabaseService;
+    cachedPlayers:Map<string,string>;
 
     constructor(db:DatabaseService){
         this.db = db;
+        this.cachedPlayers = new Map();
 
         this.items = new AllItems();
 
@@ -69,6 +71,14 @@ export default class Game{
         ];
 
         return new Promise((resolve,reject)=>{
+            const cachedPlayer = this.cachedPlayers.get(playerBag.uid);
+            
+            if(cachedPlayer){
+                resolve(cachedPlayer);
+
+                return;
+            }
+
             try{
                 const con = this.db.getClient();
 
@@ -160,6 +170,8 @@ export default class Game{
                             offhandWeapon: this.items.get(row.equipment_offhand),
                         }),
                     });
+
+                    this.cachedPlayers.set(pc.uid,pc);
 
                     resolve(pc);
                 }
