@@ -19,6 +19,13 @@ export default class CoopMonsterBattle{
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:Creature){
         this.id = id;
         this.pcs = pcs;
+
+        this.pcs.forEach((pc)=>{
+            pc.currentBattleData = {
+                battle: this
+            };
+        });
+
         this.opponent = opponent;
 
         this.handlers = [];
@@ -32,7 +39,7 @@ export default class CoopMonsterBattle{
 
 
 
-    //Really need to abstract these into a generic class somehow
+    //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction
     on(event:CoopMonsterBattleEvent,handler){
         this.handlers[event].push(handler);
     }

@@ -7,6 +7,7 @@ import CreatureEquipment from './item/CreatureEquipment';
 import Creature from './creature/Creature';
 import Monster from './creature/monster/Monster';
 import AttributeSet from './creature/AttributeSet';
+import CoopMonsterBattle from './battle/CoopMonsterBattle';
 const winston = require('winston');
 
 interface IPlayerRegisterBag{
@@ -20,12 +21,17 @@ export default class Game{
     items:AllItems;
     db:DatabaseService;
     cachedPlayers:Map<string,string>;
+    battleCardinality:number;
+    activeBattles:Map<number,CoopMonsterBattle>;
 
     constructor(db:DatabaseService){
         this.db = db;
         this.cachedPlayers = new Map();
 
         this.items = new AllItems();
+
+        this.activeBattles = new Map();
+        this.battleCardinality = 1;
     }
 
     registerPlayerCharacter(playerBag:IPlayerRegisterBag){
@@ -177,7 +183,24 @@ export default class Game{
         });
     }
 
-    createMonsterBattle(players:Array<Creature>,monster:Monster){
-        
+    createMonsterBattle(players:Array<PlayerCharacter>,opponent:Creature){
+        return new Promise((resolve,reject)=>{
+            //Verify no player is currently in a battle
+            for(var i=0;i<players.length;i++){
+                const player:PlayerCharacter = players[i];
+
+                if(player.inBattle){
+                    reject(player.title + ' is already in a battle');
+
+                    return;
+                }
+            }
+
+            const battle:CoopMonsterBattle = new CoopMonsterBattle(this.battleCardinality++,players,opponent);
+
+            this.activeBattles.set(battle.id,battle);
+
+            resolve(battle);
+        });
     }
 }

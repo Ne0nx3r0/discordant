@@ -7,7 +7,7 @@ import {EquipmentSlot} from '../item/CreatureEquipment';
 import IStatSet from './IStatSet';
 import ItemEquippable from '../item/ItemEquippable';
 
-interface ICreatureBag{
+export interface ICreatureBag{
     id:number;
     title:string;
     description:string;
@@ -66,12 +66,14 @@ export default class Creature{
 
         this.updateStats();
 
-        return 
+        return null;
     }
 
     unEquipItem(slot:EquipmentSlot):ItemEquippable{
-        const removedItem = 
+        //const removedItem = 
 
         this.updateStats();
+
+        return null;
     }
 }
