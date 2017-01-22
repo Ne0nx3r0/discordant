@@ -1,29 +1,25 @@
-import ICreature from '../ICreature';
-import AttackStep from './AttackStep';
+import Creature from '../../creature/Creature';
+import WeaponAttackStep from './WeaponAttackStep';
 
 interface AIShouldUseFunc{
-    (attacker:ICreature,defender:ICreature,master?:ICreature):boolean;
+    (attacker:Creature,defender:Creature,master?:Creature):boolean;
 }
 
 export default class Attack{
     title:string;
-    steps:Array<AttackStep>;
+    steps:Array<WeaponAttackStep>;
 
     //1-100 weighted chance AI will use this attack
     aiUseWeight:number;
 
     //is now an appropriate time to use this attack?
     //master is in the case where this is a pet
-    aiShouldUseFunc:AIShouldUseFunc;
+    aiShouldIUseThisAttack:AIShouldUseFunc;
 
-    aiShouldUse(attacker:ICreature,defender:ICreature,master?:ICreature){
-        return this.aiShouldUse;
-    }
-
-    constructor(title:string,steps:Array<AttackStep>,aiUseWeight:number,aiShouldUseFunc?:AIShouldUseFunc){
+    constructor(title:string,steps:Array<WeaponAttackStep>,aiUseWeight:number,aiShouldUseFunc?:AIShouldUseFunc){
         this.title = title;
         this.steps = steps;
         this.aiUseWeight = aiUseWeight;
-        this.aiShouldUseFunc = aiShouldUseFunc || function(attacker:ICreature,defender:ICreature,master?:ICreature){return true};
+        this.aiShouldIUseThisAttack = aiShouldUseFunc || function(attacker:Creature,defender:Creature,master?:Creature){return true};
     }
 }

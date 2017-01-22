@@ -29,6 +29,14 @@ export default class CoopMonsterBattle{
         this.opponent = opponent;
 
         this.handlers = [];
+
+        
+
+        need to implement monster auto-attacks
+
+        then work on player attacks
+
+        then player blocks
     }
 
 
