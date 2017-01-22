@@ -4,6 +4,8 @@ import CharacterClass from './creature/player/CharacterClass';
 import CharacterClasses from './creature/player/CharacterClasses';
 import PlayerCharacter from './creature/player/PlayerCharacter';
 import CreatureEquipment from './item/CreatureEquipment';
+import Creature from './creature/Creature';
+import Monster from './creature/monster/Monster';
 import AttributeSet from './creature/AttributeSet';
 const winston = require('winston');
 
@@ -173,5 +175,9 @@ export default class Game{
                 reject(ex);
             }
         });
+    }
+
+    createMonsterBattle(players:Array<Creature>,monster:Monster){
+        
     }
 }

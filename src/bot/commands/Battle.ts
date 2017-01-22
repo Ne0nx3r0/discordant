@@ -24,7 +24,35 @@ export default class Battle extends Command{
     }
 
     run(params:Array<string>,message:any,game:Game){
-        
+        game.getPlayerCharacter(message.author.uid)
+        .then(getPCResult)
+        .catch(errFunc);
 
+        function getPCResult(pc){
+            if(!pc){
+                message.reply('You must register first with dbegin');
+
+                return;
+            }
+
+            if(pc.isInBattle){
+                message.reply('You are in a battle already, omg defend yourself!');
+
+                return;
+            }
+
+            game.createMonsterBattle([pc])
+            .then(battleCreated)
+            .catch(errFunc);
+
+            function battleCreated(battle){
+                message.reply('BATTLE!');
+            }
+        }
+
+
+        function errFunc(err){
+            message.reply(err);
+        }
     }
 }
