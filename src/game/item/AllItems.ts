@@ -1,7 +1,7 @@
 import ItemBase from './ItemBase';
 
 import Weapon from './weapon/Weapon';
-import * as WeaponsIndex from './weapon/weapons/WeaponsIndex';
+import * as WeaponsIndex from './weapon/WeaponsIndex';
 
 export default class AllItems{
     items:Map<number,ItemBase>;

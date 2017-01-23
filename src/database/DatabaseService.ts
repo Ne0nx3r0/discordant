@@ -10,6 +10,14 @@ interface dbConfig{
     timeout?:number;
 }
 
+interface dbClientCallback{
+    (error:any,result:any);
+}
+
+interface dbClient{
+    query(query:string,params:Array<any>,callback:dbClientCallback):Function;
+}
+
 export default class DatabaseService{
     pool:any;
 
@@ -25,7 +33,7 @@ export default class DatabaseService{
         });
     }
 
-    getClient(){
+    getClient():dbClient{
         return this.pool;
     }
 }

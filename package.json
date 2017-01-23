@@ -4,7 +4,8 @@
   "description": "Pet project",
   "main": "Index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test": "jasmine"
   },
   "author": "Ne0nx3r0",
   "license": "ISC",
@@ -14,5 +15,11 @@
     "spawn-args": "^0.2.0",
     "typescript": "^2.1.5",
     "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.6",
+    "gulp": "^3.9.1",
+    "jasmine": "^2.5.2",
+    "typings": "^2.1.0"
   }
 }

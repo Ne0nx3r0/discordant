@@ -2,6 +2,7 @@ import Command from './Command';
 import Game from '../../game/Game';
 import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
+import Goblin from '../../game/creature/monsters/Goblin';
 
 export default class Battle extends Command{
     constructor(){
@@ -41,7 +42,7 @@ export default class Battle extends Command{
                 return;
             }
 
-            game.createMonsterBattle([pc])
+            game.createMonsterBattle([pc],new Goblin())
             .then(battleCreated)
             .catch(errFunc);
 

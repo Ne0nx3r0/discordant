@@ -5,7 +5,6 @@ import CreatureType from '../CreatureType';
 import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
 import Weapon from '../../item/weapon/Weapon';
-import Weapons from '../../item/weapon/Weapons';
 import CreatureEquipment from '../../item/CreatureEquipment';
 
 interface PCConfig{

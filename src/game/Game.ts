@@ -44,7 +44,6 @@ export default class Game{
                     attribute_strength,
                     attribute_agility,
                     attribute_vitality,
-                    attribute_endurance,
                     attribute_spirit,
                     attribute_luck
                 )
