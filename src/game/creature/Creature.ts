@@ -22,7 +22,6 @@ export default class Creature{
     description:string;
     attributes:AttributeSet;
     equipment:CreatureEquipment;
-    hpCurrent:number;
     stats:IStatSet;
 
     constructor(creatureBag:ICreatureBag){
@@ -33,8 +32,6 @@ export default class Creature{
         this.equipment = creatureBag.equipment;
 
         this.updateStats();
-
-        this.hpCurrent = this.stats.HPTotal;
     }
 
     updateStats(){
@@ -52,6 +49,7 @@ export default class Creature{
                 Chaos:0,
             },
             HPTotal:this.attributes.Vitality*10,
+            HPCurrent: this.stats.HPCurrent ? this.stats.HPCurrent : this.stats.HPTotal,
         };
 
         if(this.equipment.armor) this.equipment.armor.onAddBonuses(stats);

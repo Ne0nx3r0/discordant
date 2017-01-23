@@ -6,6 +6,7 @@ interface IStatSet{
     Vitality:number,
     Spirit:number,
     Luck:number,
+    HPCurrent:number,
     HPTotal:number,
     Resistances:IDamageSet,
 }
