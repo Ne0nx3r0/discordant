@@ -38,4 +38,16 @@ describe('User registration',()=>{
             expect(ex).toBeNull();
         });
     });
+
+    it('should allow retrieving existing users',(done)=>{
+        game.getPlayerCharacter('42')
+        .then((pc:PlayerCharacter)=>{
+            expect(pc).toBeDefined();
+
+            expect(pc.stats.hpCurrent).toEqual(pc.stats.HPTotal);
+        })
+        .catch((ex)=>{
+            expect(ex).toBeNull();
+        });    
+    });
 });
