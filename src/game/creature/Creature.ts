@@ -6,9 +6,10 @@ import CreatureEquipment from '../item/CreatureEquipment';
 import {EquipmentSlot} from '../item/CreatureEquipment';
 import IStatSet from './IStatSet';
 import ItemEquippable from '../item/ItemEquippable';
+import CreatureId from './CreatureId';
 
 export interface ICreatureBag{
-    id:number;
+    id:CreatureId;
     title:string;
     description:string;
     attributes:AttributeSet;
@@ -16,7 +17,7 @@ export interface ICreatureBag{
 }
 
 export default class Creature{
-    id:number;
+    id:CreatureId;
     title:string;
     description:string;
     attributes:AttributeSet;
@@ -41,14 +42,13 @@ export default class Creature{
             Strength:this.attributes.Strength,
             Agility:this.attributes.Agility,
             Vitality:this.attributes.Vitality,
-            Endurance:this.attributes.Endurance,
             Spirit:this.attributes.Spirit,
             Luck:this.attributes.Luck,
             Resistances:{
                 Physical:0,
-                Fire:0,
-                Cold:0,
-                Thunder:0,
+                Fire:Math.floor(this.attributes.Agility/3)/100,
+                Cold:Math.floor(this.attributes.Strength/3)/100,
+                Thunder:Math.floor(this.attributes.Luck/3)/100,
                 Chaos:0,
             },
             HPTotal:this.attributes.Vitality*10,

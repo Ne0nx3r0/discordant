@@ -5,7 +5,7 @@ import CharacterClasses from './creature/player/CharacterClasses';
 import PlayerCharacter from './creature/player/PlayerCharacter';
 import CreatureEquipment from './item/CreatureEquipment';
 import Creature from './creature/Creature';
-import Monster from './creature/monster/Monster';
+import CreatureAIControlled from './creature/CreatureAIControlled';
 import AttributeSet from './creature/AttributeSet';
 import CoopMonsterBattle from './battle/CoopMonsterBattle';
 const winston = require('winston');
@@ -48,7 +48,7 @@ export default class Game{
                     attribute_spirit,
                     attribute_luck
                 )
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9);
         `;
 
         const queryValues:Array<any> = [
@@ -59,7 +59,6 @@ export default class Game{
             playerBag.class.startingAttributes.Strength,
             playerBag.class.startingAttributes.Agility,
             playerBag.class.startingAttributes.Vitality,
-            playerBag.class.startingAttributes.Endurance,
             playerBag.class.startingAttributes.Spirit,
             playerBag.class.startingAttributes.Luck            
         ];
@@ -155,7 +154,6 @@ export default class Game{
                             row.attribute_strength,
                             row.attribute_agility,
                             row.attribute_vitality,
-                            row.attribute_endurance,
                             row.attribute_spirit,
                             row.attribute_luck
                         ),
@@ -183,7 +181,7 @@ export default class Game{
         });
     }
 
-    createMonsterBattle(players:Array<PlayerCharacter>,opponent:Creature){
+    createMonsterBattle(players:Array<PlayerCharacter>,opponent:CreatureAIControlled){
         return new Promise((resolve,reject)=>{
             //Verify no player is currently in a battle
             for(var i=0;i<players.length;i++){

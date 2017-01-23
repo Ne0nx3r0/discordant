@@ -1,0 +1,1 @@
+export { default as BareHands } from './weapons/BareHands';

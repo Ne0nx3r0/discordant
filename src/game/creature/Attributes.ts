@@ -2,7 +2,6 @@ enum Attributes{
     Strength,
     Agility,
     Vitality,
-    Endurance,
     Spirit,
     Luck
 }

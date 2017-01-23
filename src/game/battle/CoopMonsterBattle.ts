@@ -19,6 +19,15 @@ export enum CoopMonsterBattleEvent{
     PlayerDeath
 }
 
+interface PlayerDamaged{
+    pc:PlayerCharacter,
+    damages:IDamageSet,
+}
+
+interface PlayersAttackedEventData{
+    damages:Array<PlayerDamaged>;
+}
+
 export default class CoopMonsterBattle{
     id:number;
     pcs:Array<PlayerCharacter>;
@@ -71,14 +80,23 @@ export default class CoopMonsterBattle{
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
-        const eventData = {};
+        const eventData:PlayersAttackedEventData = {
+            damages: []
+        };
 
         this.pcs.forEach((pc)=>{
-            const pcDamages = attackStep.getDamages(this.opponent,pc);
+            const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,pc);
 
-            const pcResistances = pc.stats.Resistances;
+            //Reduce damage by player's resistance to it
+            Object.keys(pcDamages).forEach(function(damageType){
+                //Resistance = 0.0 (0%) to 0.9 (90%) damage reduction 
+                pcDamages[damageType] = Math.round( pcDamages[damageType] * (1-pc.stats.Resistances[damageType]) );
+            });
 
-            
+            eventData.damages.push({
+                pc:pc,
+                damages:pcDamages
+            });
         });
 
         this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);

@@ -1,5 +1,5 @@
 import Creature from './Creature';
-import ICreatureBag from './Creature'; 
+import {ICreatureBag} from './Creature'; 
 import WeaponAttack from '../item/weapon/WeaponAttack';
 import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
 

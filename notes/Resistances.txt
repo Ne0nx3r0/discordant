@@ -1,0 +1,7 @@
+Max = 0.9 which means 90% of damage of that type is resisted
+stats can offer 
+
+99/3
+.33
+
+3 points = 0.01 resistance bonus

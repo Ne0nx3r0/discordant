@@ -1,5 +1,7 @@
-import Weapons from './weapon/Weapons';
 import ItemBase from './ItemBase';
+
+import Weapon from './weapon/Weapon';
+import * as WeaponsIndex from './weapon/weapons/WeaponsIndex';
 
 export default class AllItems{
     items:Map<number,ItemBase>;
@@ -7,7 +9,9 @@ export default class AllItems{
     constructor(){
         this.items = new Map();
 
-        Weapons.forEach((weapon)=>{
+        Object.keys(WeaponsIndex).forEach((weaponKey)=>{
+            const weapon:Weapon = WeaponsIndex[weaponKey];
+        
             this.items.set(weapon.id,weapon);
         });
     }
