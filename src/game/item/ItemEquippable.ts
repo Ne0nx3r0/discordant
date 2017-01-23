@@ -15,14 +15,16 @@ export default class ItemEquippable extends ItemBase{
     }
 
     //Modifies the damageset if bonuses/penalties apply
-    onAttack(currentDamages:DamageSet,wearer:Creature,wearerWeapon:Weapon,defender:Creature):DamageSet{
+    /*onAttack(currentDamages:DamageSet,wearer:Creature,wearerWeapon:Weapon,defender:Creature):DamageSet{
         return;
-    }
+    }not implemented yet
+    */
 
     //Modifies the damageset if bonuses/penalties apply
-    onDefend(currentDamages:DamageSet,wearer:Creature,attacker:Creature):DamageSet{
+    /*onDefend(currentDamages:DamageSet,wearer:Creature,attacker:Creature):DamageSet{
         return;
-    }
+    }not implemented yet
+    */
 
     //Modifies the statset if bonuses/penalties apply
     onAddBonuses(stats:IStatSet){

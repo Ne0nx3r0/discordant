@@ -44,11 +44,13 @@ export default class Creature{
             Endurance:this.attributes.Endurance,
             Spirit:this.attributes.Spirit,
             Luck:this.attributes.Luck,
-            ResistancePhysical:0,
-            ResistanceFire:0,
-            ResistanceCold:0,
-            ResistanceThunder:0,
-            ResistanceChaos:0,
+            Resistances:{
+                Physical:0,
+                Fire:0,
+                Cold:0,
+                Thunder:0,
+                Chaos:0,
+            },
             HPTotal:this.attributes.Vitality*10,
         };
 

@@ -2,10 +2,10 @@ import Creature from '../../creature/Creature';
 import WeaponAttackStep from './WeaponAttackStep';
 
 interface AIShouldUseFunc{
-    (attacker:Creature,defender:Creature,master?:Creature):boolean;
+    (attacker:Creature):boolean;
 }
 
-export default class Attack{
+export default class WeaponAttack{
     title:string;
     steps:Array<WeaponAttackStep>;
 
@@ -20,6 +20,6 @@ export default class Attack{
         this.title = title;
         this.steps = steps;
         this.aiUseWeight = aiUseWeight;
-        this.aiShouldIUseThisAttack = aiShouldUseFunc || function(attacker:Creature,defender:Creature,master?:Creature){return true};
+        this.aiShouldIUseThisAttack = aiShouldUseFunc || function(attacker:Creature){return true};
     }
 }

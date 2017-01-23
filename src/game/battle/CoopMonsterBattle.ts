@@ -1,6 +1,15 @@
 import PlayerCharacter from '../creature/player/PlayerCharacter';
-import Creature from '../creature/Creature';
+import CreatureAIControlled from '../creature/CreatureAIControlled';
+import WeaponAttack from '../item/weapon/WeaponAttack';
+import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
+import IDamageSet from '../damage/IDamageSet';
+
 const winston = require('winston');
+
+const dummyAttack = new WeaponAttackStep(
+    '{attacker} doesn\'t know what to do!',
+    10000
+);
 
 export enum CoopMonsterBattleEvent{
     PlayerAttack,
@@ -13,10 +22,13 @@ export enum CoopMonsterBattleEvent{
 export default class CoopMonsterBattle{
     id:number;
     pcs:Array<PlayerCharacter>;
-    opponent:Creature;
+    opponent:CreatureAIControlled;
     handlers:Array<Array<Function>>;
 
-    constructor(id:number,pcs:Array<PlayerCharacter>,opponent:Creature){
+    currentAttack:WeaponAttack;
+    currentAttackStep:number;
+
+    constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
         this.id = id;
         this.pcs = pcs;
 
@@ -30,16 +42,47 @@ export default class CoopMonsterBattle{
 
         this.handlers = [];
 
-        
-
-        need to implement monster auto-attacks
-
-        then work on player attacks
-
-        then player blocks
+        this.attackTick();
     }
 
+    attackTick(){   
+        if(!this.currentAttack){
+            this.currentAttack = this.opponent.getRandomAttack();
+            this.currentAttackStep = 0;
+        }
 
+        let attackStep;
+
+        if(this.currentAttack){    
+            attackStep = this.currentAttack.steps[this.currentAttackStep++];
+    
+            if(this.currentAttack.steps.length >= this.currentAttackStep){
+                this.currentAttack = null;
+            }   
+        }
+        //Didn't find an elgible attack
+        else{
+            attackStep = dummyAttack;
+        }
+
+        this.attackPlayers(attackStep);
+
+        setTimeout(this.attackTick.bind(this),attackStep.cooldown);        
+    }
+
+    attackPlayers(attackStep:WeaponAttackStep){
+        const eventData = {};
+
+        this.pcs.forEach((pc)=>{
+            const pcDamages = attackStep.getDamages(this.opponent,pc);
+
+            const pcResistances = pc.stats.Resistances;
+
+            
+        });
+
+        this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);
+    }
 
 
 

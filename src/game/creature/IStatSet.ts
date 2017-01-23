@@ -5,12 +5,8 @@ interface IStatSet{
     Endurance,
     Spirit,
     Luck,
-    ResistancePhysical,
-    ResistanceFire,
-    ResistanceCold,
-    ResistanceThunder,
-    ResistanceChaos,
     HPTotal,
+    Resistances
 }
 
 export default IStatSet;

@@ -16,9 +16,18 @@ export enum EquipmentSlot{
     Armor,
     Amulet,
     Ring,
-    Earing,
+    Earring,
     Weapon,
     Offhand,
+}
+
+export enum EquipmentSlotType{
+    Hat,
+    Armor,
+    Amulet,
+    Ring,
+    Earring,
+    Weapon,//includes Offhand
 }
 
 export default class CreatureEquipment{
