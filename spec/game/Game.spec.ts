@@ -7,8 +7,9 @@ import Bot from '../../src/bot/Bot';
 import CharacterClasses from '../../src/game/creature/player/CharacterClasses';
 import PlayerCharacter from '../../src/game/creature/player/PlayerCharacter';
 import Goblin from '../../src/game/creature/monsters/Goblin';
-import { CoopMonsterBattleEvent } from '../../src/game/battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEventData } from '../../src/game/battle/CoopMonsterBattle';
 import CoopMonsterBattle from '../../src/game/battle/CoopMonsterBattle';
+import IDamageSet from '../../src/game/damage/IDamageSet';
 
 const TEST_PC_ID = '42';
 
@@ -63,7 +64,7 @@ describe('User registration',()=>{
     });
 });
 
-describe('Player battles',()=>{
+describe('Game player battles',()=>{
     it('should allow creating battles',(done)=>{
         game.getPlayerCharacter(TEST_PC_ID)
         .then((pc:PlayerCharacter)=>{
@@ -85,8 +86,6 @@ describe('Player battles',()=>{
                 expect(battle.id).toEqual(jasmine.any(Number));
 
                 expect(battle.pcs[0]).toEqual(pc);
-
-                done();
             })
             .catch((ex)=>{
                 expect(ex).toBeNull();

@@ -24,8 +24,8 @@ interface PlayerDamaged{
     damages:IDamageSet,
 }
 
-interface PlayersAttackedEventData{
-    damages:Array<PlayerDamaged>;
+export interface PlayersAttackedEventData{
+    players:Array<PlayerDamaged>;
 }
 
 export default class CoopMonsterBattle{
@@ -81,7 +81,7 @@ export default class CoopMonsterBattle{
 
     attackPlayers(attackStep:WeaponAttackStep){
         const eventData:PlayersAttackedEventData = {
-            damages: []
+            players: []
         };
 
         this.pcs.forEach((pc)=>{
@@ -93,7 +93,7 @@ export default class CoopMonsterBattle{
                 pcDamages[damageType] = Math.round( pcDamages[damageType] * (1-pc.stats.Resistances[damageType]) );
             });
 
-            eventData.damages.push({
+            eventData.players.push({
                 pc:pc,
                 damages:pcDamages
             });
@@ -102,8 +102,7 @@ export default class CoopMonsterBattle{
         this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);
     }
 
-
-
+    
 
 
 
