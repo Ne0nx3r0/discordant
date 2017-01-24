@@ -1,7 +1,7 @@
 import CreatureAIControlled from '../CreatureAIControlled';
 import CreatureId from '../CreatureId';
 import CreatureEquipment from '../../item/CreatureEquipment';
-import {BareHands} from '../../item/weapon/weapons/WeaponsIndex';
+import {BareHands} from '../../item/weapon/WeaponsIndex';
 import AttributeSet from '../AttributeSet';
 
 export default class Goblin extends CreatureAIControlled{

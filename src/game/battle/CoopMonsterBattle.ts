@@ -110,27 +110,36 @@ export default class CoopMonsterBattle{
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction
     on(event:CoopMonsterBattleEvent,handler){
+        if(!this.handlers[event]){
+            this.handlers[event] = [];
+        }
+
         this.handlers[event].push(handler);
     }
 
     off(event:CoopMonsterBattleEvent,handler){
         const handlers = this.handlers[event];
 
-        for(var i = handlers.length - 1; i >= 0; i--) {
-            if(handlers[i] == handler) {
-                handlers.splice(i, 1);
+        if(handlers){
+            for(var i = handlers.length - 1; i >= 0; i--) {
+                if(handlers[i] == handler) {
+                    handlers.splice(i, 1);
+                }
             }
         }
     }
 
     dispatch(event:CoopMonsterBattleEvent,eventData){
-        this.handlers[event].forEach(function(handler){
-            try{
-                handler(eventData);
-            }
-            catch(ex){
-                winston.error('Error in handler',ex);
-            }
-        });
+        //is anyone even listening?
+        if(this.handlers[event]){
+            this.handlers[event].forEach(function(handler){
+                try{
+                    handler(eventData);
+                }
+                catch(ex){
+                    winston.error('Error in handler',ex);
+                }
+            });
+        }
     }
 }

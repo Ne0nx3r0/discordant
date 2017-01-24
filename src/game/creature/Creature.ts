@@ -49,8 +49,10 @@ export default class Creature{
                 Chaos:0,
             },
             HPTotal:this.attributes.Vitality*10,
-            HPCurrent: this.stats.HPCurrent ? this.stats.HPCurrent : this.stats.HPTotal,
+            HPCurrent:null
         };
+
+        stats.HPCurrent = (this.stats && this.stats.HPCurrent) ? this.stats.HPCurrent : stats.HPTotal;
 
         if(this.equipment.armor) this.equipment.armor.onAddBonuses(stats);
         if(this.equipment.hat) this.equipment.hat.onAddBonuses(stats);
