@@ -24,16 +24,20 @@ export default class ChannelId extends Command{
     }
 
     run(params:Array<string>,message:any,game:Game){
-        if(params.length < 1){
-            message.reply('You must choose a class\n\n'+this.getAvailableClasses());
+        const existingPlayer = game.getPlayerCharacter(message.author.id)
+        .then()
+        .catch(function(err){message.reply(err);});
+
+
+
+        if(existingPlayer){
+            message.reply('You have already begun');
 
             return;
         }
 
-        const existingPlayer = game.getPlayerCharacter(message.author.id);
-
-        if(!existingPlayer){
-            message.reply('You have already begun');
+        if(params.length < 1){
+            message.reply('You must choose a class\n\n'+this.getAvailableClasses());
 
             return;
         }

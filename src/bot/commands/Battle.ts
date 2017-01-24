@@ -3,6 +3,10 @@ import Game from '../../game/Game';
 import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
 import Goblin from '../../game/creature/monsters/Goblin';
+import CoopMonsterBattle from '../../game/battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEventData } from '../../game/battle/CoopMonsterBattle';
+import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
+import IDamageSet from '../../game/damage/IDamageSet';
 
 export default class Battle extends Command{
     constructor(){
@@ -25,6 +29,10 @@ export default class Battle extends Command{
     }
 
     run(params:Array<string>,message:any,game:Game){
+        function errFunc(err){
+            message.reply(err);
+        }
+
         game.getPlayerCharacter(message.author.uid)
         .then(getPCResult)
         .catch(errFunc);
@@ -45,15 +53,23 @@ export default class Battle extends Command{
             game.createMonsterBattle([pc],new Goblin())
             .then(battleCreated)
             .catch(errFunc);
-
-            function battleCreated(battle){
-                message.reply('BATTLE!');
-            }
         }
 
+        function battleCreated(battle:CoopMonsterBattle){
+            battle.on(CoopMonsterBattleEvent.PlayersAttacked,onPlayerAttacked);
+        }
 
-        function errFunc(err){
-            message.reply(err);
+        function onPlayerAttacked(e:PlayersAttackedEventData){
+            let messageStr = 'Monster attacked!';
+            
+            e.players.forEach((pd)=>{
+                const pc:PlayerCharacter = pd.pc;
+                const damages:IDamageSet = pd.damages;
+
+                messageStr += '\n'+pc.title+' damaged! '+JSON.stringify(damages);
+            });
+
+            message.channel.sendMessage(messageStr);
         }
     }
 }
