@@ -31,6 +31,7 @@ export interface PlayersAttackedEventData{
 export default class CoopMonsterBattle{
     id:number;
     pcs:Array<PlayerCharacter>;
+    defeatedPCs:Array<PlayerCharacter>;
     opponent:CreatureAIControlled;
     handlers:Array<Array<Function>>;
 
@@ -84,14 +85,20 @@ export default class CoopMonsterBattle{
             players: []
         };
 
-        this.pcs.forEach((pc)=>{
+        this.pcs.forEach((pc:PlayerCharacter)=>{
             const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,pc);
+
+            let pcDamagesTotal = 0;
 
             //Reduce damage by player's resistance to it
             Object.keys(pcDamages).forEach(function(damageType){
                 //Resistance = 0.0 (0%) to 0.9 (90%) damage reduction 
                 pcDamages[damageType] = Math.round( pcDamages[damageType] * (1-pc.stats.Resistances[damageType]) );
+                
+                pcDamagesTotal += pcDamages[damageType];
             });
+
+            pc.HPCurrent -= pcDamagesTotal;
 
             eventData.players.push({
                 pc:pc,
@@ -100,10 +107,36 @@ export default class CoopMonsterBattle{
         });
 
         this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);
+
+        //check if anybody died
+        this.pcs.forEach((pc:PlayerCharacter)=>{
+            if(pc.HPCurrent < 1){
+                const eventData = {
+                    pc:pc
+                };
+
+                this.pcs.splice(this.pcs.indexOf(pc),1);
+
+                this.defeatedPCs.push(pc);
+                
+                this.dispatch(CoopMonsterBattleEvent.PlayerDeath,eventData);
+            }
+        });
+
+        if(this.pcs.length == 0){
+            this.endBattle(false);
+        }
     }
 
-    
+    endBattle(victory:boolean){
+        const eventData = {
+            defeatedPCs: this.defeatedPCs,
+            survivingPCs: this.pcs,
+            victory: victory
+        };
 
+        this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
+    }
 
 
 

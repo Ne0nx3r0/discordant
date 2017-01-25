@@ -43,9 +43,9 @@ export default class ChannelId extends Command{
             return;
         }
 
-        const existingPlayer = game.getPlayerCharacter(message.author.id)
+        game.getPlayerCharacter(message.author.id)
         .then(function(pc){
-            if(existingPlayer){
+            if(pc){
                 message.reply('You have already begun');
             }
             else{

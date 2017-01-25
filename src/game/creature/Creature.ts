@@ -4,9 +4,19 @@ import Weapon from '../item/weapon/Weapon';
 import AttributeSet from './AttributeSet';
 import CreatureEquipment from '../item/CreatureEquipment';
 import {EquipmentSlot} from '../item/CreatureEquipment';
-import IStatSet from './IStatSet';
 import ItemEquippable from '../item/ItemEquippable';
 import CreatureId from './CreatureId';
+import IDamageSet from '../damage/IDamageSet';
+
+interface IStatSet{
+    Strength:number,
+    Agility:number,
+    Vitality:number,
+    Spirit:number,
+    Luck:number,
+    HPTotal:number,
+    Resistances:IDamageSet,
+}
 
 export interface ICreatureBag{
     id:CreatureId;
@@ -23,6 +33,7 @@ export default class Creature{
     attributes:AttributeSet;
     equipment:CreatureEquipment;
     stats:IStatSet;
+    HPCurrent:number;
 
     constructor(creatureBag:ICreatureBag){
         this.id = creatureBag.id;
@@ -32,6 +43,7 @@ export default class Creature{
         this.equipment = creatureBag.equipment;
 
         this.updateStats();
+        this.HPCurrent = this.stats.HPTotal;
     }
 
     updateStats(){
@@ -49,10 +61,7 @@ export default class Creature{
                 Chaos:0,
             },
             HPTotal:this.attributes.Vitality*10,
-            HPCurrent:null
         };
-
-        stats.HPCurrent = (this.stats && this.stats.HPCurrent) ? this.stats.HPCurrent : stats.HPTotal;
 
         if(this.equipment.armor) this.equipment.armor.onAddBonuses(stats);
         if(this.equipment.hat) this.equipment.hat.onAddBonuses(stats);
@@ -61,6 +70,8 @@ export default class Creature{
         if(this.equipment.amulet) this.equipment.amulet.onAddBonuses(stats);
 
         this.stats = stats;
+
+        if(this.HPCurrent>this.stats.HPTotal) this.HPCurrent = this.stats.HPTotal;
     }
 
     equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{

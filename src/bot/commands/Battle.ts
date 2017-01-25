@@ -33,7 +33,7 @@ export default class Battle extends Command{
             message.reply(err);
         }
 
-        game.getPlayerCharacter(message.author.uid)
+        game.getPlayerCharacter(message.author.id)
         .then(getPCResult)
         .catch(errFunc);
 
