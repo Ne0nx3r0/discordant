@@ -51,14 +51,14 @@ export default class CoopMonsterBattle{
     pcs:Array<PlayerCharacter>;
     defeatedPCs:Array<PlayerCharacter>;
     opponent:CreatureAIControlled;
-    handlers:Array<Array<Function>>;
-    battleEnded:boolean;
+    _handlers:Array<Array<Function>>;
+    _battleEnded:boolean;
 
-    currentAttack:WeaponAttack;
-    currentAttackStep:number;
+    _currentAttack:WeaponAttack;
+    _currentAttackStep:number;
 
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
-        this.battleEnded = false;
+        this._battleEnded = false;
 
         this.id = id;
         this.pcs = pcs;
@@ -72,24 +72,24 @@ export default class CoopMonsterBattle{
 
         this.opponent = opponent;
 
-        this.handlers = [];
+        this._handlers = [];
 
-        this.attackTick();
+        this._attackTick();
     }
 
-    attackTick(){   
-        if(!this.currentAttack){
-            this.currentAttack = this.opponent.getRandomAttack();
-            this.currentAttackStep = 0;
+    _attackTick(){   
+        if(!this._currentAttack){
+            this._currentAttack = this.opponent.getRandomAttack();
+            this._currentAttackStep = 0;
         }
 
         let attackStep;
 
-        if(this.currentAttack){    
-            attackStep = this.currentAttack.steps[this.currentAttackStep++];
+        if(this._currentAttack){    
+            attackStep = this._currentAttack.steps[this._currentAttackStep++];
     
-            if(this.currentAttack.steps.length >= this.currentAttackStep){
-                this.currentAttack = null;
+            if(this._currentAttack.steps.length >= this._currentAttackStep){
+                this._currentAttack = null;
             }   
         }
         //Didn't find an elgible attack
@@ -99,8 +99,8 @@ export default class CoopMonsterBattle{
 
         this.attackPlayers(attackStep);
 
-        if(!this.battleEnded){
-            setTimeout(this.attackTick.bind(this),attackStep.cooldown);
+        if(!this._battleEnded){
+            setTimeout(this._attackTick.bind(this),attackStep.cooldown);
         }        
     }
 
@@ -159,7 +159,7 @@ export default class CoopMonsterBattle{
     }
 
     endBattle(victory:boolean){
-        this.battleEnded = true;
+        this._battleEnded = true;
 
         const eventData:BattleEndEvent = {
             defeatedPCs: this.defeatedPCs,
@@ -172,15 +172,15 @@ export default class CoopMonsterBattle{
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction
     on(event:CoopMonsterBattleEvent,handler){
-        if(!this.handlers[event]){
-            this.handlers[event] = [];
+        if(!this._handlers[event]){
+            this._handlers[event] = [];
         }
 
-        this.handlers[event].push(handler);
+        this._handlers[event].push(handler);
     }
 
     off(event:CoopMonsterBattleEvent,handler){
-        const handlers = this.handlers[event];
+        const handlers = this._handlers[event];
 
         if(handlers){
             for(var i = handlers.length - 1; i >= 0; i--) {
@@ -193,8 +193,8 @@ export default class CoopMonsterBattle{
 
     dispatch(event:CoopMonsterBattleEvent,eventData){
         //is anyone even listening?
-        if(this.handlers[event]){
-            this.handlers[event].forEach(function(handler){
+        if(this._handlers[event]){
+            this._handlers[event].forEach(function(handler){
                 try{
                     handler(eventData);
                 }
