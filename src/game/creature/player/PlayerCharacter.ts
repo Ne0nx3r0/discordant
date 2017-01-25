@@ -1,11 +1,16 @@
 import Creature from '../Creature';
 import DamageSet from '../../damage/IDamageSet';
-import CurrentBattleData from '../../battle/CurrentBattleData';
 import CreatureType from '../CreatureType';
 import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
 import Weapon from '../../item/weapon/Weapon';
 import CreatureEquipment from '../../item/CreatureEquipment';
+import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
+
+interface CurrentBattleData{
+    battle:CoopMonsterBattle;
+    defeated:boolean;
+}
 
 interface PCConfig{
     id:number,

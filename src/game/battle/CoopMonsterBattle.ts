@@ -66,7 +66,8 @@ export default class CoopMonsterBattle{
 
         this.pcs.forEach((pc)=>{
             pc.currentBattleData = {
-                battle: this
+                battle: this,
+                defeated: false
             };
         });
 
@@ -147,6 +148,8 @@ export default class CoopMonsterBattle{
 
                 this.pcs.splice(this.pcs.indexOf(pc),1);
 
+                pc.currentBattleData.defeated = true;
+
                 this.defeatedPCs.push(pc);
                 
                 this.dispatch(CoopMonsterBattleEvent.PlayerDeath,eventData);
@@ -160,6 +163,10 @@ export default class CoopMonsterBattle{
 
     endBattle(victory:boolean){
         this._battleEnded = true;
+
+        this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
+            pc.currentBattleData = null;
+        });
 
         const eventData:BattleEndEvent = {
             defeatedPCs: this.defeatedPCs,

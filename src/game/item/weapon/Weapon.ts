@@ -21,4 +21,16 @@ export default class Weapon extends ItemEquippable{
         this.attacks = attacks;
         this.useRequirements = useRequirements || {};
     }
+
+    findAttack(attackName:string):WeaponAttack{
+        for(var i=0;i<this.attacks.length;i++){
+            const attack = this.attacks[i];
+
+            if(attack.title.toUpperCase() == attackName){
+                return attack;
+            }
+        }
+
+        return null;
+    }
 }
