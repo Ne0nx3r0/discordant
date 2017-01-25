@@ -24,18 +24,6 @@ export default class ChannelId extends Command{
     }
 
     run(params:Array<string>,message:any,game:Game){
-        const existingPlayer = game.getPlayerCharacter(message.author.id)
-        .then()
-        .catch(function(err){message.reply(err);});
-
-
-
-        if(existingPlayer){
-            message.reply('You have already begun');
-
-            return;
-        }
-
         if(params.length < 1){
             message.reply('You must choose a class\n\n'+this.getAvailableClasses());
 
@@ -55,17 +43,30 @@ export default class ChannelId extends Command{
             return;
         }
 
-        game.registerPlayerCharacter({
-            uid: message.author.id,
-            discriminator: message.author.discriminator,
-            username: message.author.username,
-            class: wantedClass
-        })
+        const existingPlayer = game.getPlayerCharacter(message.author.id)
         .then(function(pc){
-            message.reply('You have successfully been registered as a '+wantedClass.title+', good luck!');
+            if(existingPlayer){
+                message.reply('You have already begun');
+            }
+            else{
+                registerPlayer();
+            }
         })
-        .catch(function(err){
-            message.reply(err);
-        });
+        .catch(function(err){message.reply(err);});
+
+        function registerPlayer(){
+            game.registerPlayerCharacter({
+                uid: message.author.id,
+                discriminator: message.author.discriminator,
+                username: message.author.username,
+                class: wantedClass
+            })
+            .then(function(pc){
+                message.reply('You have successfully been registered as a '+wantedClass.title+', good luck!');
+            })
+            .catch(function(err){
+                message.reply(err);
+            });
+        }
     }
 }
