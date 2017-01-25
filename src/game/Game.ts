@@ -8,7 +8,7 @@ import Creature from './creature/Creature';
 import CreatureAIControlled from './creature/CreatureAIControlled';
 import AttributeSet from './creature/AttributeSet';
 import CoopMonsterBattle from './battle/CoopMonsterBattle';
-import { CoopMonsterBattleEvent, BattleEndEventData } from './battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, BattleEndEvent } from './battle/CoopMonsterBattle';
 const winston = require('winston');
 
 interface IPlayerRegisterBag{
@@ -196,7 +196,7 @@ export default class Game{
 
             const battle:CoopMonsterBattle = new CoopMonsterBattle(this.battleCardinality++,players,opponent);
 
-            battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEventData)=>{
+            battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
                 this.activeBattles.delete(battle.id);
             });
 

@@ -4,7 +4,7 @@ import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
 import Goblin from '../../game/creature/monsters/Goblin';
 import CoopMonsterBattle from '../../game/battle/CoopMonsterBattle';
-import { CoopMonsterBattleEvent, PlayersAttackedEventData, BattleEndEventData, PlayerDeathEventData, PlayerBlockedEventData } from '../../game/battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEvent, BattleEndEvent, PlayerDeathEvent, PlayerBlockedEvent } from '../../game/battle/CoopMonsterBattle';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import IDamageSet from '../../game/damage/IDamageSet';
 
@@ -56,7 +56,7 @@ export default class Battle extends Command{
         }
 
         function battleCreated(battle:CoopMonsterBattle){
-            battle.on(CoopMonsterBattleEvent.PlayersAttacked,function(e:PlayersAttackedEventData){
+            battle.on(CoopMonsterBattleEvent.PlayersAttacked,function(e:PlayersAttackedEvent){
                 let msg = '```md\n< '+e.message+' >\n```';
 
                 e.players.forEach(function(playerDamage){
@@ -66,15 +66,15 @@ export default class Battle extends Command{
                 message.channel.sendMessage(msg);
             });
 
-            battle.on(CoopMonsterBattleEvent.PlayerDeath,function(e:PlayerDeathEventData){
+            battle.on(CoopMonsterBattleEvent.PlayerDeath,function(e:PlayerDeathEvent){
                 message.channel.sendMessage(':skull_crossbones:   '+e.pc.title + ' died! (Lost '+e.lostXP+' xp, '+e.lostGold+' gold)  :skull_crossbones:');
             });
 
-            battle.on(CoopMonsterBattleEvent.BattleEnd,function(e:BattleEndEventData){
+            battle.on(CoopMonsterBattleEvent.BattleEnd,function(e:BattleEndEvent){
                 message.channel.sendMessage('```fix\nBattle Over\n```');
             });
 
-            battle.on(CoopMonsterBattleEvent.PlayerBlock,function(e:PlayerBlockedEventData){
+            battle.on(CoopMonsterBattleEvent.PlayerBlock,function(e:PlayerBlockedEvent){
                 message.channel.sendMessage(':shield: '+e.pc.title + ' blocks! :shield:');
             });
         }        

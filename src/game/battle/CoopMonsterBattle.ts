@@ -11,6 +11,12 @@ const dummyAttack = new WeaponAttackStep(
     10000
 );
 
+interface PlayerDamaged{
+    pc:PlayerCharacter,
+    damages:IDamageSet,
+    blocked:boolean,
+}
+
 export enum CoopMonsterBattleEvent{
     PlayerAttack,
     PlayerBlock,
@@ -19,28 +25,22 @@ export enum CoopMonsterBattleEvent{
     PlayerDeath
 }
 
-interface PlayerDamaged{
-    pc:PlayerCharacter,
-    damages:IDamageSet,
-    blocked:boolean,
-}
-
-export interface PlayersAttackedEventData{
+export interface PlayersAttackedEvent{
     players:Array<PlayerDamaged>;
     message:string;
 }
 
-export interface PlayerBlockedEventData{
+export interface PlayerBlockedEvent{
     pc:PlayerCharacter;
 }
 
-export interface PlayerDeathEventData{
+export interface PlayerDeathEvent{
     pc:PlayerCharacter;
     lostXP:number;
     lostGold:number;
 }
 
-export interface BattleEndEventData{
+export interface BattleEndEvent{
     defeatedPCs: Array<PlayerCharacter>;
     survivingPCs: Array<PlayerCharacter>;
     victory: boolean;
@@ -105,7 +105,7 @@ export default class CoopMonsterBattle{
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
-        const eventData:PlayersAttackedEventData = {
+        const eventData:PlayersAttackedEvent = {
             players: [],
             message:attackStep.attackMessage
                 .replace('{attacker}',this.opponent.title)
@@ -139,7 +139,7 @@ export default class CoopMonsterBattle{
         //check if anybody died
         this.pcs.forEach((pc:PlayerCharacter)=>{
             if(pc.HPCurrent < 1){
-                const eventData:PlayerDeathEventData = {
+                const eventData:PlayerDeathEvent = {
                     pc: pc,
                     lostXP: 0-pc.experience * 0.1,//TODO: implement actual xp lost
                     lostGold: 0-pc.gold / 2,//TODO: implement actual gold lost
@@ -161,7 +161,7 @@ export default class CoopMonsterBattle{
     endBattle(victory:boolean){
         this.battleEnded = true;
 
-        const eventData:BattleEndEventData = {
+        const eventData:BattleEndEvent = {
             defeatedPCs: this.defeatedPCs,
             survivingPCs: this.pcs,
             victory: victory
@@ -169,8 +169,6 @@ export default class CoopMonsterBattle{
 
         this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
     }
-
-
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction
     on(event:CoopMonsterBattleEvent,handler){
