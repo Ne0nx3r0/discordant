@@ -4,9 +4,10 @@ import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
 import Goblin from '../../game/creature/monsters/Goblin';
 import CoopMonsterBattle from '../../game/battle/CoopMonsterBattle';
-import { CoopMonsterBattleEvent, PlayersAttackedEventData } from '../../game/battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEventData, BattleEndEventData, PlayerDeathEventData, PlayerBlockedEventData } from '../../game/battle/CoopMonsterBattle';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import IDamageSet from '../../game/damage/IDamageSet';
+import DamageType from '../../game/damage/DamageType';
 
 export default class Battle extends Command{
     constructor(){
@@ -56,20 +57,55 @@ export default class Battle extends Command{
         }
 
         function battleCreated(battle:CoopMonsterBattle){
-            battle.on(CoopMonsterBattleEvent.PlayersAttacked,onPlayerAttacked);
-        }
+            battle.on(CoopMonsterBattleEvent.PlayersAttacked,function(e:PlayersAttackedEventData){
+                let msg = '```md\n< '+e.message+' >\n```';
 
-        function onPlayerAttacked(e:PlayersAttackedEventData){
-            let messageStr = 'Monster attacked!';
-            
-            e.players.forEach((pd)=>{
-                const pc:PlayerCharacter = pd.pc;
-                const damages:IDamageSet = pd.damages;
+                e.players.forEach(function(playerDamage){
+                    msg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked);
+                });
 
-                messageStr += '\n'+pc.title+' damaged! '+JSON.stringify(damages);
+                message.channel.sendMessage(msg);
             });
 
-            message.channel.sendMessage(messageStr);
-        }
+            battle.on(CoopMonsterBattleEvent.PlayerDeath,function(e:PlayerDeathEventData){
+                message.channel.sendMessage(':skull_crossbones:   '+e.pc.title + ' died! (Lost '+e.lostXP+' xp, '+e.lostGold+' gold)  :skull_crossbones:');
+            });
+
+            battle.on(CoopMonsterBattleEvent.BattleEnd,function(e:BattleEndEventData){
+                message.channel.sendMessage('```fix\nBattle Over\n```');
+            });
+
+            battle.on(CoopMonsterBattleEvent.PlayerBlock,function(e:PlayerBlockedEventData){
+                message.channel.sendMessage(':shield: '+e.pc.title + ' blocks! :shield:');
+            });
+        }        
     }
+}
+
+function getDamagesLine(pc:PlayerCharacter,damages:IDamageSet,blocked:boolean){
+    let blockedStr;
+
+    if(blocked){
+        blockedStr = '**BLOCKED** ';
+    }
+
+    var line = '**'+pc.title+'** ('+pc.HPCurrent+'/'+pc.stats.HPTotal+') '+blockedStr+'took damage ';
+    
+    Object.keys(damages).forEach(function(damageStr:string){
+        line += damages[damageStr] + ' ' + getDamageTypeEmoji(damageStr) + '   ';
+    });
+
+    return line.slice(0,-3);
+}
+
+function getDamageTypeEmoji(type:string){
+    switch(type){
+        case 'Physical': return ':crossed_swords:';
+        case 'Fire': return ':fire:';
+        case 'Cold': return ':snowflake:';
+        case 'Thunder': return ':cloud_lightning:';
+        case 'Chaos': return ':sparkles:';
+    }
+
+    return ':question:';
 }

@@ -22,10 +22,28 @@ export enum CoopMonsterBattleEvent{
 interface PlayerDamaged{
     pc:PlayerCharacter,
     damages:IDamageSet,
+    blocked:boolean,
 }
 
 export interface PlayersAttackedEventData{
     players:Array<PlayerDamaged>;
+    message:string;
+}
+
+export interface PlayerBlockedEventData{
+    pc:PlayerCharacter;
+}
+
+export interface PlayerDeathEventData{
+    pc:PlayerCharacter;
+    lostXP:number;
+    lostGold:number;
+}
+
+export interface BattleEndEventData{
+    defeatedPCs: Array<PlayerCharacter>;
+    survivingPCs: Array<PlayerCharacter>;
+    victory: boolean;
 }
 
 export default class CoopMonsterBattle{
@@ -41,6 +59,7 @@ export default class CoopMonsterBattle{
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
         this.id = id;
         this.pcs = pcs;
+        this.defeatedPCs = [];
 
         this.pcs.forEach((pc)=>{
             pc.currentBattleData = {
@@ -82,7 +101,10 @@ export default class CoopMonsterBattle{
 
     attackPlayers(attackStep:WeaponAttackStep){
         const eventData:PlayersAttackedEventData = {
-            players: []
+            players: [],
+            message:attackStep.attackMessage
+                .replace('{attacker}',this.opponent.title)
+                .replace('{defender}',this.pcs.length==1?this.pcs[0].title:'the group')
         };
 
         this.pcs.forEach((pc:PlayerCharacter)=>{
@@ -102,7 +124,8 @@ export default class CoopMonsterBattle{
 
             eventData.players.push({
                 pc:pc,
-                damages:pcDamages
+                damages:pcDamages,
+                blocked:false,
             });
         });
 
@@ -111,8 +134,10 @@ export default class CoopMonsterBattle{
         //check if anybody died
         this.pcs.forEach((pc:PlayerCharacter)=>{
             if(pc.HPCurrent < 1){
-                const eventData = {
-                    pc:pc
+                const eventData:PlayerDeathEventData = {
+                    pc: pc,
+                    lostXP: 0-pc.experience * 0.1,//TODO: implement actual xp lost
+                    lostGold: 0-pc.gold / 2,//TODO: implement actual gold lost
                 };
 
                 this.pcs.splice(this.pcs.indexOf(pc),1);
@@ -129,7 +154,7 @@ export default class CoopMonsterBattle{
     }
 
     endBattle(victory:boolean){
-        const eventData = {
+        const eventData:BattleEndEventData = {
             defeatedPCs: this.defeatedPCs,
             survivingPCs: this.pcs,
             victory: victory

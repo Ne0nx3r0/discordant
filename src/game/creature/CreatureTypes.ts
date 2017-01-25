@@ -1,5 +1,4 @@
-import DamageType from '../damage/DamageType';
-import DamageSet from '../damage/DamageSet';
+import DamageSet from '../damage/IDamageSet';
 import CreatureType from './CreatureType';
 
 const CreatureTypes = {};
