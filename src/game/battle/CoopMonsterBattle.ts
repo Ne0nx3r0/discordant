@@ -52,11 +52,14 @@ export default class CoopMonsterBattle{
     defeatedPCs:Array<PlayerCharacter>;
     opponent:CreatureAIControlled;
     handlers:Array<Array<Function>>;
+    battleEnded:boolean;
 
     currentAttack:WeaponAttack;
     currentAttackStep:number;
 
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
+        this.battleEnded = false;
+
         this.id = id;
         this.pcs = pcs;
         this.defeatedPCs = [];
@@ -96,7 +99,9 @@ export default class CoopMonsterBattle{
 
         this.attackPlayers(attackStep);
 
-        setTimeout(this.attackTick.bind(this),attackStep.cooldown);        
+        if(!this.battleEnded){
+            setTimeout(this.attackTick.bind(this),attackStep.cooldown);
+        }        
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
@@ -154,6 +159,8 @@ export default class CoopMonsterBattle{
     }
 
     endBattle(victory:boolean){
+        this.battleEnded = true;
+
         const eventData:BattleEndEventData = {
             defeatedPCs: this.defeatedPCs,
             survivingPCs: this.pcs,

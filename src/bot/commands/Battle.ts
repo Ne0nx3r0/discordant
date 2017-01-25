@@ -7,7 +7,6 @@ import CoopMonsterBattle from '../../game/battle/CoopMonsterBattle';
 import { CoopMonsterBattleEvent, PlayersAttackedEventData, BattleEndEventData, PlayerDeathEventData, PlayerBlockedEventData } from '../../game/battle/CoopMonsterBattle';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import IDamageSet from '../../game/damage/IDamageSet';
-import DamageType from '../../game/damage/DamageType';
 
 export default class Battle extends Command{
     constructor(){
@@ -83,7 +82,7 @@ export default class Battle extends Command{
 }
 
 function getDamagesLine(pc:PlayerCharacter,damages:IDamageSet,blocked:boolean){
-    let blockedStr;
+    let blockedStr = '';
 
     if(blocked){
         blockedStr = '**BLOCKED** ';
