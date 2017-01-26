@@ -20,7 +20,7 @@ export default class ChannelId extends Command{
 
         game.getPlayerCharacter(message.author.id)
         .then(playerFound)
-        .catch(this.fail(message.reply));
+        .catch(function(error){message.reply(error);});
 
         function playerFound(pc:PlayerCharacter){
             if(!pc){
@@ -57,12 +57,8 @@ export default class ChannelId extends Command{
             }
             else{
                 pc.currentBattleData.battle.playerActionAttack(pc,attack)
-                .catch(this.fail(message.reply));
+                .catch(function(error){message.reply(error);});
             }
-        }
-
-        function playerAttacked(){
-
         }
     }
 }

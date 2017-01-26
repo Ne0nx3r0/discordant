@@ -119,6 +119,13 @@ export default class Game{
     getPlayerCharacter(uid:string){
         return new Promise((resolve,reject)=>{
             try{
+                const cachedPC = this.cachedPlayers.get(uid);
+
+                if(cachedPC){
+                    resolve(cachedPC);
+                    return;
+                }
+
                 const con = this.db.getClient();
 
                 con.query('SELECT * FROM player WHERE uid=$1 LIMIT 1', [uid], insertResult.bind(this));

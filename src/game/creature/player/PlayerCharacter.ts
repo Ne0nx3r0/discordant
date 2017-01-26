@@ -55,7 +55,7 @@ export default class PlayerCharacter extends Creature{
         this.currentBattleData = null;
     }
 
-    get inBattle():boolean{console.log(this.currentBattleData,this.currentBattleData != null);
+    get inBattle():boolean{
         return this.currentBattleData != null;
     }
 }

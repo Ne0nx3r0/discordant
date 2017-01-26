@@ -74,6 +74,14 @@ export default class Creature{
         if(this.HPCurrent>this.stats.HPTotal) this.HPCurrent = this.stats.HPTotal;
     }
 
+   /*calculated in weapon attack step 
+   resist(damages:IDamageSet){
+        Object.keys(damages).forEach((damageType)=>{
+            //Resistance = 0.0 (0%) to 0.9 (90%) damage reduction 
+            damages[damageType] = Math.round( damages[damageType] * (1-this.stats.Resistances[damageType]) );
+        });
+    }*/
+
     equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{
         const unequippedItem = 
 

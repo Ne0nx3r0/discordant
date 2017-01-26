@@ -13,10 +13,27 @@ export default new Weapon(
     {},//no use requirements
     [
         new WeaponAttack(
-            'swing',
+            'light',
             [
                 new WeaponAttackStep(
                     '{attacker} swings a fist at {defender}',
+                    5000,
+                    function(attacker:Creature,defender:Creature,master?:Creature){
+                        const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);
+
+                        return {
+                            Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
+                        };
+                    }
+                )
+            ],
+            0.5
+        ),
+        new WeaponAttack(
+            'heavy',
+            [
+                new WeaponAttackStep(
+                    '{attacker} swings both fists at {defender}',
                     5000,
                     function(attacker:Creature,defender:Creature,master?:Creature){
                         const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);

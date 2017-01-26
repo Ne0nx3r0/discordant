@@ -3,6 +3,7 @@ import CreatureAIControlled from '../creature/CreatureAIControlled';
 import WeaponAttack from '../item/weapon/WeaponAttack';
 import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
 import IDamageSet from '../damage/IDamageSet';
+import {damagesTotal} from '../damage/IDamageSet';
 import AttackStep from '../item/weapon/WeaponAttackStep';
 
 const winston = require('winston');
@@ -26,6 +27,12 @@ export enum CoopMonsterBattleEvent{
     PlayersAttacked,
     BattleEnd,
     PlayerDeath,
+    OpponentDefeated,
+}
+
+export interface OpponentDefeatedEvent{
+    opponent:CreatureAIControlled;
+    killer:PlayerCharacter;
 }
 
 export interface PlayersAttackedEvent{
@@ -37,6 +44,7 @@ export interface PlayerAttackEvent{
     attackingPlayer:PlayerCharacter,
     damages:IDamageSet,
     opponent:CreatureAIControlled,
+    message:string,
 }
 
 export interface PlayerBlockedEvent{
@@ -77,7 +85,7 @@ export default class CoopMonsterBattle{
             pc.currentBattleData = {
                 battle: this,
                 defeated: false,
-                attackExhaustion: 0,
+                attackExhaustion: 1,
                 blocking: false,
                 queuedAttacks: [],
             };
@@ -128,17 +136,7 @@ export default class CoopMonsterBattle{
         this.pcs.forEach((pc:PlayerCharacter)=>{
             const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,pc);
 
-            let pcDamagesTotal = 0;
-
-            //Reduce damage by player's resistance to it
-            Object.keys(pcDamages).forEach(function(damageType){
-                //Resistance = 0.0 (0%) to 0.9 (90%) damage reduction 
-                pcDamages[damageType] = Math.round( pcDamages[damageType] * (1-pc.stats.Resistances[damageType]) );
-                
-                pcDamagesTotal += pcDamages[damageType];
-            });
-
-            pc.HPCurrent -= pcDamagesTotal;
+            pc.HPCurrent -=  damagesTotal(pcDamages);
 
             eventData.players.push({
                 pc:pc,
@@ -170,11 +168,16 @@ export default class CoopMonsterBattle{
 
         //drain a step of any queued attacks players have
         this.pcs.forEach((pc:PlayerCharacter)=>{
+            //one queued attack per round
             if(pc.currentBattleData.queuedAttacks.length>0){
                 const attackStep = pc.currentBattleData.queuedAttacks.shift();
-                pc.currentBattleData.attackExhaustion--;
 
                 this._sendAttackStep(pc,attackStep);
+            }
+
+            //remove one exhaustion point each round
+            if(pc.currentBattleData.attackExhaustion>0){
+                pc.currentBattleData.attackExhaustion--;
             }
         });
 
@@ -208,7 +211,7 @@ export default class CoopMonsterBattle{
                 reject('You have already been defeated :(');
             }
             else if(pc.currentBattleData.attackExhaustion > 0){
-                reject('You are already in the middle of an attack!');
+                reject('You are not ready to attack yet!');
             }
             else if(this.pcs.indexOf(pc)){
                 reject('You are not in this battle');
@@ -230,13 +233,29 @@ export default class CoopMonsterBattle{
     _sendAttackStep(pc:PlayerCharacter,step:AttackStep){
         const damages:IDamageSet = step.getDamages(pc,this.opponent);
 
+        this.opponent.HPCurrent -= damagesTotal(damages);
+
         const eventData:PlayerAttackEvent = {
             attackingPlayer: pc,
             damages: damages,
             opponent: this.opponent,
+            message: step.attackMessage
+                .replace('{attacker}',pc.title)
+                .replace('{defender}',this.opponent.title)
         };
 
         this.dispatch(CoopMonsterBattleEvent.PlayerAttack,eventData);
+
+        if(this.opponent.HPCurrent<1){
+            const eventData:OpponentDefeatedEvent = {
+                killer:pc,
+                opponent:this.opponent
+            };
+
+            this.dispatch(CoopMonsterBattleEvent.OpponentDefeated,eventData);
+
+            this.endBattle(true);
+        }
     }
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction

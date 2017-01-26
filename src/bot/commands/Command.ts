@@ -12,13 +12,7 @@ export default class Command{
         this.usage = usage;
         this.permissionNode = permissionNode;
     }
-
-    fail(handler:Function){
-        return function(error){
-            handler(error);
-        }
-    }
-
+    
     run(params:Array<string>,message:any,game:Game){
         throw 'Run method not implemented for command '+this.name;        
     }

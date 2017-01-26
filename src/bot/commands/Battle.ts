@@ -4,9 +4,10 @@ import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
 import Goblin from '../../game/creature/monsters/Goblin';
 import CoopMonsterBattle from '../../game/battle/CoopMonsterBattle';
-import { CoopMonsterBattleEvent, PlayersAttackedEvent, BattleEndEvent, PlayerDeathEvent, PlayerBlockedEvent } from '../../game/battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEvent, BattleEndEvent, PlayerDeathEvent, PlayerBlockedEvent, PlayerAttackEvent } from '../../game/battle/CoopMonsterBattle';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import IDamageSet from '../../game/damage/IDamageSet';
+import Creature from '../../game/creature/Creature';
 
 export default class Battle extends Command{
     constructor(){
@@ -44,7 +45,7 @@ export default class Battle extends Command{
             else if(pc.isInBattle){
                 message.reply('You are in a battle already, omg defend yourself!');
             }
-            else{console.log(pc.isInBattle);
+            else{
                 game.createMonsterBattle([pc],new Goblin())
                 .then(battleCreated)
                 .catch(errFunc);
@@ -73,11 +74,15 @@ export default class Battle extends Command{
             battle.on(CoopMonsterBattleEvent.PlayerBlock,function(e:PlayerBlockedEvent){
                 message.channel.sendMessage(':shield: '+e.pc.title + ' blocks! :shield:');
             });
+
+            battle.on(CoopMonsterBattleEvent.PlayerAttack,function(e:PlayerAttackEvent){
+                message.channel.sendMessage(e.message+'\n'+getDamagesLine(e.opponent,e.damages,false));
+            });
         }        
     }
 }
 
-function getDamagesLine(pc:PlayerCharacter,damages:IDamageSet,blocked:boolean){
+function getDamagesLine(pc:Creature,damages:IDamageSet,blocked:boolean){
     let blockedStr = '';
 
     if(blocked){
