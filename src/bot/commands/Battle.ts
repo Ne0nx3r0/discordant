@@ -70,7 +70,18 @@ export default class Battle extends Command{
             });
 
             battle.on(CoopMonsterBattleEvent.BattleEnd,function(e:BattleEndEvent){
-                message.channel.sendMessage('```fix\nBattle Over\n```');
+                if(e.victory){
+                    message.channel.sendMessage('```fix\n Battle Over \n```'
+                    +'\n:tada: YOU WERE VICTORIOUS :tada: ');
+
+                    e.survivingPCs.forEach((pc:PlayerCharacter)=>{
+                        message.channel.sendMessage(pc.title+' earned '+e.xpEarned+'xp');
+                    });
+                }
+                else{
+                    message.channel.sendMessage('```fix\n Battle Over \n```'
+                    +'\n:dizzy_face: YOU WERE DEFEATED :dizzy_face: ');
+                }
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerBlock,function(e:PlayerBlockedEvent){

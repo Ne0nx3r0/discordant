@@ -4,14 +4,17 @@ import WeaponAttack from '../item/weapon/WeaponAttack';
 import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
 
 interface ICreatureAIBag extends ICreatureBag{
-    expDropped:number;
+    xpDropped:number;
 }
 
 export default class CreatureAIControlled extends Creature{
+    xpDropped:number;
     attacks:Array<WeaponAttack>;
 
     constructor(bag:ICreatureAIBag){
         super(bag);
+        
+        this.xpDropped = bag.xpDropped;
 
         this.attacks = [];
 

@@ -61,6 +61,7 @@ export interface BattleEndEvent{
     defeatedPCs: Array<PlayerCharacter>;
     survivingPCs: Array<PlayerCharacter>;
     victory: boolean;
+    xpEarned: number;
 }
 
 export default class CoopMonsterBattle{
@@ -86,7 +87,7 @@ export default class CoopMonsterBattle{
             pc.currentBattleData = {
                 battle: this,
                 defeated: false,
-                attackExhaustion: 1,
+                attackExhaustion: 1,//pc can't attack the mob until the mob attacks the pc
                 blocking: false,
                 queuedAttacks: [],
             };
@@ -155,8 +156,8 @@ export default class CoopMonsterBattle{
             if(pc.HPCurrent < 1){
                 const eventData:PlayerDeathEvent = {
                     pc: pc,
-                    lostXP: 0-pc.experience * 0.1,//TODO: implement actual xp lost
-                    lostGold: 0-pc.gold / 2,//TODO: implement actual gold lost
+                    lostXP: pc.calculateDeathXPLost(),//TODO: implement actual xp lost
+                    lostGold: pc.calculateDeathGoldLost(),//TODO: implement actual gold lost
                 };
 
                 this.pcs.splice(this.pcs.indexOf(pc),1);
@@ -248,17 +249,25 @@ export default class CoopMonsterBattle{
     endBattle(victory:boolean){
         this._battleEnded = true;
 
-        this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
-            pc.currentBattleData = null;
-        });
+        let xpEarned = 0;
+
+        if(victory){
+            xpEarned = this.opponent.xpDropped;
+        }
 
         const eventData:BattleEndEvent = {
             defeatedPCs: this.defeatedPCs,
             survivingPCs: this.pcs,
+            xpEarned: xpEarned, 
             victory: victory
         };
 
         this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
+
+        //release players from the battle lock
+        this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
+            pc.currentBattleData = null;
+        });
     }
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction

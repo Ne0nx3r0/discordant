@@ -1,6 +1,5 @@
 import Creature from '../Creature';
 import DamageSet from '../../damage/IDamageSet';
-import CreatureType from '../CreatureType';
 import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
 import Weapon from '../../item/weapon/Weapon';
@@ -25,7 +24,7 @@ interface PCConfig{
     attributes:AttributeSet,
     class:CharacterClass,
     equipment: CreatureEquipment,
-    experience:number;
+    xp:number;
     gold:number;
 }
 
@@ -34,7 +33,7 @@ export default class PlayerCharacter extends Creature{
     discriminator:number;
     currentBattleData:CurrentBattleData;
     class:CharacterClass;
-    experience:number;
+    xp:number;
     gold:number;
 
     constructor(o:PCConfig){
@@ -57,5 +56,13 @@ export default class PlayerCharacter extends Creature{
 
     get inBattle():boolean{
         return this.currentBattleData != null;
+    }
+
+    calculateDeathGoldLost():number{
+        return this.gold / 2;
+    }
+
+    calculateDeathXPLost():number{
+        return this.xp * 0.01;
     }
 }

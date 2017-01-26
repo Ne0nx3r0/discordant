@@ -15,7 +15,7 @@ export default class Goblin extends CreatureAIControlled{
             equipment: new CreatureEquipment({
                 primaryWeapon: BareHands
             }),
-            expDropped: 10
+            xpDropped: 10,
         });
     }
 }
