@@ -7,19 +7,21 @@ import DamageScaling from '../../../damage/DamageScaling';
 import ItemId from '../../ItemId';
 
 export default new Weapon(
-    ItemId.BareHands,
-    'Bare Hands',
-    'When you bring knuckles to a knife fight',
-    {},//no use requirements
+    ItemId.HandAxe,
+    'Hand Axe',
+    'A basic weapon whose history and use dates back to prehistoric times',
+    {
+        Strength: 10
+    },//no use requirements
     [
         new WeaponAttack(
             'light',
             [
                 new WeaponAttackStep(
-                    '{attacker} swings a fist at {defender}',
+                    '{attacker} swings a hand axe at {defender}',
                     1,
                     function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(5,attacker.stats.Strength*2);
+                        const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
@@ -33,10 +35,10 @@ export default new Weapon(
             'heavy',
             [
                 new WeaponAttackStep(
-                    '{attacker} swings both fists at {defender}',
+                    '{attacker} leaps at {defender} with their hand axe',
                     2,
                     function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength*2);
+                        const physicalDamage = DamageScaling.ByAttribute(25,attacker.stats.Strength);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)

@@ -189,22 +189,6 @@ export default class CoopMonsterBattle{
         }
     }
 
-    endBattle(victory:boolean){
-        this._battleEnded = true;
-
-        this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
-            pc.currentBattleData = null;
-        });
-
-        const eventData:BattleEndEvent = {
-            defeatedPCs: this.defeatedPCs,
-            survivingPCs: this.pcs,
-            victory: victory
-        };
-
-        this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
-    }
-
     playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack){
         return new Promise((resolve,reject)=>{
             if(pc.currentBattleData.blocking){
@@ -259,6 +243,22 @@ export default class CoopMonsterBattle{
 
             this.endBattle(true);
         }
+    }
+
+    endBattle(victory:boolean){
+        this._battleEnded = true;
+
+        this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
+            pc.currentBattleData = null;
+        });
+
+        const eventData:BattleEndEvent = {
+            defeatedPCs: this.defeatedPCs,
+            survivingPCs: this.pcs,
+            victory: victory
+        };
+
+        this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
     }
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction

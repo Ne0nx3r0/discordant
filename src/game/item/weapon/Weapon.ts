@@ -5,6 +5,7 @@ import {EquipmentSlotType} from '../CreatureEquipment';
 
 interface useRequirements{
     Strength?:number,
+    Agility?:number,
     Vitality?:number,
     Spirit?:number,
     Luck?:number,

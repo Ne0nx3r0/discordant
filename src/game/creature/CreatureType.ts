@@ -1,13 +1,7 @@
-import DamageSet from '../damage/DamageSet';
-
-export default class CreatureType{
-    id:number;
-    title:string;
-    resistances:DamageSet;
-
-    constructor(id:number,title:string,resistances:DamageSet){
-        this.id = id;
-        this.title = title;
-        this.resistances = resistances;
-    }
+enum CreatureType{
+    PC,//A human being playing the game
+    Opponent,//An AI controlled opponent in a battle
+    Pet,//An AI controlled player pet in a battle
 }
+
+export default CreatureType;

@@ -173,6 +173,7 @@ export default class Game{
                             primaryWeapon: this.items.get(row.equipment_weapon),
                             offhandWeapon: this.items.get(row.equipment_offhand),
                         }),
+                        inventory:[]
                     });
 
                     this.cachedPlayers.set(pc.uid,pc);

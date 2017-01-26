@@ -7,6 +7,7 @@ import {EquipmentSlot} from '../item/CreatureEquipment';
 import ItemEquippable from '../item/ItemEquippable';
 import CreatureId from './CreatureId';
 import IDamageSet from '../damage/IDamageSet';
+import WeaponAttack from '../item/weapon/WeaponAttack';
 
 interface IStatSet{
     Strength:number,
@@ -24,6 +25,7 @@ export interface ICreatureBag{
     description:string;
     attributes:AttributeSet;
     equipment: CreatureEquipment;
+    type: CreatureType;
 }
 
 export default class Creature{
@@ -34,16 +36,31 @@ export default class Creature{
     equipment:CreatureEquipment;
     stats:IStatSet;
     HPCurrent:number;
+    type:CreatureType;
+    attacks:Array<WeaponAttack>;
 
-    constructor(creatureBag:ICreatureBag){
-        this.id = creatureBag.id;
-        this.title = creatureBag.title;
-        this.description = creatureBag.description;
-        this.attributes = creatureBag.attributes;
-        this.equipment = creatureBag.equipment;
+    constructor(bag:ICreatureBag){
+        this.id = bag.id;
+        this.title = bag.title;
+        this.description = bag.description;
+        this.attributes = bag.attributes;
+        this.equipment = bag.equipment;
+
+        this.type = bag.type;
 
         this.updateStats();
         this.HPCurrent = this.stats.HPTotal;
+
+        //AI functions
+        if(bag.type != CreatureType.PC){
+            this.attacks = [];
+                if(bag.equipment.primaryWeapon){
+                    this.attacks = this.attacks.concat(bag.equipment.primaryWeapon.attacks);
+                }
+                if(bag.equipment.offhandWeapon){
+                    this.attacks = this.attacks.concat(bag.equipment.offhandWeapon.attacks);
+                }
+            }
     }
 
     updateStats(){
@@ -96,5 +113,38 @@ export default class Creature{
         this.updateStats();
 
         return null;
+    }
+
+    //May return nothing if no valid attacks or if no attacks that should be used right now
+    getRandomAttack(){
+        if(!this.attacks){
+            throw "Only available for AI-controlled creatures";
+        }
+
+        //determine which attacks we can use right now and create a weighted pool
+        const availableAttacks:Array<WeaponAttack> = [];
+        let attacksWeightTotal = 0;
+
+        this.attacks.forEach((attack)=>{
+            if(attack.aiShouldIUseThisAttack(this)){
+                availableAttacks.push(attack);
+
+                attacksWeightTotal += attack.aiUseWeight;
+            }
+        });
+
+        //choose an attack from the pool
+        const roll = Math.random() * attacksWeightTotal;
+        let currentWeight = 0;
+
+        for(var i=0;i<availableAttacks.length;i++){
+            const attack = availableAttacks[i];
+
+            currentWeight += attack.aiUseWeight;
+
+            if(roll < currentWeight){
+                return attack;
+            }
+        }
     }
 }
