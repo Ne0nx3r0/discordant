@@ -95,7 +95,9 @@ export default class CoopMonsterBattle{
 
         this._handlers = [];
 
-        this._attackTick();
+        this._attackTick = this._attackTick.bind(this);
+
+        setTimeout(this._attackTick,ATTACK_TICK_MS/2);
     }
 
     _attackTick(){   
@@ -121,7 +123,7 @@ export default class CoopMonsterBattle{
         this.attackPlayers(attackStep);
 
         if(!this._battleEnded){
-            setTimeout(this._attackTick.bind(this),ATTACK_TICK_MS);
+            setTimeout(this._attackTick,ATTACK_TICK_MS);
         }        
     }
 

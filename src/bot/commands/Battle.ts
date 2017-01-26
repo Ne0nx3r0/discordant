@@ -53,6 +53,8 @@ export default class Battle extends Command{
         }
 
         function battleCreated(battle:CoopMonsterBattle){
+            message.channel.sendMessage(battle.opponent.title+' rushes towards you, prepare for battle!');
+
             battle.on(CoopMonsterBattleEvent.PlayersAttacked,function(e:PlayersAttackedEvent){
                 let msg = '```md\n< '+e.message+' >\n```';
 
