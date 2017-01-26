@@ -38,6 +38,7 @@ export default class DatabaseService{
     }
 }
 
+
 /* Usage:
 
     db.getClient().query('SELECT $1::text as name', ['brianc'], function (error, result) {
