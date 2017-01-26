@@ -3,6 +3,7 @@ import CreatureAIControlled from '../creature/CreatureAIControlled';
 import WeaponAttack from '../item/weapon/WeaponAttack';
 import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
 import IDamageSet from '../damage/IDamageSet';
+import AttackStep from '../item/weapon/WeaponAttackStep';
 
 const winston = require('winston');
 
@@ -22,12 +23,18 @@ export enum CoopMonsterBattleEvent{
     PlayerBlock,
     PlayersAttacked,
     BattleEnd,
-    PlayerDeath
+    PlayerDeath,
 }
 
 export interface PlayersAttackedEvent{
     players:Array<PlayerDamaged>;
     message:string;
+}
+
+export interface PlayerAttackEvent{
+    attackingPlayer:PlayerCharacter,
+    damages:IDamageSet,
+    opponent:CreatureAIControlled,
 }
 
 export interface PlayerBlockedEvent{
@@ -67,7 +74,9 @@ export default class CoopMonsterBattle{
         this.pcs.forEach((pc)=>{
             pc.currentBattleData = {
                 battle: this,
-                defeated: false
+                defeated: false,
+                attacking: false,
+                blocking: false,
             };
         });
 
@@ -175,6 +184,56 @@ export default class CoopMonsterBattle{
         };
 
         this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
+    }
+
+    playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack){
+        return new Promise((resolve,reject)=>{
+            if(pc.currentBattleData.blocking){
+                reject('You are currently blocking');
+            }
+            else if(pc.currentBattleData.defeated){
+                reject('You have already been defeated :(');
+            }
+            else if(pc.currentBattleData.attacking){
+                reject('You are already in the middle of an attack!');
+            }
+            else if(this.pcs.indexOf(pc)){
+                reject('You are not in this battle');
+            }
+            else{
+                resolve();
+
+                pc.currentBattleData.attacking = true;
+
+                let delay = 0;
+
+                //schedule the attacks as appropriate
+                attack.steps.forEach((step)=>{
+                    setTimeout(()=>{
+                        this._sendAttackStep(step)
+                    },delay);
+
+                    delay += step.cooldown;
+                });
+
+                //allow the player to send another attack
+                setTimeout(()=>{
+                    pc.currentBattleData.attacking = false;
+                },delay+100);
+            }
+        });
+    }
+
+    _sendAttackStep(step:AttackStep){
+        const damages:IDamageSet = ;
+
+        const eventData:PlayerAttackEvent = {
+            attackingPlayer: pc,
+            damages: damages,
+            opponent: this.opponent,
+        };
+
+        this.dispatch(CoopMonsterBattleEvent.PlayerAttack,eventData);
     }
 
     //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction

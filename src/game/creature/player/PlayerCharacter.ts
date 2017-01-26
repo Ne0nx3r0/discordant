@@ -10,6 +10,8 @@ import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
 interface CurrentBattleData{
     battle:CoopMonsterBattle;
     defeated:boolean;
+    attacking:boolean,
+    blocking:boolean,
 }
 
 interface PCConfig{
@@ -48,7 +50,7 @@ export default class PlayerCharacter extends Creature{
         this.experience = o.experience;
         this.gold = o.gold;
 
-        this.currentBattleData = false;
+        this.currentBattleData = null;
     }
 
     get inBattle():boolean{

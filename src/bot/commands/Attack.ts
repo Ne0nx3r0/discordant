@@ -29,9 +29,6 @@ export default class ChannelId extends Command{
             else if(!pc.inBattle){
                 message.reply('You are not currently in a battle');
             }
-            else if(pc.currentBattleData.defeated){
-                message.reply('You have already been defeated :(');
-            }
             else{
                 playerAttack(pc);
             }
@@ -39,16 +36,33 @@ export default class ChannelId extends Command{
 
         function playerAttack(pc:PlayerCharacter){
             const pcWeaponPrimary = pc.equipment.primaryWeapon;
-            const attack = pcWeaponPrimary.findAttack(wantedAttackStr);
-
-            if(!attack){
-                let validAttacks = get weapon's valid attacks
-
-                message.reply(wantedAttackStr+' is not an attack '+pcWeaponPrimary.title+' has!');
+            let attack;
+            
+            if(params.length == 0){
+                attack = pcWeaponPrimary.attacks[0];
             }
             else{
-                pc.currentBattleData.battle.playerActionAttack()
+                attack = pcWeaponPrimary.findAttack(wantedAttackStr);
             }
+
+            if(!attack){
+                let validAttacks = '';
+
+                pcWeaponPrimary.attacks.forEach((attack)=>{
+                    validAttacks += ', '+attack.title;
+                });
+
+                message.reply(wantedAttackStr+' is not an attack '+pcWeaponPrimary.title+' has!\n'
+                    +'Available attacks: '+validAttacks.substr(2));
+            }
+            else{
+                pc.currentBattleData.battle.playerActionAttack(pc,attack)
+                .catch(this.fail(message.reply));
+            }
+        }
+
+        function playerAttacked(){
+
         }
     }
 }
