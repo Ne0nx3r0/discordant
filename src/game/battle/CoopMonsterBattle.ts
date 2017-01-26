@@ -68,6 +68,7 @@ export default class CoopMonsterBattle{
     pcs:Array<PlayerCharacter>;
     defeatedPCs:Array<PlayerCharacter>;
     opponent:CreatureAIControlled;
+    
     _handlers:Array<Array<Function>>;
     _battleEnded:boolean;
 

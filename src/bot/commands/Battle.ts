@@ -59,7 +59,7 @@ export default class Battle extends Command{
                 let msg = '```md\n< '+e.message+' >\n```';
 
                 e.players.forEach(function(playerDamage){
-                    msg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked);
+                    msg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.pc.currentBattleData.attackExhaustion>1);
                 });
 
                 message.channel.sendMessage(msg);
@@ -78,20 +78,32 @@ export default class Battle extends Command{
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerAttack,function(e:PlayerAttackEvent){
-                message.channel.sendMessage(e.message+'\n'+getDamagesLine(e.opponent,e.damages,false));
+                message.channel.sendMessage(e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false));
+
+                const exhaustion = e.attackingPlayer.currentBattleData.attackExhaustion;
+
+                if(exhaustion>1){
+                    message.channel.sendMessage(e.attackingPlayer.title+' is exhausted for '
+                    +(exhaustion-1)+' turn'+(exhaustion>2?'s':''));
+                }
             });
         }        
     }
 }
 
-function getDamagesLine(pc:Creature,damages:IDamageSet,blocked:boolean){
+function getDamagesLine(pc:Creature,damages:IDamageSet,blocked:boolean,exhausted:boolean){
     let blockedStr = '';
+    let exhaustedStr = '';
 
     if(blocked){
         blockedStr = '**BLOCKED** ';
     }
 
-    var line = '**'+pc.title+'** ('+pc.HPCurrent+'/'+pc.stats.HPTotal+') '+blockedStr+'took damage ';
+    if(exhausted){
+        exhaustedStr = '**EXHAUSTED**';
+    }
+
+    var line = '**'+pc.title+'** '+exhaustedStr+' ('+pc.HPCurrent+'/'+pc.stats.HPTotal+') '+blockedStr+'took damage ';
     
     Object.keys(damages).forEach(function(damageStr:string){
         line += damages[damageStr] + ' ' + getDamageTypeEmoji(damageStr) + '   ';
