@@ -40,19 +40,15 @@ export default class Battle extends Command{
         function getPCResult(pc){
             if(!pc){
                 message.reply('You must register first with dbegin');
-
-                return;
             }
-
-            if(pc.isInBattle){
+            else if(pc.isInBattle){
                 message.reply('You are in a battle already, omg defend yourself!');
-
-                return;
             }
-
-            game.createMonsterBattle([pc],new Goblin())
-            .then(battleCreated)
-            .catch(errFunc);
+            else{console.log(pc.isInBattle);
+                game.createMonsterBattle([pc],new Goblin())
+                .then(battleCreated)
+                .catch(errFunc);
+            }
         }
 
         function battleCreated(battle:CoopMonsterBattle){
