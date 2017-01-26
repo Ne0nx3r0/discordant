@@ -12,12 +12,12 @@ interface DamageFunc{
 
 export default class AttackStep{
     attackMessage:string;
-    cooldown:number;
+    exhaustion:number;
     getDamages:DamageFunc;
 
-    constructor(attackMessage:string,cooldown:number,damageFunc?:DamageFunc){
+    constructor(attackMessage:string,exhaustion:number,damageFunc?:DamageFunc){
         this.attackMessage = attackMessage;
-        this.cooldown = cooldown;
+        this.exhaustion = exhaustion;
         this.getDamages = damageFunc;
     }
 }

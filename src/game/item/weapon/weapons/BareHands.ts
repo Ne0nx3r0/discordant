@@ -17,7 +17,7 @@ export default new Weapon(
             [
                 new WeaponAttackStep(
                     '{attacker} swings a fist at {defender}',
-                    5000,
+                    1,
                     function(attacker:Creature,defender:Creature,master?:Creature){
                         const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);
 
@@ -34,9 +34,9 @@ export default new Weapon(
             [
                 new WeaponAttackStep(
                     '{attacker} swings both fists at {defender}',
-                    5000,
+                    2,
                     function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);
+                        const physicalDamage = DamageScaling.ByAttribute(25,attacker.stats.Strength);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)

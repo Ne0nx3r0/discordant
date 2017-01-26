@@ -217,8 +217,6 @@ export default class CoopMonsterBattle{
                 reject('You are not in this battle');
             }
             else{
-                pc.currentBattleData.attackExhaustion+=attack.steps.length;
-
                 this._sendAttackStep(pc,attack.steps[0]);
 
                 if(attack.steps.length>1){
@@ -232,6 +230,8 @@ export default class CoopMonsterBattle{
 
     _sendAttackStep(pc:PlayerCharacter,step:AttackStep){
         const damages:IDamageSet = step.getDamages(pc,this.opponent);
+
+        pc.currentBattleData.attackExhaustion += step.exhaustion;
 
         this.opponent.HPCurrent -= damagesTotal(damages);
 

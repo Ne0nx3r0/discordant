@@ -52,8 +52,7 @@ export default class ChannelId extends Command{
                     validAttacks += ', '+attack.title;
                 });
 
-                message.reply(wantedAttackStr+' is not an attack '+pcWeaponPrimary.title+' has!\n'
-                    +'Available attacks: '+validAttacks.substr(2));
+                message.reply(wantedAttackStr+' is not a valid attack, '+pcWeaponPrimary.title+' has: '+validAttacks.substr(2));
             }
             else{
                 pc.currentBattleData.battle.playerActionAttack(pc,attack)
