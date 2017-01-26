@@ -48,7 +48,7 @@ export default class PlayerCharacter extends Creature{
         this.uid = o.uid;
         this.discriminator = o.discriminator;
         this.class = o.class;
-        this.experience = o.experience;
+        this.xp = o.xp;
         this.gold = o.gold;
 
         this.currentBattleData = null;
