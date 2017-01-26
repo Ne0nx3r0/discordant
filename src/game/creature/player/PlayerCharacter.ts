@@ -27,7 +27,6 @@ interface PCConfig{
     equipment: CreatureEquipment,
     experience:number;
     gold:number;
-    AIControlled?:boolean;
 }
 
 export default class PlayerCharacter extends Creature{
@@ -41,7 +40,6 @@ export default class PlayerCharacter extends Creature{
     constructor(o:PCConfig){
         super({
             id: o.id,
-            type: o.AIControlled ? CreatureType.Opponent : CreatureType.PC, 
             title: o.title,
             description: o.description,
             attributes: o.attributes,

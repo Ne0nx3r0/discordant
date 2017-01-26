@@ -1,4 +1,5 @@
 enum CreatureId{
+    PlayerCharacter,
     Goblin,
 }
 

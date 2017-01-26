@@ -1,4 +1,3 @@
-import CreatureType from './CreatureType';
 import DamageSet from '../damage/IDamageSet';
 import Weapon from '../item/weapon/Weapon';
 import AttributeSet from './AttributeSet';
@@ -25,7 +24,6 @@ export interface ICreatureBag{
     description:string;
     attributes:AttributeSet;
     equipment: CreatureEquipment;
-    type: CreatureType;
 }
 
 export default class Creature{
@@ -36,7 +34,6 @@ export default class Creature{
     equipment:CreatureEquipment;
     stats:IStatSet;
     HPCurrent:number;
-    type:CreatureType;
     attacks:Array<WeaponAttack>;
 
     constructor(bag:ICreatureBag){
@@ -50,17 +47,6 @@ export default class Creature{
 
         this.updateStats();
         this.HPCurrent = this.stats.HPTotal;
-
-        //AI functions
-        if(bag.type != CreatureType.PC){
-            this.attacks = [];
-                if(bag.equipment.primaryWeapon){
-                    this.attacks = this.attacks.concat(bag.equipment.primaryWeapon.attacks);
-                }
-                if(bag.equipment.offhandWeapon){
-                    this.attacks = this.attacks.concat(bag.equipment.offhandWeapon.attacks);
-                }
-            }
     }
 
     updateStats(){
@@ -90,14 +76,6 @@ export default class Creature{
 
         if(this.HPCurrent>this.stats.HPTotal) this.HPCurrent = this.stats.HPTotal;
     }
-
-   /*calculated in weapon attack step 
-   resist(damages:IDamageSet){
-        Object.keys(damages).forEach((damageType)=>{
-            //Resistance = 0.0 (0%) to 0.9 (90%) damage reduction 
-            damages[damageType] = Math.round( damages[damageType] * (1-this.stats.Resistances[damageType]) );
-        });
-    }*/
 
     equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{
         const unequippedItem = 
