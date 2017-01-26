@@ -27,7 +27,7 @@ export default new Weapon(
                     }
                 )
             ],
-            0.5
+            0.8
         ),
         new WeaponAttack(
             'heavy',
@@ -44,7 +44,7 @@ export default new Weapon(
                     }
                 )
             ],
-            0.5
+            0.2
         ),
     ]
 );
