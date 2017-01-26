@@ -7,6 +7,8 @@ import AttackStep from '../item/weapon/WeaponAttackStep';
 
 const winston = require('winston');
 
+const ATTACK_TICK_MS = 10000;
+
 const dummyAttack = new WeaponAttackStep(
     '{attacker} doesn\'t know what to do!',
     10000
@@ -75,8 +77,9 @@ export default class CoopMonsterBattle{
             pc.currentBattleData = {
                 battle: this,
                 defeated: false,
-                attacking: false,
+                attackExhaustion: 0,
                 blocking: false,
+                queuedAttacks: [],
             };
         });
 
@@ -110,7 +113,7 @@ export default class CoopMonsterBattle{
         this.attackPlayers(attackStep);
 
         if(!this._battleEnded){
-            setTimeout(this._attackTick.bind(this),attackStep.cooldown);
+            setTimeout(this._attackTick.bind(this),ATTACK_TICK_MS);
         }        
     }
 
@@ -165,6 +168,16 @@ export default class CoopMonsterBattle{
             }
         });
 
+        //drain a step of any queued attacks players have
+        this.pcs.forEach((pc:PlayerCharacter)=>{
+            if(pc.currentBattleData.queuedAttacks.length>0){
+                const attackStep = pc.currentBattleData.queuedAttacks.shift();
+                pc.currentBattleData.attackExhaustion--;
+
+                this._sendAttackStep(pc,attackStep);
+            }
+        });
+
         if(this.pcs.length == 0){
             this.endBattle(false);
         }
@@ -194,38 +207,28 @@ export default class CoopMonsterBattle{
             else if(pc.currentBattleData.defeated){
                 reject('You have already been defeated :(');
             }
-            else if(pc.currentBattleData.attacking){
+            else if(pc.currentBattleData.attackExhaustion > 0){
                 reject('You are already in the middle of an attack!');
             }
             else if(this.pcs.indexOf(pc)){
                 reject('You are not in this battle');
             }
             else{
+                pc.currentBattleData.attackExhaustion+=attack.steps.length;
+
+                this._sendAttackStep(pc,attack.steps[0]);
+
+                if(attack.steps.length>1){
+                    pc.currentBattleData.queuedAttacks = attack.steps.slice(1);
+                }
+
                 resolve();
-
-                pc.currentBattleData.attacking = true;
-
-                let delay = 0;
-
-                //schedule the attacks as appropriate
-                attack.steps.forEach((step)=>{
-                    setTimeout(()=>{
-                        this._sendAttackStep(step)
-                    },delay);
-
-                    delay += step.cooldown;
-                });
-
-                //allow the player to send another attack
-                setTimeout(()=>{
-                    pc.currentBattleData.attacking = false;
-                },delay+100);
             }
         });
     }
 
-    _sendAttackStep(step:AttackStep){
-        const damages:IDamageSet = ;
+    _sendAttackStep(pc:PlayerCharacter,step:AttackStep){
+        const damages:IDamageSet = step.getDamages(pc,this.opponent);
 
         const eventData:PlayerAttackEvent = {
             attackingPlayer: pc,

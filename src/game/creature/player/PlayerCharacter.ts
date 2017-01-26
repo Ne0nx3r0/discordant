@@ -6,11 +6,13 @@ import AttributeSet from '../AttributeSet';
 import Weapon from '../../item/weapon/Weapon';
 import CreatureEquipment from '../../item/CreatureEquipment';
 import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
+import AttackStep from '../../item/weapon/WeaponAttackStep';
 
 interface CurrentBattleData{
     battle:CoopMonsterBattle;
     defeated:boolean;
-    attacking:boolean,
+    attackExhaustion:number,
+    queuedAttacks:Array<AttackStep>,
     blocking:boolean,
 }
 
