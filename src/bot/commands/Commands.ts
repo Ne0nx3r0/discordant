@@ -1,5 +1,5 @@
 export { default as Begin } from "./Begin";
-export { default as ClassCommand } from "./ClassCommand";
+export { default as Classes } from "./Classes";
 
 export { default as Stats } from "./Stats";
 

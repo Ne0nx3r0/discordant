@@ -20,4 +20,13 @@ export default class Command{
     getUsage(){
         return 'Usage: '+ this.usage;
     }
+
+    getEmbed(msg:string,color?:number){
+        return {
+            embed: {
+                color: color || 0xFF6347, 
+                description: msg,           
+            }
+        }
+    }
 }

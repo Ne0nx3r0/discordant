@@ -49,6 +49,11 @@ export default class DiscordBot{
             return;
         }
 
+        //For now ignore all but #testing on discordant
+        if(message.channel.id != '263031735770415104'){
+            return;
+        }
+
         if(!message.content.startsWith(COMMAND_PREFIX)){
             return;
         }

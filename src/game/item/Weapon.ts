@@ -1,7 +1,7 @@
 import WeaponAttack from './WeaponAttack';
-import Creature from '../../creature/Creature';
-import ItemEquippable from '../ItemEquippable';
-import {EquipmentSlotType} from '../CreatureEquipment';
+import Creature from '../creature/Creature';
+import ItemEquippable from './ItemEquippable';
+import {EquipmentSlotType} from './CreatureEquipment';
 
 interface useRequirements{
     Strength?:number,

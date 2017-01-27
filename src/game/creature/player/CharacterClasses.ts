@@ -22,7 +22,7 @@ function addClass(c){
 addClass(new CharacterClass(
     CharacterClassId.Nobody,
     'Nobody',
-    'Your path is your own, but you will receive no help along the way.\n\nStarting Equipment: None',
+    'Your path is your own, but you will receive no help along the way.',
     new AttributeSet(10,10,10,10,10),
     new CreatureEquipment({}),
 ));
@@ -30,7 +30,7 @@ addClass(new CharacterClass(
 addClass(new CharacterClass(
     CharacterClassId.Mercanary,
     'Mercanary',
-    'You have lived a live in service of others, now out to carve a piece for yourself.\n\nStarting Equipment: Worn Leathers, Hunting Sword, Wooden Round Shield',
+    'Having lived a life of service you\'re ready to carve out a piece for yourself.',
     new AttributeSet(12,12,14,4,8),
     new CreatureEquipment({
         armor: WornLeathers,
