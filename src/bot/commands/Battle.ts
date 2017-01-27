@@ -57,16 +57,19 @@ export default class Battle extends Command{
 
             battle.on(CoopMonsterBattleEvent.PlayersAttacked,function(e:PlayersAttackedEvent){
                 let msg = '```md\n< '+e.message+' >\n```';
-
+                let embedMsg = '';
                 e.players.forEach(function(playerDamage){
-                    msg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.pc.currentBattleData.attackExhaustion>1);
+                    embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.pc.currentBattleData.attackExhaustion>1);
                 });
 
-                message.channel.sendMessage(msg);
+                message.channel.sendMessage(msg)
+                .catch(errFunc);
+
+                message.channel.sendMessage('',getEmbed(embedMsg)).catch(errFunc);
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerDeath,function(e:PlayerDeathEvent){
-                message.channel.sendMessage(':skull_crossbones:   '+e.pc.title + ' died! (Lost '+e.lostXP+' xp, '+e.lostGold+' gold)  :skull_crossbones:');
+                message.channel.sendMessage(':skull_crossbones:   '+e.pc.title + ' died! (Lost '+e.lostWishes+' wishes)  :skull_crossbones:');
             });
 
             battle.on(CoopMonsterBattleEvent.BattleEnd,function(e:BattleEndEvent){
@@ -89,14 +92,16 @@ export default class Battle extends Command{
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerAttack,function(e:PlayerAttackEvent){
-                message.channel.sendMessage(e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false));
+                let msg = e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false);
 
                 const exhaustion = e.attackingPlayer.currentBattleData.attackExhaustion;
 
                 if(exhaustion>1){
-                    message.channel.sendMessage(e.attackingPlayer.title+' is exhausted for '
-                    +(exhaustion-1)+' turn'+(exhaustion>2?'s':''));
+                    msg+='\n'+e.attackingPlayer.title+' is exhausted for '
+                    +(exhaustion-1)+' turn'+(exhaustion>2?'s':'');
                 }
+
+                message.channel.sendMessage('',getEmbed(msg,0xFFA500));
             });
         }        
     }
@@ -133,4 +138,13 @@ function getDamageTypeEmoji(type:string){
     }
 
     return ':question:';
+}
+
+function getEmbed(msg:string,color?:number){
+    return {
+        embed: {
+            color: color || 0xFF6347, 
+            description: msg,           
+        }
+    }
 }

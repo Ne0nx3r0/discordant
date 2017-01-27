@@ -53,7 +53,7 @@ export interface PlayerBlockedEvent{
 
 export interface PlayerDeathEvent{
     pc:PlayerCharacter;
-    lostGold:number;
+    lostWishes:number;
 }
 
 export interface BattleEndEvent{
@@ -137,15 +137,24 @@ export default class CoopMonsterBattle{
         };
 
         this.pcs.forEach((pc:PlayerCharacter)=>{
+            //damages calculates resistances
             const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,pc);
 
-            pc.HPCurrent -=  damagesTotal(pcDamages);
+            if(pc.currentBattleData.blocking){
+                Object.keys(pcDamages).forEach(function(type){
+                    pcDamages[type] = Math.floor(pcDamages[type] * (1-pc.damageBlocked));
+                });
+            }
+
+            pc.HPCurrent -= damagesTotal(pcDamages);
 
             eventData.players.push({
                 pc:pc,
                 damages:pcDamages,
-                blocked:false,
+                blocked:pc.currentBattleData.blocking,
             });
+
+            pc.currentBattleData.blocking = false;
         });
 
         this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);
@@ -155,7 +164,7 @@ export default class CoopMonsterBattle{
             if(pc.HPCurrent < 1){
                 const eventData:PlayerDeathEvent = {
                     pc: pc,
-                    lostGold: pc.calculateDeathGoldLost(),//TODO: implement actual gold lost
+                    lostWishes: pc.calculateDeathWishesLost(),
                 };
 
                 this.pcs.splice(this.pcs.indexOf(pc),1);
@@ -188,6 +197,29 @@ export default class CoopMonsterBattle{
         }
     }
 
+    playerActionBlock(pc:PlayerCharacter){
+        return new Promise((resolve,reject)=>{
+            if(pc.currentBattleData.blocking){
+                reject('You are already blocking');
+            }
+            else if(pc.currentBattleData.defeated){
+                reject('You have already been defeated :(');
+            }
+            else if(pc.currentBattleData.attackExhaustion > 0){
+                reject('You are too exhausted to block!');
+            }
+            else if(this.pcs.indexOf(pc)){
+                reject('You are not in this battle');
+            }
+            else{
+                pc.currentBattleData.attackExhaustion++;
+                pc.currentBattleData.blocking = true;
+
+                resolve();
+            }
+        });
+    }
+
     playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack){
         return new Promise((resolve,reject)=>{
             if(pc.currentBattleData.blocking){
@@ -197,7 +229,7 @@ export default class CoopMonsterBattle{
                 reject('You have already been defeated :(');
             }
             else if(pc.currentBattleData.attackExhaustion > 0){
-                reject('You are not ready to attack yet!');
+                reject('You are too exhausted to attack!');
             }
             else if(this.pcs.indexOf(pc)){
                 reject('You are not in this battle');

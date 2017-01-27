@@ -10,6 +10,7 @@ export default new Weapon(
     ItemId.BareHands,
     'Bare Hands',
     'When you bring knuckles to a knife fight',
+    0.02,
     {},//no use requirements
     [
         new WeaponAttack(

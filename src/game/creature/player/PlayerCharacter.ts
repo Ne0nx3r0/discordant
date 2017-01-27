@@ -25,7 +25,7 @@ interface PCConfig{
     class:CharacterClass,
     equipment: CreatureEquipment,
     xp:number;
-    gold:number;
+    wishes:number;
 }
 
 export default class PlayerCharacter extends Creature{
@@ -34,7 +34,7 @@ export default class PlayerCharacter extends Creature{
     currentBattleData:CurrentBattleData;
     class:CharacterClass;
     xp:number;
-    gold:number;
+    wishes:number;
 
     constructor(o:PCConfig){
         super({
@@ -49,7 +49,7 @@ export default class PlayerCharacter extends Creature{
         this.discriminator = o.discriminator;
         this.class = o.class;
         this.xp = o.xp;
-        this.gold = o.gold;
+        this.wishes = o.wishes;
 
         this.currentBattleData = null;
     }
@@ -58,8 +58,8 @@ export default class PlayerCharacter extends Creature{
         return this.currentBattleData != null;
     }
 
-    calculateDeathGoldLost():number{
-        return this.gold / 2;
+    calculateDeathWishesLost():number{
+        return this.wishes / 2;
     }
 
     calculateDeathXPLost():number{

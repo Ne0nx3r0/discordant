@@ -156,7 +156,7 @@ export default class Game{
                         description: row.description,
                         title: row.username,
                         xp: row.xp,
-                        gold: row.gold,
+                        wishes: row.wishes,
                         class: CharacterClasses.get(row.class),
                         attributes: new AttributeSet(
                             row.attribute_strength,
@@ -230,14 +230,14 @@ export default class Game{
         });
     }
 
-    addGold(pc:PlayerCharacter,amount:number):Promise<{}>{
+    addWishes(pc:PlayerCharacter,amount:number):Promise<{}>{
         return new Promise((resolve,reject)=>{
         try{
             const queryStr = `
                 UPDATE player 
-                SET gold = gold + $1
+                SET wishes = wishes + $1
                 WHERE uid = $2
-                RETURNING gold;
+                RETURNING wishes;
             `;
 
             this.db.getClient().query(queryStr,[amount,pc.uid],(error,result)=>{
@@ -268,7 +268,7 @@ export default class Game{
                     return;
                 }
 
-                pc.gold = result.rows[0].gold;
+                pc.wishes = result.rows[0].wishes;
 
                 resolve();              
             });
@@ -342,7 +342,7 @@ export default class Game{
         });
     }
 /*
-    transferGold(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
+    transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
 
     }
 

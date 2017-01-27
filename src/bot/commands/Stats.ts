@@ -59,35 +59,33 @@ function getEmbed(pc:PlayerCharacter){
                 name: 'Stats for '+pc.title,
                 icon_url: 'http://dsi-vd.github.io/patternlab-vd/images/fpo_avatar.png'
             },
-            //title: 'Stats for '+pc.title,
-            //url: 'http://discordant.io/',
             description: 'description here '+pc.description,
             fields: [
                 {
                     name: 'Experience',
-                    value: pc.xp
+                    value: pc.xp,
+                    inline: true,
                 },
                 {
-                    name: 'Gold',
-                    value: pc.gold
+                    name: 'Wishes',
+                    value: pc.wishes,
+                    inline: true,
                 },
                 {
                     name: 'Primary Weapon',
-                    value: pc.equipment.primaryWeapon.title
+                    value: pc.equipment.primaryWeapon.title,
+                    inline: true,
                 },
                 {
                     name: 'Offhand Weapon',
-                    value: pc.equipment.offhandWeapon.title
+                    value: pc.equipment.offhandWeapon.title,
+                    inline: true,
                 },
                 {
                     name: 'Testing code markdown',
-                    value: '```md\n\n< Testing spacing           '+pc.xp+'xp >\n<blue_stuff>         <blue_stuff>\n```'
+                    value: '```md\n\n< Testing spacing           '+pc.xp+'xp >\n<blue_stuff>         <blue_stuff>\n```',
                 }
-            ],
-            /*timestamp: new Date(),
-            footer: {
-                icon_url: 'http://gohwp.org/wp-content/uploads/2016/10/light-bulb.png',
-                text: 'Discordant Footer Text'
-            }*/
-        };
+            ]
+        }
+    }
 }

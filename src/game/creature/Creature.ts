@@ -43,8 +43,6 @@ export default class Creature{
         this.attributes = bag.attributes;
         this.equipment = bag.equipment;
 
-        this.type = bag.type;
-
         this.updateStats();
         this.HPCurrent = this.stats.HPTotal;
     }
@@ -124,5 +122,10 @@ export default class Creature{
                 return attack;
             }
         }
+    }
+
+    //Returns what percent (0.0-0.95) of damage to block when blocking
+    get damageBlocked():number{
+        return Math.min(0.95,this.equipment.primaryWeapon.damageBlocked + this.equipment.offhandWeapon.damageBlocked);
     }
 }

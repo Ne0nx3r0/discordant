@@ -10,6 +10,7 @@ export default new Weapon(
     ItemId.HandAxe,
     'Hand Axe',
     'A basic weapon whose history and use dates back to prehistoric times',
+    0.05,
     {
         Strength: 10
     },//no use requirements

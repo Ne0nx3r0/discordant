@@ -2,11 +2,11 @@ import ItemEquippable from './ItemEquippable';
 import Weapon from './weapon/Weapon';
 
 interface EquipmentBag{
-    hat?: ItemEquippable;
-    armor?: ItemEquippable;
-    amulet?: ItemEquippable;
-    earring?: ItemEquippable;
-    ring?: ItemEquippable;
+    hat?: ItemEquippable;// ?
+    armor?: ItemEquippable;//physical resistance
+    amulet?: ItemEquippable;//element resistance, item find, critical hits
+    earring?: ItemEquippable;//element resistance, item find, critical hits
+    ring?: ItemEquippable;//element resistance, item find, critical hits
     primaryWeapon?: Weapon;
     offhandWeapon?: Weapon;
 }
