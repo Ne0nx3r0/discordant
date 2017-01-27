@@ -66,5 +66,14 @@ export default class DiscordBot{
             
             command.run(params,message,this.game);
         }
+        else if(commandName == 'HELP'){
+            let commandsStr = '';
+
+            this.commands.forEach(function(command){
+                commandsStr += '\n**'+command.name + '** - ' +command.description;
+            });
+
+            message.channel.sendMessage('Here are the commands you have access to:\n'+commandsStr);
+        }
     }
 }

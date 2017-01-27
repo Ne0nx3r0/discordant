@@ -12,6 +12,6 @@ export default class ChannelId extends Command{
     }
 
     run(params:Array<string>,message:any,game:Game){
-        message.channel.sendMessage(message.content.replace('echo ',''));
+        message.channel.sendMessage(message.content.replace('decho ',''));
     }
 }
