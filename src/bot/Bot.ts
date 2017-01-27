@@ -5,7 +5,7 @@ import * as Commands from "./commands/Commands";
 const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
 
-const COMMAND_PREFIX:string = '-';
+const COMMAND_PREFIX:string = 'd';
 
 export default class DiscordBot{
     client: any;

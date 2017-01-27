@@ -1,3 +1,4 @@
+import PlayerCharacter from '../game/creature/player/PlayerCharacter';
 const pg = require('pg');
 
 interface dbConfig{

@@ -53,7 +53,6 @@ export interface PlayerBlockedEvent{
 
 export interface PlayerDeathEvent{
     pc:PlayerCharacter;
-    lostXP:number;
     lostGold:number;
 }
 
@@ -156,7 +155,6 @@ export default class CoopMonsterBattle{
             if(pc.HPCurrent < 1){
                 const eventData:PlayerDeathEvent = {
                     pc: pc,
-                    lostXP: pc.calculateDeathXPLost(),//TODO: implement actual xp lost
                     lostGold: pc.calculateDeathGoldLost(),//TODO: implement actual gold lost
                 };
 
@@ -251,6 +249,7 @@ export default class CoopMonsterBattle{
 
         let xpEarned = 0;
 
+        //Note: Game is responsible for listening for and adjusting player stats based on this event
         if(victory){
             xpEarned = this.opponent.xpDropped;
         }
@@ -267,6 +266,7 @@ export default class CoopMonsterBattle{
         //release players from the battle lock
         this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
             pc.currentBattleData = null;
+            pc.HPCurrent = pc.stats.HPTotal/10;
         });
     }
 

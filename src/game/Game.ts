@@ -123,6 +123,7 @@ export default class Game{
 
                 if(cachedPC){
                     resolve(cachedPC);
+
                     return;
                 }
 
@@ -154,7 +155,7 @@ export default class Game{
                         discriminator: row.discriminator,
                         description: row.description,
                         title: row.username,
-                        experience: row.experience,
+                        xp: row.experience,
                         gold: row.gold,
                         class: CharacterClasses.get(row.class),
                         attributes: new AttributeSet(
@@ -172,8 +173,7 @@ export default class Game{
                                ring: this.items.get(row.equipment_ring),
                             primaryWeapon: this.items.get(row.equipment_weapon),
                             offhandWeapon: this.items.get(row.equipment_offhand),
-                        }),
-                        inventory:[]
+                        })
                     });
 
                     this.cachedPlayers.set(pc.uid,pc);
@@ -205,6 +205,22 @@ export default class Game{
             const battle:CoopMonsterBattle = new CoopMonsterBattle(this.battleCardinality++,players,opponent);
 
             battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+                if(e.victory){
+                    e.survivingPCs.forEach((pc:PlayerCharacter)=>{
+                        this.addXP(pc,e.xpEarned)
+                        .catch((error)=>{
+                            winston.error(error);
+                        });
+                    });
+
+                    e.defeatedPCs.forEach((pc:PlayerCharacter)=>{
+                        this.addXP(pc,e.xpEarned)
+                        .catch((error)=>{
+                            winston.error(error);
+                        });
+                    });
+                }
+
                 this.activeBattles.delete(battle.id);
             });
 
@@ -213,4 +229,126 @@ export default class Game{
             resolve(battle);
         });
     }
+
+    addGold(pc:PlayerCharacter,amount:number):Promise<{}>{
+        return new Promise((resolve,reject)=>{
+        try{
+            const queryStr = `
+                UPDATE player 
+                SET gold = gold + $1
+                WHERE uid = $2
+                RETURNING gold;
+            `;
+
+            this.db.getClient().query(queryStr,[amount,pc.uid],(error,result)=>{
+                if(error){
+                    const nowMS = new Date().getTime();
+
+                    winston.error({
+                        did: nowMS,
+                        error: error,
+                    });
+
+                    reject('A database error occured - did'+nowMS);
+
+                    return;
+                }
+
+                if(result.rows){
+                    const nowMS = new Date().getTime();
+
+                    reject('Database did not return any rows? Wat. did'+nowMS);
+
+                    winston.error({
+                        did: nowMS,
+                        query: queryStr,
+                        result: result,
+                    });
+
+                    return;
+                }
+
+                pc.gold = result.rows[0].gold;
+
+                resolve();              
+            });
+        }
+        catch(ex){
+            const nowMS = new Date().getTime();
+            
+            winston.log({
+                did:nowMS,
+                error:ex
+            });
+
+            reject('An unexpected error occurred did'+nowMS);
+        }
+        });
+    }
+
+    addXP(pc:PlayerCharacter,amount:number):Promise<{}>{
+        return new Promise((resolve,reject)=>{
+        try{
+            const queryStr = `
+                UPDATE player 
+                SET xp = xp + $1
+                WHERE uid = $2
+                RETURNING xp;
+            `;
+
+            this.db.getClient().query(queryStr,[amount,pc.uid],(error,result)=>{
+                if(error){
+                    const nowMS = new Date().getTime();
+
+                    winston.error({
+                        did: nowMS,
+                        error: error,
+                    });
+
+                    reject('A database error occured - did'+nowMS);
+
+                    return;
+                }
+
+                if(result.rows){
+                    const nowMS = new Date().getTime();
+
+                    reject('Database did not return any rows? Wat. did'+nowMS);
+
+                    winston.error({
+                        did: nowMS,
+                        query: queryStr,
+                        result: result,
+                    });
+
+                    return;
+                }
+
+                pc.xp = result.rows[0].xp;
+
+                resolve();              
+            });
+        }
+        catch(ex){
+            const nowMS = new Date().getTime();
+            
+            winston.log({
+                did:nowMS,
+                error:ex
+            });
+
+            reject('An unexpected error occurred did'+nowMS);
+        }
+        });
+    }
+/*
+    transferGold(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
+
+    }
+
+    addItem()
+    removeItem()
+    transferItem()
+
+    addExperience()*/
 }
