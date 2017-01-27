@@ -2,8 +2,8 @@ import ItemBase from './ItemBase';
 import {EquipmentSlotType} from '../item/CreatureEquipment';
 import DamageSet from '../damage/IDamageSet';
 import Creature from '../creature/Creature';
-import Weapon from './weapon/Weapon';
-import IStatSet from '../creature/IStatSet';
+import Weapon from './Weapon';
+import IStatSet from '../creature/Creature';
 
 export default class ItemEquippable extends ItemBase{
     slotType:EquipmentSlotType;

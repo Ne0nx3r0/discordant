@@ -1,10 +1,10 @@
-import Weapon from '../Weapon';
-import WeaponAttack from '../WeaponAttack';
-import WeaponAttackStep from '../WeaponAttackStep';
-import IDamageSet from '../../../damage/IDamageSet';
-import Creature from '../../../creature/Creature';
-import DamageScaling from '../../../damage/DamageScaling';
-import ItemId from '../../ItemId';
+import Weapon from './Weapon';
+import WeaponAttack from './WeaponAttack';
+import WeaponAttackStep from './WeaponAttackStep';
+import IDamageSet from '../../damage/IDamageSet';
+import Creature from '../../creature/Creature';
+import DamageScaling from '../../damage/DamageScaling';
+import ItemId from '../ItemId';
 
 export default new Weapon(
     ItemId.WoodRoundShield,

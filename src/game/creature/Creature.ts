@@ -1,12 +1,12 @@
 import DamageSet from '../damage/IDamageSet';
-import Weapon from '../item/weapon/Weapon';
+import Weapon from '../item/Weapon';
 import AttributeSet from './AttributeSet';
 import CreatureEquipment from '../item/CreatureEquipment';
 import {EquipmentSlot} from '../item/CreatureEquipment';
 import ItemEquippable from '../item/ItemEquippable';
 import CreatureId from './CreatureId';
 import IDamageSet from '../damage/IDamageSet';
-import WeaponAttack from '../item/weapon/WeaponAttack';
+import WeaponAttack from '../item/WeaponAttack';
 
 interface IStatSet{
     Strength:number,

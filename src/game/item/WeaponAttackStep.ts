@@ -1,5 +1,5 @@
-import IDamageSet from '../../damage/IDamageSet';
-import Creature from '../../creature/Creature';
+import IDamageSet from '../damage/IDamageSet';
+import Creature from '../creature/Creature';
 import Weapon from './Weapon';
 
 interface DamageFunc{
