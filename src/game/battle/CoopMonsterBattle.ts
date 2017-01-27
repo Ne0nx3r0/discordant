@@ -1,10 +1,10 @@
 import PlayerCharacter from '../creature/player/PlayerCharacter';
 import CreatureAIControlled from '../creature/CreatureAIControlled';
-import WeaponAttack from '../item/weapon/WeaponAttack';
-import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
+import WeaponAttack from '../item/WeaponAttack';
+import WeaponAttackStep from '../item/WeaponAttackStep';
 import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
-import AttackStep from '../item/weapon/WeaponAttackStep';
+import AttackStep from '../item/WeaponAttackStep';
 
 const winston = require('winston');
 

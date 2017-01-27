@@ -8,7 +8,7 @@ import CreatureId from './CreatureId';
 import IDamageSet from '../damage/IDamageSet';
 import WeaponAttack from '../item/WeaponAttack';
 
-interface IStatSet{
+export interface IStatSet{
     Strength:number,
     Agility:number,
     Vitality:number,

@@ -3,7 +3,7 @@ import {EquipmentSlotType} from '../item/CreatureEquipment';
 import DamageSet from '../damage/IDamageSet';
 import Creature from '../creature/Creature';
 import Weapon from './Weapon';
-import IStatSet from '../creature/Creature';
+import {IStatSet} from '../creature/Creature';
 
 export default class ItemEquippable extends ItemBase{
     slotType:EquipmentSlotType;
@@ -27,7 +27,5 @@ export default class ItemEquippable extends ItemBase{
     */
 
     //Modifies the statset if bonuses/penalties apply
-    onAddBonuses(stats:IStatSet){
-        return;
-    }
+    onAddBonuses(stats:IStatSet){/* modify the stats object and let it fall back to the caller */}
 }

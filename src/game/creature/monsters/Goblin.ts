@@ -1,7 +1,7 @@
 import Creature from '../Creature';
 import CreatureId from '../CreatureId';
 import CreatureEquipment from '../../item/CreatureEquipment';
-import {BareHands} from '../../item/weapon/WeaponsIndex';
+import {BareHands} from '../../item/ItemsIndex';
 import AttributeSet from '../AttributeSet';
 import CreatureAIControlled from '../CreatureAIControlled';
 

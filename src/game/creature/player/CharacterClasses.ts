@@ -1,6 +1,10 @@
 import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
 import Collection from '../../../util/Collection';
+import CreatureEquipment from '../../item/CreatureEquipment';
+import WornLeathers from '../../item/clothing/WornLeathers';
+import WoodRoundShield from '../../item/weapons/WoodRoundShield';
+import HuntingSword from '../../item/weapons/HuntingSword';
 
 enum CharacterClassId{
     Nobody,
@@ -19,12 +23,18 @@ addClass(new CharacterClass(
     CharacterClassId.Nobody,
     'Nobody',
     'Your path is your own, but you will receive no help along the way.\n\nStarting Equipment: None',
-    new AttributeSet(10,10,10,10,10)
+    new AttributeSet(10,10,10,10,10),
+    new CreatureEquipment({}),
 ));
 
 addClass(new CharacterClass(
     CharacterClassId.Mercanary,
     'Mercanary',
     'You have lived a live in service of others, now out to carve a piece for yourself.\n\nStarting Equipment: Worn Leathers, Hunting Sword, Wooden Round Shield',
-    new AttributeSet(12,12,14,4,8)
+    new AttributeSet(12,12,14,4,8),
+    new CreatureEquipment({
+        armor: WornLeathers,
+        primaryWeapon: HuntingSword,
+        offhandWeapon: WoodRoundShield,
+    }),
 ));

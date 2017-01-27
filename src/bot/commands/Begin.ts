@@ -20,7 +20,7 @@ export default class ChannelId extends Command{
             classesStr += c.title+', ';
         });
 
-        return classesStr.slice(0,-2) +'(`dclass [name]` for more info)';
+        return classesStr.slice(0,-2) +'\n(`dclass` for more info)';
     }
 
     run(params:Array<string>,message:any,game:Game){
