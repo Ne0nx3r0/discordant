@@ -86,7 +86,11 @@ export default class Game{
                             reject('Character has already been registered');
                         }
                         else{
-                            reject(error);
+                            const did = new Date().getTime();
+
+                            winston.error({error:error,did:did});
+
+                            reject('A database error occurred did'+did);
                         }
 
                         return;
@@ -109,9 +113,11 @@ export default class Game{
                 }
             }
             catch(ex){
-                winston.error(ex);
+                const did = new Date().getTime();
 
-                reject(ex);
+                winston.error({ex:ex,did:did});
+
+                reject('A database error occurred did'+did);
             }
         });
     }
@@ -133,9 +139,11 @@ export default class Game{
 
                 function insertResult(error, result) {
                     if(error){
-                        winston.error([uid,error]);
+                        const did = new Date().getTime();
 
-                        reject(error);
+                        winston.error({error:error,did:did,uid:uid});
+
+                        reject('A database error occurred did'+did);
 
                         return;
                     }
@@ -182,9 +190,11 @@ export default class Game{
                 }
             }
             catch(ex){
-                winston.error(ex);
+                const did = new Date().getTime();
 
-                reject(ex);
+                winston.error({ex:ex,did:did});
+
+                reject('A database error occurred did'+did);
             }
         });
     }
