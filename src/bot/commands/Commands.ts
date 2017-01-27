@@ -4,3 +4,4 @@ export { default as Battle } from "./Battle";
 export { default as ChannelId } from "./ChannelId";
 export { default as Echo } from "./Echo";
 export { default as Shutdown } from "./Shutdown";
+export { default as Stats } from "./Stats";

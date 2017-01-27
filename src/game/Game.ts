@@ -155,7 +155,7 @@ export default class Game{
                         discriminator: row.discriminator,
                         description: row.description,
                         title: row.username,
-                        xp: row.experience,
+                        xp: row.xp,
                         gold: row.gold,
                         class: CharacterClasses.get(row.class),
                         attributes: new AttributeSet(

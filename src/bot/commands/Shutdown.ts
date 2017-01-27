@@ -16,6 +16,6 @@ export default class ChannelId extends Command{
 
         setTimeout(function(){
             process.exit();
-        },1000);
+        },100);
     }
 }
