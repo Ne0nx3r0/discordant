@@ -16,6 +16,8 @@ interface IPlayerRegisterBag{
     discriminator:number;
     username:string;
     class:CharacterClass;
+    equipment:CreatureEquipment;
+    inventory:PlayerInventory;
 }
 
 export default class Game{
@@ -46,10 +48,30 @@ export default class Game{
                     attribute_agility,
                     attribute_vitality,
                     attribute_spirit,
-                    attribute_luck
+                    attribute_luck,
+                    inventory,
+                    equipment,
                 )
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9);
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);
         `;
+
+        const pcInventory = {};
+
+        Need to define a player inventory class
+
+        Object.keys(playerBag.inventory).forEach(function(itemId){
+            pcEquipment[slot] = {
+                id:playerBag.inventory[slot].id
+            };
+        });
+
+        const pcEquipment = {};
+
+        Object.keys(playerBag.equipment).forEach(function(slot){
+            pcEquipment[slot] = {
+                id:playerBag.equipment[slot].id
+            };
+        });
 
         const queryValues:Array<any> = [
             playerBag.uid,
@@ -60,7 +82,9 @@ export default class Game{
             playerBag.class.startingAttributes.Agility,
             playerBag.class.startingAttributes.Vitality,
             playerBag.class.startingAttributes.Spirit,
-            playerBag.class.startingAttributes.Luck            
+            playerBag.class.startingAttributes.Luck,
+            pcInventory,
+            pcEquipment,
         ];
 
         return new Promise((resolve,reject)=>{
@@ -173,15 +197,8 @@ export default class Game{
                             row.attribute_spirit,
                             row.attribute_luck
                         ),
-                        equipment: new CreatureEquipment({
-                                hat: this.items.get(row.equipment_hat),
-                              armor: this.items.get(row.equipment_armor),
-                             amulet: this.items.get(row.equipment_amulet),
-                            earring: this.items.get(row.equipment_earring),
-                               ring: this.items.get(row.equipment_ring),
-                            primaryWeapon: this.items.get(row.equipment_weapon),
-                            offhandWeapon: this.items.get(row.equipment_offhand),
-                        })
+                        equipment: new CreatureEquipment(row.equipment),
+                        inventory: new PlayerInventory(row.inventory),
                     });
 
                     this.cachedPlayers.set(pc.uid,pc);
