@@ -34,7 +34,7 @@ export default class DiscordBot{
         console.log('Bot: logged in');
 
         this.client.channels
-            .get('263031735770415104')//discordant server general
+            .get('263031735770415104')//discordant server #testing
             .sendMessage('I\'m online!');
     }
 
