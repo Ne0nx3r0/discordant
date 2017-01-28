@@ -89,7 +89,7 @@ export default class Game{
                     'player'
                 ];
                 
-                const con = this.db.getClient();
+                const con = this.db.pool();
 
                 con.query(queryStr, queryValues, insertResult.bind(this));
 
@@ -147,7 +147,7 @@ export default class Game{
                     return;
                 }
 
-                const con = this.db.getClient();
+                const con = this.db.getPool();
 
                 con.query('SELECT * FROM player WHERE uid=$1 LIMIT 1', [uid], (error, result)=>{
                     if(error){

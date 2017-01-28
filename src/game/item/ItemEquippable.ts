@@ -1,14 +1,14 @@
 import ItemBase from './ItemBase';
-import {EquipmentSlotType} from '../item/CreatureEquipment';
+import {EquipmentSlot} from '../item/CreatureEquipment';
 import DamageSet from '../damage/IDamageSet';
 import Creature from '../creature/Creature';
 import Weapon from './Weapon';
 import {IStatSet} from '../creature/Creature';
 
 export default class ItemEquippable extends ItemBase{
-    slotType:EquipmentSlotType;
+    slotType:EquipmentSlot;
 
-    constructor(id:number,title:string,description:string,slotType:EquipmentSlotType){
+    constructor(id:number,title:string,description:string,slotType:EquipmentSlot){
         super(id,title,description);
 
         this.slotType = slotType;

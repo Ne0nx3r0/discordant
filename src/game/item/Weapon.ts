@@ -1,7 +1,7 @@
 import WeaponAttack from './WeaponAttack';
 import Creature from '../creature/Creature';
 import ItemEquippable from './ItemEquippable';
-import {EquipmentSlotType} from './CreatureEquipment';
+import {EquipmentSlot} from './CreatureEquipment';
 
 interface useRequirements{
     Strength?:number,
@@ -18,7 +18,7 @@ export default class Weapon extends ItemEquippable{
     damageBlocked:number;//0.0 to 0.5 describing how much damage this weapon blocks when the player blocks
 
     constructor(id:number,title:string,description:string,damageBlocked:number,useRequirements:useRequirements,attacks:Array<WeaponAttack>){
-        super(id,title,description,EquipmentSlotType.Weapon);
+        super(id,title,description,'primaryweapon');//also offhandweapon, but for our purposes they are all primary's
 
         this.damageBlocked = damageBlocked;
         this.attacks = attacks;

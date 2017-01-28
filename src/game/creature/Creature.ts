@@ -74,19 +74,11 @@ export default class Creature{
     }
 
     equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{
-        const unequippedItem = 
-
-        this.updateStats();
-
-        return null;
+        return this.equipment.equip(item,slot);
     }
 
     unEquipItem(slot:EquipmentSlot):ItemEquippable{
-        //const removedItem = 
-
-        this.updateStats();
-
-        return null;
+        return this.equipment.unequip(slot);
     }
 
     //May return nothing if no valid attacks or if no attacks that should be used right now
