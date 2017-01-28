@@ -11,6 +11,8 @@ import CoopMonsterBattle from './battle/CoopMonsterBattle';
 import { CoopMonsterBattleEvent, BattleEndEvent } from './battle/CoopMonsterBattle';
 import { EquipmentBag } from './item/CreatureEquipment';
 import PlayerInventory from './item/PlayerInventory';
+import ItemEquippable from './item/ItemEquippable';
+import Weapon from './item/Weapon';
 const winston = require('winston');
 
 interface IPlayerRegisterBag{
@@ -18,14 +20,12 @@ interface IPlayerRegisterBag{
     discriminator:number;
     username:string;
     class:CharacterClass;
-    equipment:CreatureEquipment;
-    inventory:PlayerInventory;
 }
 
 export default class Game{
     items:AllItems;
     db:DatabaseService;
-    cachedPlayers:Map<string,string>;
+    cachedPlayers:Map<string,PlayerCharacter>;
     battleCardinality:number;
     activeBattles:Map<number,CoopMonsterBattle>;
 
@@ -40,55 +40,6 @@ export default class Game{
     }
 
     registerPlayerCharacter(playerBag:IPlayerRegisterBag){
-        const queryStr = `
-            INSERT INTO player (
-                    uid,
-                    discriminator,
-                    username,
-                    class,
-                    attribute_strength,
-                    attribute_agility,
-                    attribute_vitality,
-                    attribute_spirit,
-                    attribute_luck,
-                    inventory,
-                    equipment,
-                    role,
-                )
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
-        `;
-
-        const pcInventory = {};
-
-        playerBag.inventory.items.forEach(function(item){
-            pcInventory[item.base.id] = {
-                amount: item.amount
-            };
-        });
-
-        const pcEquipment = {};
-
-        Object.keys(playerBag.equipment).forEach(function(slot){
-            pcEquipment[slot] = {
-                id: playerBag.equipment[slot].id
-            };
-        });
-
-        const queryValues:Array<any> = [
-            playerBag.uid,
-            playerBag.discriminator,
-            playerBag.username,
-            playerBag.class.id,
-            playerBag.class.startingAttributes.Strength,
-            playerBag.class.startingAttributes.Agility,
-            playerBag.class.startingAttributes.Vitality,
-            playerBag.class.startingAttributes.Spirit,
-            playerBag.class.startingAttributes.Luck,
-            pcInventory,
-            pcEquipment,
-            'player'
-        ];
-
         return new Promise((resolve,reject)=>{
             const cachedPlayer = this.cachedPlayers.get(playerBag.uid);
             
@@ -99,14 +50,53 @@ export default class Game{
             }
 
             try{
+                const queryStr = `
+                    INSERT INTO player (
+                            uid,
+                            discriminator,
+                            username,
+                            class,
+                            attribute_strength,
+                            attribute_agility,
+                            attribute_vitality,
+                            attribute_spirit,
+                            attribute_luck,
+                            inventory,
+                            equipment,
+                            role,
+                        )
+                        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
+                `;
+
+                const pcInventory = {};//TODO: implement starting inventory for classes
+
+                const pcEquipment = {};
+
+                const startingEquipment = playerBag.class.startingEquipment;
+
+                if(startingEquipment.amulet) pcEquipment.amulet = startingEquipment.amulet;
+
+                const queryValues:Array<any> = [
+                    playerBag.uid,
+                    playerBag.discriminator,
+                    playerBag.username,
+                    playerBag.class.id,
+                    playerBag.class.startingAttributes.Strength,
+                    playerBag.class.startingAttributes.Agility,
+                    playerBag.class.startingAttributes.Vitality,
+                    playerBag.class.startingAttributes.Spirit,
+                    playerBag.class.startingAttributes.Luck,
+                    pcInventory,
+                    pcEquipment,
+                    'player'
+                ];
+                
                 const con = this.db.getClient();
 
                 con.query(queryStr, queryValues, insertResult.bind(this));
 
                 function insertResult(error, result) {
                     if(error){
-                        winston.error([playerBag,error]);
-
                         //Unique constraint violation - uid exists already
                         if(error.code == 23505){
                             reject('Character has already been registered');
@@ -143,7 +133,7 @@ export default class Game{
 
                 winston.error({ex:ex,did:did});
 
-                reject('A database error occurred did'+did);
+                reject('A promise error occurred did'+did);
             }
         });
     }
@@ -161,9 +151,7 @@ export default class Game{
 
                 const con = this.db.getClient();
 
-                con.query('SELECT * FROM player WHERE uid=$1 LIMIT 1', [uid], insertResult.bind(this));
-
-                function insertResult(error, result) {
+                con.query('SELECT * FROM player WHERE uid=$1 LIMIT 1', [uid], (error, result)=>{
                     if(error){
                         const did = new Date().getTime();
 
@@ -186,13 +174,13 @@ export default class Game{
                     const pcEquipment:EquipmentBag = {};
 
                     if(row.equipment){
-                        if(row.equipment.amulet) pcEquipment.amulet = this.items.get(row.equipment.amulet.id);
-                        if(row.equipment.armor) pcEquipment.armor = this.items.get(row.equipment.armor.id);
-                        if(row.equipment.hat) pcEquipment.hat = this.items.get(row.equipment.hat.id);
-                        if(row.equipment.ring) pcEquipment.ring = this.items.get(row.equipment.ring.id);
-                        if(row.equipment.earring) pcEquipment.earring = this.items.get(row.equipment.earring.id);
-                        if(row.equipment.primaryWeapon) pcEquipment.primaryWeapon = this.items.get(row.equipment.primaryWeapon.id);
-                        if(row.equipment.offhandWeapon) pcEquipment.offhandWeapon = this.items.get(row.equipment.offhandWeapon.id);
+                        if(row.equipment.amulet) pcEquipment.amulet = this.items.get(row.equipment.amulet.id) as ItemEquippable;
+                        if(row.equipment.armor) pcEquipment.armor = this.items.get(row.equipment.armor.id) as ItemEquippable;
+                        if(row.equipment.hat) pcEquipment.hat = this.items.get(row.equipment.hat.id) as ItemEquippable;
+                        if(row.equipment.ring) pcEquipment.ring = this.items.get(row.equipment.ring.id) as ItemEquippable;
+                        if(row.equipment.earring) pcEquipment.earring = this.items.get(row.equipment.earring.id) as ItemEquippable;
+                        if(row.equipment.primaryWeapon) pcEquipment.primaryWeapon = this.items.get(row.equipment.primaryWeapon.id) as Weapon;
+                        if(row.equipment.offhandWeapon) pcEquipment.offhandWeapon = this.items.get(row.equipment.offhandWeapon.id) as Weapon;
                     }
 
                     const pcInventory:PlayerInventory = new PlayerInventory();
@@ -227,7 +215,7 @@ export default class Game{
                     this.cachedPlayers.set(pc.uid,pc);
 
                     resolve(pc);
-                }
+                });
             }
             catch(ex){
                 const did = new Date().getTime();

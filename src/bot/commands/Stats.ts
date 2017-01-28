@@ -40,7 +40,7 @@ export default class ChannelId extends Command{
 
                 return;
             }
-            
+            console.log(pc);
             message.channel
             .sendMessage("",getEmbed(pc))
             .catch(function(err){message.reply(err);});

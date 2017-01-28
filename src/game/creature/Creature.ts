@@ -64,11 +64,15 @@ export default class Creature{
             HPTotal:this.attributes.Vitality*10,
         };
 
-        if(this.equipment.armor) this.equipment.armor.onAddBonuses(stats);
-        if(this.equipment.hat) this.equipment.hat.onAddBonuses(stats);
-        if(this.equipment.ring) this.equipment.ring.onAddBonuses(stats);
-        if(this.equipment.earring) this.equipment.earring.onAddBonuses(stats);
-        if(this.equipment.amulet) this.equipment.amulet.onAddBonuses(stats);
+        Object.keys(this.equipment.All).forEach(function(equip:ItemEquippable){
+            equip.
+        });
+
+        if(this.equipment.Armor) this.equipment.Armor.onAddBonuses(stats);
+        if(this.equipment.Hat) this.equipment.hat.onAddBonuses(stats);
+        if(this.equipment.Ring) this.equipment.ring.onAddBonuses(stats);
+        if(this.equipment.Earring) this.equipment.earring.onAddBonuses(stats);
+        if(this.equipment.Amulet) this.equipment.amulet.onAddBonuses(stats);
 
         this.stats = stats;
 
@@ -126,6 +130,6 @@ export default class Creature{
 
     //Returns what percent (0.0-0.95) of damage to block when blocking
     get damageBlocked():number{
-        return Math.min(0.95,this.equipment.primaryWeapon.damageBlocked + this.equipment.offhandWeapon.damageBlocked);
+        return Math.min(0.95,this.equipment.PrimaryWeapon.damageBlocked + this.equipment.OffhandWeapon.damageBlocked);
     }
 }

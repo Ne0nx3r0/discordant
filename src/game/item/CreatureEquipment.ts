@@ -31,21 +31,41 @@ export enum EquipmentSlotType{
 }
 
 export default class CreatureEquipment{
-    hat: ItemEquippable;
-    armor: ItemEquippable;
-    amulet: ItemEquippable;
-    ring: ItemEquippable;
-    earring: ItemEquippable;
-    primaryWeapon: Weapon;
-    offhandWeapon: Weapon;
+    _items:EquipmentBag;
 
     constructor(equipmentBag:EquipmentBag){
-        this.hat = equipmentBag.hat;
-        this.armor = equipmentBag.armor;
-        this.amulet = equipmentBag.amulet;
-        this.ring = equipmentBag.ring;
-        this.earring = equipmentBag.earring;
-        this.primaryWeapon = equipmentBag.primaryWeapon;
-        this.offhandWeapon = equipmentBag.offhandWeapon;
+        this._items = equipmentBag;
+    }
+
+    get All():EquipmentBag{
+        return this._items;
+    }
+
+    get Hat():ItemEquippable{
+        return this._items.hat;
+    }
+
+    get Armor():ItemEquippable{
+        return this._items.hat;
+    }
+
+    get Amulet():ItemEquippable{
+        return this._items.hat;
+    }
+
+    get Ring():ItemEquippable{
+        return this._items.hat;
+    }
+
+    get Earring():ItemEquippable{
+        return this._items.hat;
+    }
+
+    get PrimaryWeapon():Weapon{
+        return this._items.primaryWeapon;
+    }
+
+    get OffhandWeapon():Weapon{
+        return this._items.offhandWeapon;
     }
 }

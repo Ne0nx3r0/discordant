@@ -59,7 +59,7 @@ export default class ChannelId extends Command{
                 uid: message.author.id,
                 discriminator: message.author.discriminator,
                 username: message.author.username,
-                class: wantedClass
+                class: wantedClass,
             })
             .then(function(pc){
                 message.reply('You have successfully been registered as a '+wantedClass.title+', good luck!');
