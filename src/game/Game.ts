@@ -276,7 +276,7 @@ export default class Game{
                 RETURNING wishes;
             `;
 
-            this.db.getClient().query(queryStr,[amount,pc.uid],(error,result)=>{
+            this.db.getPool().query(queryStr,[amount,pc.uid],(error,result)=>{
                 if(error){
                     const nowMS = new Date().getTime();
 
@@ -332,7 +332,7 @@ export default class Game{
                 RETURNING xp;
             `;
 
-            this.db.getClient().query(queryStr,[amount,pc.uid],(error,result)=>{
+            this.db.getPool().query(queryStr,[amount,pc.uid],(error,result)=>{
                 if(error){
                     const nowMS = new Date().getTime();
 

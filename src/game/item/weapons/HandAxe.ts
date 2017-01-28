@@ -13,7 +13,7 @@ export default new Weapon(
     0.05,
     {
         Strength: 10
-    },//no use requirements
+    },
     [
         new WeaponAttack(
             'light',

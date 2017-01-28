@@ -11,7 +11,7 @@ export default class Goblin extends CreatureAIControlled{
             id: CreatureId.Goblin,
             title: 'Goblin',
             description: 'A low level generic creature',
-            attributes: new AttributeSet(10,10,10,0,0),
+            attributes: new AttributeSet(10, 10, 10, 0, 0),
             equipment: new CreatureEquipment({
                 primaryweapon: BareHands
             }),

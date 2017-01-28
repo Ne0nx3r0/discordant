@@ -1,6 +1,6 @@
 import ItemEquippable from '../ItemEquippable';
 import ItemId from '../ItemId';
-import { EquipmentSlotType } from '../CreatureEquipment';
+import { EquipmentSlot } from '../CreatureEquipment';
 import { IStatSet } from '../../creature/Creature';
 
 class WornLeathers extends ItemEquippable{
@@ -9,7 +9,7 @@ class WornLeathers extends ItemEquippable{
             ItemId.WornLeathers,
             'Worn Leathers',
             'A set of hardened animal hide braces that cover the chest, arms and legs (+20% Physical Resistance)',
-            EquipmentSlotType.Armor
+            'armor'
         );
     }
 
