@@ -35,7 +35,7 @@ export default class ChannelId extends Command{
         }
 
         function playerAttack(pc:PlayerCharacter){
-            const pcWeaponPrimary = pc.equipment.primaryWeapon;
+            const pcWeaponPrimary = pc.equipment.primaryweapon;
             let attack;
             
             if(params.length == 0){

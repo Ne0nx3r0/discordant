@@ -1,9 +1,9 @@
 enum ItemId {
-    BareHands2,
-    HandAxe2,
-    WoodRoun2dShield,
-    HuntingSwo2rd,
-    WornLeath2ers,
+    BareHands,
+    HandAxe,
+    WoodRoundShield,
+    HuntingSword,
+    WornLeathers,
 }
 
 export default ItemId;

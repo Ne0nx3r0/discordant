@@ -91,12 +91,12 @@ function getEmbed(pc:PlayerCharacter){
                 },
                 {
                     name: 'Primary Weapon',
-                    value: pc.equipment.primaryWeapon.title,
+                    value: pc.equipment.primaryweapon.title,
                     inline: true,
                 },
                 {
                     name: 'Offhand Weapon',
-                    value: pc.equipment.offhandWeapon.title,
+                    value: pc.equipment.offhandweapon.title,
                     inline: true,
                 },
                 {

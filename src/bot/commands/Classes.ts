@@ -24,8 +24,8 @@ export default class Classes extends Command{
             if(c.startingEquipment.ring) equipStr += ', '+c.startingEquipment.ring.title;
             if(c.startingEquipment.hat) equipStr += ', '+c.startingEquipment.hat.title;
             if(c.startingEquipment.armor) equipStr += ', '+c.startingEquipment.armor.title;
-            if(c.startingEquipment.primaryWeapon) equipStr += ', '+c.startingEquipment.primaryWeapon.title;
-            if(c.startingEquipment.offhandWeapon) equipStr += ', '+c.startingEquipment.offhandWeapon.title;
+            if(c.startingEquipment.primaryweapon) equipStr += ', '+c.startingEquipment.primaryweapon.title;
+            if(c.startingEquipment.offhandweapon) equipStr += ', '+c.startingEquipment.offhandweapon.title;
 
             equipStr = equipStr.substr(2);
 

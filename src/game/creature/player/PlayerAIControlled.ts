@@ -10,7 +10,7 @@ export default class PlayerAIControlled extends CreatureAIControlled{
             description:pc.description,
             attributes:pc.attributes,
             equipment:pc.equipment,
-            expDropped: 0,
+            xpDropped: 0,
         });
     }
 }

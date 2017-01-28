@@ -35,7 +35,7 @@ export default class ChannelId extends Command{
         }
 
         function playerAttack(pc:PlayerCharacter){
-            const pcWeaponOffhand = pc.equipment.offhandWeapon;
+            const pcWeaponOffhand = pc.equipment.offhandweapon;
             let attack;
             
             if(params.length == 0){

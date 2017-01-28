@@ -116,6 +116,6 @@ export default class Creature{
 
     //Returns what percent (0.0-0.95) of damage to block when blocking
     get damageBlocked():number{
-        return Math.min(0.95,this.equipment.PrimaryWeapon.damageBlocked + this.equipment.OffhandWeapon.damageBlocked);
+        return Math.min(0.95,this.equipment.primaryweapon.damageBlocked + this.equipment.offhandweapon.damageBlocked);
     }
 }

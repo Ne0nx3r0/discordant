@@ -1,7 +1,7 @@
 import Creature from './Creature';
 import { ICreatureBag } from './Creature'; 
-import WeaponAttack from '../item/weapon/WeaponAttack';
-import WeaponAttackStep from '../item/weapon/WeaponAttackStep';
+import WeaponAttack from '../item/WeaponAttack';
+import WeaponAttackStep from '../item/WeaponAttackStep';
 
 interface ICreatureAIBag extends ICreatureBag{
     xpDropped:number;
@@ -18,11 +18,11 @@ export default class CreatureAIControlled extends Creature{
 
         this.attacks = [];
 
-        if(bag.equipment.primaryWeapon){
-            this.attacks = this.attacks.concat(bag.equipment.primaryWeapon.attacks);
+        if(bag.equipment.primaryweapon){
+            this.attacks = this.attacks.concat(bag.equipment.primaryweapon.attacks);
         }
-        if(bag.equipment.offhandWeapon){
-            this.attacks = this.attacks.concat(bag.equipment.offhandWeapon.attacks);
+        if(bag.equipment.offhandweapon){
+            this.attacks = this.attacks.concat(bag.equipment.offhandweapon.attacks);
         }
     }
 
