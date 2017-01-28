@@ -10,5 +10,6 @@ export { default as Block } from "./Block";
 
 export { default as ChannelId } from "./ChannelId";
 export { default as Echo } from "./Echo";
+export { default as Embed } from "./Embed";
 
 export { default as Shutdown } from "./Shutdown";
