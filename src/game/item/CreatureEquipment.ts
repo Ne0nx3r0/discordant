@@ -1,5 +1,6 @@
 import ItemEquippable from './ItemEquippable';
 import Weapon from './Weapon';
+import BareHands from './weapons/BareHands';
 
 export interface EquipmentBag{
     amulet?: ItemEquippable;//element resistance, item find, critical hits
@@ -66,7 +67,9 @@ export default class CreatureEquipment{
         const toDb = {};
 
         Object.keys(this._items).forEach((slot:EquipmentSlot)=>{
-            toDb[slot] = this._items[slot];
+            toDb[slot] = {
+                id: this._items[slot].id
+            };
         });
 
         return toDb;
@@ -97,10 +100,10 @@ export default class CreatureEquipment{
     }
 
     get primaryweapon():Weapon{
-        return this._items.primaryweapon;
+        return this._items.primaryweapon || BareHands;
     }
 
     get offhandweapon():Weapon{
-        return this._items.offhandweapon;
+        return this._items.offhandweapon || BareHands;
     }
 }

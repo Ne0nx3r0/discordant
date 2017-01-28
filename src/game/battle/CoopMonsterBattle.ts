@@ -102,10 +102,6 @@ export default class CoopMonsterBattle{
     }
 
     _attackTick(){   
-        if(!this._battleEnded){
-            return;
-        }
-
         if(!this._currentAttack){
             this._currentAttack = this.opponent.getRandomAttack();
             this._currentAttackStep = 0;
@@ -127,7 +123,9 @@ export default class CoopMonsterBattle{
 
         this.attackPlayers(attackStep);
 
-        setTimeout(this._attackTick,ATTACK_TICK_MS);
+        if(!this._battleEnded){
+            setTimeout(this._attackTick,ATTACK_TICK_MS);
+        }
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
@@ -184,7 +182,7 @@ export default class CoopMonsterBattle{
         });
 
         //drain a step of any queued attacks players have
-        this.pcs.forEach((pc:PlayerCharacter)=>{
+        this.pcs.some((pc:PlayerCharacter)=>{
             //one queued attack per round
             if(pc.currentBattleData.queuedAttacks.length>0){
                 const attackStep = pc.currentBattleData.queuedAttacks.shift();
@@ -196,6 +194,8 @@ export default class CoopMonsterBattle{
             if(pc.currentBattleData.attackExhaustion>0){
                 pc.currentBattleData.attackExhaustion--;
             }
+
+            return !this._battleEnded;
         });
 
         if(this.pcs.length == 0){
@@ -249,7 +249,7 @@ export default class CoopMonsterBattle{
             else{
                 this._sendAttackStep(pc,attack.steps[0]);
 
-                if(attack.steps.length>1){
+                if(!this._battleEnded && attack.steps.length>1){
                     pc.currentBattleData.queuedAttacks = attack.steps.slice(1);
                 }
 

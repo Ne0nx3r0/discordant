@@ -5,10 +5,12 @@ import CreatureEquipment from '../../item/CreatureEquipment';
 import WornLeathers from '../../item/clothing/WornLeathers';
 import WoodRoundShield from '../../item/weapons/WoodRoundShield';
 import HuntingSword from '../../item/weapons/HuntingSword';
+import TabletOfHealing from '../../item/weapons/TabletOfHealing';
 
 enum CharacterClassId{
     Nobody,
-    Mercanary
+    Mercanary,
+    Healer
 }
 
 const classes = new Collection();
@@ -36,5 +38,16 @@ addClass(new CharacterClass(
         armor: WornLeathers,
         primaryweapon: HuntingSword,
         offhandweapon: WoodRoundShield,
+    }),
+));
+
+addClass(new CharacterClass(
+    CharacterClassId.Healer,
+    'Healer',
+    'I have homework to do remind me to fill this in later.',
+    new AttributeSet(6,6,12,16,10),
+    new CreatureEquipment({
+        primaryweapon: HuntingSword,
+        offhandweapon: TabletOfHealing,
     }),
 ));

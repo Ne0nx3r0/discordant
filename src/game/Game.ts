@@ -13,7 +13,7 @@ import { EquipmentBag } from './item/CreatureEquipment';
 import PlayerInventory from './item/PlayerInventory';
 import ItemEquippable from './item/ItemEquippable';
 import Weapon from './item/Weapon';
-const winston = require('winston');
+import Logger from '../util/Logger';
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
@@ -63,16 +63,14 @@ export default class Game{
                             attribute_luck,
                             inventory,
                             equipment,
-                            role,
+                            role
                         )
                         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
                 `;
 
                 const pcInventory = {};//TODO: implement starting inventory for classes
 
-                const pcEquipment = {};
-
-                const startingEquipment = playerBag.class.startingEquipment.toDatabase();
+                const pcEquipment = playerBag.class.startingEquipment.toDatabase();
 
                 const queryValues:Array<any> = [
                     playerBag.uid,
@@ -84,12 +82,12 @@ export default class Game{
                     playerBag.class.startingAttributes.Vitality,
                     playerBag.class.startingAttributes.Spirit,
                     playerBag.class.startingAttributes.Luck,
-                    pcInventory,
-                    pcEquipment,
+                    JSON.stringify(pcInventory),
+                    JSON.stringify(pcEquipment),
                     'player'
                 ];
-                
-                const con = this.db.pool();
+
+                const con = this.db.getPool();
 
                 con.query(queryStr, queryValues, insertResult.bind(this));
 
@@ -100,38 +98,27 @@ export default class Game{
                             reject('Character has already been registered');
                         }
                         else{
-                            const did = new Date().getTime();
+                            const did = Logger.error(error);
 
-                            winston.error({error:error,did:did});
-
-                            reject('A database error occurred did'+did);
+                            reject('An unexpected database error occurred '+did);
                         }
 
                         return;
                     }
-                    
-                    if(result.rowCount != 1){
-                        winston.error(['An unknown error occured while inserting into player table',playerBag,result]);
 
-                        reject('An unknown error occurred');
-                    }
-                    else{
-                        this.getPlayerCharacter(playerBag.uid)
-                        .then(function(pc){
-                            resolve(pc);
-                        })
-                        .catch(function(ex){
-                            reject(ex);//not this method's problem
-                        });
-                    }
+                    this.getPlayerCharacter(playerBag.uid)
+                    .then(function(pc){
+                        resolve(pc);
+                    })
+                    .catch(function(ex){
+                        reject(ex);//not this method's problem
+                    });
                 }
             }
             catch(ex){
-                const did = new Date().getTime();
+                const did = Logger.error(ex);
 
-                winston.error({ex:ex,did:did});
-
-                reject('A promise error occurred did'+did);
+                reject('An unexpected promise error occurred '+did);
             }
         });
     }
@@ -151,11 +138,9 @@ export default class Game{
 
                 con.query('SELECT * FROM player WHERE uid=$1 LIMIT 1', [uid], (error, result)=>{
                     if(error){
-                        const did = new Date().getTime();
+                        const did = Logger.error({error:error,uid:uid});
 
-                        winston.error({error:error,did:did,uid:uid});
-
-                        reject('A database error occurred did'+did);
+                        reject('An unexpected database error occurred '+did);
 
                         return;
                     }
@@ -177,8 +162,8 @@ export default class Game{
                         if(row.equipment.hat) pcEquipment.hat = this.items.get(row.equipment.hat.id) as ItemEquippable;
                         if(row.equipment.ring) pcEquipment.ring = this.items.get(row.equipment.ring.id) as ItemEquippable;
                         if(row.equipment.earring) pcEquipment.earring = this.items.get(row.equipment.earring.id) as ItemEquippable;
-                        if(row.equipment.primaryWeapon) pcEquipment.primaryweapon = this.items.get(row.equipment.primaryWeapon.id) as Weapon;
-                        if(row.equipment.offhandWeapon) pcEquipment.offhandweapon = this.items.get(row.equipment.offhandWeapon.id) as Weapon;
+                        if(row.equipment.primaryweapon) pcEquipment.primaryweapon = this.items.get(row.equipment.primaryweapon.id) as Weapon;
+                        if(row.equipment.offhandweapon) pcEquipment.offhandweapon = this.items.get(row.equipment.offhandweapon.id) as Weapon;
                     }
 
                     const pcInventory:PlayerInventory = new PlayerInventory();
@@ -208,6 +193,7 @@ export default class Game{
                         equipment: new CreatureEquipment(pcEquipment),
                         inventory: pcInventory,
                         role: row.role,
+                        karma: row.karma
                     });
 
                     this.cachedPlayers.set(pc.uid,pc);
@@ -216,11 +202,9 @@ export default class Game{
                 });
             }
             catch(ex){
-                const did = new Date().getTime();
+                const did = Logger.error(ex);
 
-                winston.error({ex:ex,did:did});
-
-                reject('A database error occurred did'+did);
+                reject('A database error occurred '+did);
             }
         });
     }
@@ -245,14 +229,14 @@ export default class Game{
                     e.survivingPCs.forEach((pc:PlayerCharacter)=>{
                         this.addXP(pc,e.xpEarned)
                         .catch((error)=>{
-                            winston.error(error);
+                            Logger.error({error:error,uid:pc.uid});
                         });
                     });
 
                     e.defeatedPCs.forEach((pc:PlayerCharacter)=>{
                         this.addXP(pc,e.xpEarned)
                         .catch((error)=>{
-                            winston.error(error);
+                            Logger.error({error:error,uid:pc.uid});
                         });
                     });
                 }
@@ -278,28 +262,25 @@ export default class Game{
 
             this.db.getPool().query(queryStr,[amount,pc.uid],(error,result)=>{
                 if(error){
-                    const nowMS = new Date().getTime();
-
-                    winston.error({
-                        did: nowMS,
-                        error: error,
+                    const did = Logger.error({
+                        error:error,
+                        uid:pc.uid,
+                        amount:amount
                     });
 
-                    reject('A database error occured - did'+nowMS);
+                    reject('A database error occured '+did);
 
                     return;
                 }
 
                 if(result.rows){
-                    const nowMS = new Date().getTime();
-
-                    reject('Database did not return any rows? Wat. did'+nowMS);
-
-                    winston.error({
-                        did: nowMS,
-                        query: queryStr,
-                        result: result,
+                    const did = Logger.error({
+                        error:error,
+                        uid:pc.uid,
+                        amount:amount
                     });
+
+                    reject('Database did not return any rows? Wat. '+did);
 
                     return;
                 }
@@ -310,14 +291,13 @@ export default class Game{
             });
         }
         catch(ex){
-            const nowMS = new Date().getTime();
-            
-            winston.log({
-                did:nowMS,
-                error:ex
+            const did = Logger.error({
+                ex:ex,
+                uid:pc.uid,
+                amount:amount
             });
 
-            reject('An unexpected error occurred did'+nowMS);
+            reject('An unexpected error occurred '+did);
         }
         });
     }
@@ -334,28 +314,24 @@ export default class Game{
 
             this.db.getPool().query(queryStr,[amount,pc.uid],(error,result)=>{
                 if(error){
-                    const nowMS = new Date().getTime();
-
-                    winston.error({
-                        did: nowMS,
-                        error: error,
+                    const did = Logger.error({
+                        error:error,
+                        uid:pc.uid,
+                        amount:amount
                     });
 
-                    reject('A database error occured - did'+nowMS);
+                    reject('A database error occured '+did);
 
                     return;
                 }
 
                 if(result.rows){
-                    const nowMS = new Date().getTime();
-
-                    reject('Database did not return any rows? Wat. did'+nowMS);
-
-                    winston.error({
-                        did: nowMS,
+                    const did = Logger.error({
                         query: queryStr,
                         result: result,
                     });
+
+                    reject('Database did not return any rows? Wat. '+did);
 
                     return;
                 }
@@ -366,15 +342,33 @@ export default class Game{
             });
         }
         catch(ex){
-            const nowMS = new Date().getTime();
-            
-            winston.log({
-                did:nowMS,
-                error:ex
+            const did = Logger.error({
+                ex:ex,
+                uid:pc.uid,
+                amount:amount
             });
 
-            reject('An unexpected error occurred did'+nowMS);
+            reject('An unexpected error occurred '+did);
         }
+        });
+    }
+
+    deletePlayerCharacter(uid:string){
+        return new Promise((resolve,reject)=>{
+            if(this.cachedPlayers.has(uid)){
+                this.cachedPlayers.delete(uid);
+            }
+
+            this.db.getPool().query('DELETE FROM player WHERE uid = $1',[uid],(error,result)=>{
+                if(error){
+                    const did = Logger.error(error);
+
+                    reject('An unexpected error occurred '+did);
+                }
+                else{
+                    resolve();
+                }
+            });
         });
     }
 /*

@@ -2,6 +2,7 @@ export { default as Begin } from "./Begin";
 export { default as Classes } from "./Classes";
 
 export { default as Stats } from "./Stats";
+export { default as Reset } from "./Reset";
 
 export { default as Battle } from "./Battle";
 export { default as Attack } from "./Attack";

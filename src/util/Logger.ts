@@ -37,28 +37,29 @@ class Logger{
         return new Date().getTime()+randomString(4,'derp');
     }
 
+    log(level:string,ex){
+        //If it's not an object make one and append it
+        if(Object(ex) !== ex){
+            ex = {msg:ex};
+        }
+
+        const derpId = this.makeId();
+
+        this.logger.log(level,derpId,ex);
+
+        return derpId;
+    }
+
     error(ex):string{
-        const derpId = this.makeId();
-
-        this.logger.log('error',ex,{did:derpId});
-
-        return derpId;
+        return this.log('error',ex);
     }
 
-    warning(ex):string{
-        const derpId = this.makeId();
-
-        this.logger.log('warning',ex,{did:derpId});
-
-        return derpId;
+    warning(ex?):string{
+        return this.log('warning',ex);
     }
 
-    info(ex):string{
-        const derpId = this.makeId();
-
-        this.logger.log('info',ex,{did:derpId});
-
-        return derpId;
+    info(ex?):string{
+        return this.log('info',ex);
     }
 }
 

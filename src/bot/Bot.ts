@@ -50,7 +50,9 @@ export default class DiscordBot{
         }
 
         //For now ignore all but #testing on discordant
-        if(message.channel.id != '263031735770415104'){
+        if(message.channel.id != '263031735770415104'
+        && message.channel.id != '274971874939764736'
+        && message.channel.id != '274972041164226561'){
             return;
         }
 

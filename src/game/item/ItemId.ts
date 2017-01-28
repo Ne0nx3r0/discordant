@@ -4,6 +4,7 @@ enum ItemId {
     WoodRoundShield,
     HuntingSword,
     WornLeathers,
+    TabletOfHealing,
 }
 
 export default ItemId;
