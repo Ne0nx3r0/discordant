@@ -53,8 +53,9 @@ export default class Game{
                     attribute_luck,
                     inventory,
                     equipment,
+                    role,
                 )
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
         `;
 
         const pcInventory = {};
@@ -85,6 +86,7 @@ export default class Game{
             playerBag.class.startingAttributes.Luck,
             pcInventory,
             pcEquipment,
+            'player'
         ];
 
         return new Promise((resolve,reject)=>{
@@ -219,6 +221,7 @@ export default class Game{
                         ),
                         equipment: new CreatureEquipment(pcEquipment),
                         inventory: pcInventory,
+                        role: row.role,
                     });
 
                     this.cachedPlayers.set(pc.uid,pc);

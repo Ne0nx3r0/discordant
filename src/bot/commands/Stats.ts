@@ -52,6 +52,19 @@ export default class ChannelId extends Command{
 }
 
 function getEmbed(pc:PlayerCharacter){
+    const pcAttributesStr = ''
+    +' STR'+pc.stats.Strength
+    +' AGL'+pc.stats.Agility
+    +' VIT'+pc.stats.Vitality
+    +' SPR'+pc.stats.Spirit
+    +' LCK'+pc.stats.Luck;
+
+    const resistancesStr = ''
+    +'Physical: '+pc.stats.Resistances.Physical
+    +'\n Fire: '+pc.stats.Resistances.Fire
+    +'\n Cold: '+pc.stats.Resistances.Cold
+    +'\n Thunder: '+pc.stats.Resistances.Thunder;
+
     return {
         embed: {
             color: 3447003,
@@ -72,6 +85,11 @@ function getEmbed(pc:PlayerCharacter){
                     inline: true,
                 },
                 {
+                    name: 'Attributes',
+                    value: pcAttributesStr,
+                    inline: true,
+                },
+                {
                     name: 'Primary Weapon',
                     value: pc.equipment.primaryWeapon.title,
                     inline: true,
@@ -79,6 +97,16 @@ function getEmbed(pc:PlayerCharacter){
                 {
                     name: 'Offhand Weapon',
                     value: pc.equipment.offhandWeapon.title,
+                    inline: true,
+                },
+                {
+                    name: 'Health Points',
+                    value: pc.HPCurrent + ' / ' + pc.stats.HPTotal,
+                    inline: true,
+                },
+                {
+                    name: 'Resistances',
+                    value: resistancesStr,
                     inline: true,
                 },
                 {

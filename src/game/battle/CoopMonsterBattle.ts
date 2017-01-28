@@ -102,6 +102,10 @@ export default class CoopMonsterBattle{
     }
 
     _attackTick(){   
+        if(!this._battleEnded){
+            return;
+        }
+
         if(!this._currentAttack){
             this._currentAttack = this.opponent.getRandomAttack();
             this._currentAttackStep = 0;
@@ -123,9 +127,7 @@ export default class CoopMonsterBattle{
 
         this.attackPlayers(attackStep);
 
-        if(!this._battleEnded){
-            setTimeout(this._attackTick,ATTACK_TICK_MS);
-        }        
+        setTimeout(this._attackTick,ATTACK_TICK_MS);
     }
 
     attackPlayers(attackStep:WeaponAttackStep){

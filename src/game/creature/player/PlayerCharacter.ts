@@ -28,6 +28,7 @@ interface PCConfig{
     inventory: PlayerInventory,
     xp:number;
     wishes:number;
+    role:string;
 }
 
 export default class PlayerCharacter extends Creature{
@@ -38,6 +39,7 @@ export default class PlayerCharacter extends Creature{
     xp:number;
     wishes:number;
     inventory:PlayerInventory;
+    role:string;
 
     constructor(o:PCConfig){
         super({
@@ -54,6 +56,7 @@ export default class PlayerCharacter extends Creature{
         this.xp = o.xp;
         this.wishes = o.wishes;
         this.inventory = o.inventory;
+        this.role = o.role;
 
         this.currentBattleData = null;
     }
