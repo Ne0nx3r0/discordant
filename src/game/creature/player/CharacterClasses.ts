@@ -34,7 +34,7 @@ addClass(new CharacterClass(
     new AttributeSet(12,12,14,4,8),
     new CreatureEquipment({
         armor: WornLeathers,
-        primaryWeapon: HuntingSword,
-        offhandWeapon: WoodRoundShield,
+        primaryweapon: HuntingSword,
+        offhandweapon: WoodRoundShield,
     }),
 ));

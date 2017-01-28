@@ -64,15 +64,9 @@ export default class Creature{
             HPTotal:this.attributes.Vitality*10,
         };
 
-        Object.keys(this.equipment.All).forEach(function(equip:ItemEquippable){
-            equip.
+        Object.keys(this.equipment.all).forEach((slot)=>{
+            (this.equipment[slot] as ItemEquippable).onAddBonuses(stats);
         });
-
-        if(this.equipment.Armor) this.equipment.Armor.onAddBonuses(stats);
-        if(this.equipment.Hat) this.equipment.hat.onAddBonuses(stats);
-        if(this.equipment.Ring) this.equipment.ring.onAddBonuses(stats);
-        if(this.equipment.Earring) this.equipment.earring.onAddBonuses(stats);
-        if(this.equipment.Amulet) this.equipment.amulet.onAddBonuses(stats);
 
         this.stats = stats;
 

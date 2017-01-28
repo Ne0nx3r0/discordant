@@ -72,9 +72,7 @@ export default class Game{
 
                 const pcEquipment = {};
 
-                const startingEquipment = playerBag.class.startingEquipment;
-
-                if(startingEquipment.amulet) pcEquipment.amulet = startingEquipment.amulet;
+                const startingEquipment = playerBag.class.startingEquipment.toDatabase();
 
                 const queryValues:Array<any> = [
                     playerBag.uid,
@@ -179,8 +177,8 @@ export default class Game{
                         if(row.equipment.hat) pcEquipment.hat = this.items.get(row.equipment.hat.id) as ItemEquippable;
                         if(row.equipment.ring) pcEquipment.ring = this.items.get(row.equipment.ring.id) as ItemEquippable;
                         if(row.equipment.earring) pcEquipment.earring = this.items.get(row.equipment.earring.id) as ItemEquippable;
-                        if(row.equipment.primaryWeapon) pcEquipment.primaryWeapon = this.items.get(row.equipment.primaryWeapon.id) as Weapon;
-                        if(row.equipment.offhandWeapon) pcEquipment.offhandWeapon = this.items.get(row.equipment.offhandWeapon.id) as Weapon;
+                        if(row.equipment.primaryWeapon) pcEquipment.primaryweapon = this.items.get(row.equipment.primaryWeapon.id) as Weapon;
+                        if(row.equipment.offhandWeapon) pcEquipment.offhandweapon = this.items.get(row.equipment.offhandWeapon.id) as Weapon;
                     }
 
                     const pcInventory:PlayerInventory = new PlayerInventory();
