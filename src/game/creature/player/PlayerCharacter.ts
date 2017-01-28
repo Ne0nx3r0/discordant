@@ -2,10 +2,11 @@ import Creature from '../Creature';
 import DamageSet from '../../damage/IDamageSet';
 import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
-import Weapon from '../../item/weapon/Weapon';
+import Weapon from '../../item/Weapon';
 import CreatureEquipment from '../../item/CreatureEquipment';
 import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
-import AttackStep from '../../item/weapon/WeaponAttackStep';
+import AttackStep from '../../item/WeaponAttackStep';
+import PlayerInventory from '../../item/PlayerInventory';
 
 interface CurrentBattleData{
     battle:CoopMonsterBattle;
@@ -24,6 +25,7 @@ interface PCConfig{
     attributes:AttributeSet,
     class:CharacterClass,
     equipment: CreatureEquipment,
+    inventory: PlayerInventory,
     xp:number;
     wishes:number;
 }
@@ -35,6 +37,7 @@ export default class PlayerCharacter extends Creature{
     class:CharacterClass;
     xp:number;
     wishes:number;
+    inventory:PlayerInventory;
 
     constructor(o:PCConfig){
         super({
@@ -50,6 +53,7 @@ export default class PlayerCharacter extends Creature{
         this.class = o.class;
         this.xp = o.xp;
         this.wishes = o.wishes;
+        this.inventory = o.inventory;
 
         this.currentBattleData = null;
     }

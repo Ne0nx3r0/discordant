@@ -1,7 +1,7 @@
 import ItemEquippable from './ItemEquippable';
 import Weapon from './Weapon';
 
-interface EquipmentBag{
+export interface EquipmentBag{
     hat?: ItemEquippable;// ?
     armor?: ItemEquippable;//physical resistance
     amulet?: ItemEquippable;//element resistance, item find, critical hits

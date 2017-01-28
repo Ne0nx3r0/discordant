@@ -9,6 +9,8 @@ import CreatureAIControlled from './creature/CreatureAIControlled';
 import AttributeSet from './creature/AttributeSet';
 import CoopMonsterBattle from './battle/CoopMonsterBattle';
 import { CoopMonsterBattleEvent, BattleEndEvent } from './battle/CoopMonsterBattle';
+import { EquipmentBag } from './item/CreatureEquipment';
+import PlayerInventory from './item/PlayerInventory';
 const winston = require('winston');
 
 interface IPlayerRegisterBag{
@@ -57,11 +59,9 @@ export default class Game{
 
         const pcInventory = {};
 
-        Need to define a player inventory class
-
-        Object.keys(playerBag.inventory).forEach(function(itemId){
-            pcEquipment[slot] = {
-                id:playerBag.inventory[slot].id
+        playerBag.inventory.items.forEach(function(item){
+            pcInventory[item.base.id] = {
+                amount: item.amount
             };
         });
 
@@ -69,7 +69,7 @@ export default class Game{
 
         Object.keys(playerBag.equipment).forEach(function(slot){
             pcEquipment[slot] = {
-                id:playerBag.equipment[slot].id
+                id: playerBag.equipment[slot].id
             };
         });
 
@@ -181,6 +181,26 @@ export default class Game{
                         return;
                     }
 
+                    const pcEquipment:EquipmentBag = {};
+
+                    if(row.equipment){
+                        if(row.equipment.amulet) pcEquipment.amulet = this.items.get(row.equipment.amulet.id);
+                        if(row.equipment.armor) pcEquipment.armor = this.items.get(row.equipment.armor.id);
+                        if(row.equipment.hat) pcEquipment.hat = this.items.get(row.equipment.hat.id);
+                        if(row.equipment.ring) pcEquipment.ring = this.items.get(row.equipment.ring.id);
+                        if(row.equipment.earring) pcEquipment.earring = this.items.get(row.equipment.earring.id);
+                        if(row.equipment.primaryWeapon) pcEquipment.primaryWeapon = this.items.get(row.equipment.primaryWeapon.id);
+                        if(row.equipment.offhandWeapon) pcEquipment.offhandWeapon = this.items.get(row.equipment.offhandWeapon.id);
+                    }
+
+                    const pcInventory:PlayerInventory = new PlayerInventory();
+
+                    if(row.inventory){
+                        Object.keys(row.inventory).forEach((itemId)=>{
+                            pcInventory.addItem(this.items.get(Number(itemId)),row.inventory[itemId].amount);
+                        });
+                    }
+                    
                     const pc = new PlayerCharacter({
                         id: row.id,
                         uid: uid,
@@ -197,8 +217,8 @@ export default class Game{
                             row.attribute_spirit,
                             row.attribute_luck
                         ),
-                        equipment: new CreatureEquipment(row.equipment),
-                        inventory: new PlayerInventory(row.inventory),
+                        equipment: new CreatureEquipment(pcEquipment),
+                        inventory: pcInventory,
                     });
 
                     this.cachedPlayers.set(pc.uid,pc);
