@@ -140,6 +140,10 @@ function getDamageTypeEmoji(type:string){
     return ':question:';
 }
 
+function getColorLine(msg:string){
+    return '```fix\n'+msg+'\n```';
+}
+
 function getEmbed(msg:string,color?:number){
     return {
         embed: {

@@ -1,0 +1,16 @@
+var channel = client.servers.get("name", "My Server")
+
+
+
+
+https://discordapp.com/oauth2/error?error=invalid_request&error_description=Missing+redirect+URI.
+
+https://discordapp.com/oauth2/authorize?&client_id=263033266464882688&scope=bot&permissions=8&response_type=code
+https://discordapp.com/api/oauth2/authorize?client_id=263033266464882688&scope=bot&permissions=8
+
+
+https://discordapp.com/oauth2/error?error=invalid_request&error_description=Discord+Account+Deleted
+
+
+const server = '';
+this.client.createChannel();
