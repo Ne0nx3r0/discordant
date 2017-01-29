@@ -22,6 +22,10 @@ export type EquipmentSlot =
     'ring'
 ;
 
+interface ForEachItemFunc{
+    (item:ItemEquippable,slot:EquipmentSlot): void
+}
+
 export default class CreatureEquipment{
     _items:EquipmentBag;
 
@@ -57,9 +61,9 @@ export default class CreatureEquipment{
         return removedItem;
     }
 
-    forEach(callback:Function){
+    forEach(callback:ForEachItemFunc){
         Object.keys(this._items).forEach((slot:EquipmentSlot)=>{
-            callback(this._items[slot],slot);
+            callback(this._items[slot] as ItemEquippable,slot);
         });
     }
 

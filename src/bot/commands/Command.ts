@@ -1,4 +1,6 @@
 import Game from '../../game/Game';
+import Bot from '../Bot';
+import {BotHandlers} from '../Bot';
 
 export default class Command{
     name:String;
@@ -13,7 +15,7 @@ export default class Command{
         this.permissionNode = permissionNode;
     }
     
-    run(params:Array<string>,message:any,game:Game){
+    run(params:Array<string>,message:any,game:Game,bot:BotHandlers){
         throw 'Run method not implemented for command '+this.name;        
     }
 

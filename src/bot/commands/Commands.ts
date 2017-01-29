@@ -14,3 +14,4 @@ export { default as Echo } from "./Echo";
 export { default as Embed } from "./Embed";
 
 export { default as Shutdown } from "./Shutdown";
+export { default as SetBotStatus } from "./SetBotStatus";

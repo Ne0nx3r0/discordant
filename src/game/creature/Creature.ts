@@ -64,8 +64,8 @@ export default class Creature{
             HPTotal:this.attributes.Vitality*10,
         };
 
-        Object.keys(this.equipment.all).forEach((slot)=>{
-            (this.equipment[slot] as ItemEquippable).onAddBonuses(stats);
+        this.equipment.forEach(function(item:ItemEquippable,slot:EquipmentSlot){
+            item.onAddBonuses(stats);
         });
 
         this.stats = stats;

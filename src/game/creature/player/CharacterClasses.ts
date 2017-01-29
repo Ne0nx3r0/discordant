@@ -9,7 +9,7 @@ import TabletOfHealing from '../../item/weapons/TabletOfHealing';
 
 enum CharacterClassId{
     Nobody,
-    Mercanary,
+    Mercenary,
     Healer
 }
 
@@ -30,8 +30,8 @@ addClass(new CharacterClass(
 ));
 
 addClass(new CharacterClass(
-    CharacterClassId.Mercanary,
-    'Mercanary',
+    CharacterClassId.Mercenary,
+    'Mercenary',
     'Having lived a life of service you\'re ready to carve out a piece for yourself.',
     new AttributeSet(12,12,14,4,8),
     new CreatureEquipment({

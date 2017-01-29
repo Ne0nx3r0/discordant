@@ -263,7 +263,7 @@ export default class CoopMonsterBattle{
 
         pc.currentBattleData.attackExhaustion += step.exhaustion;
 
-        this.opponent.HPCurrent -= damagesTotal(damages);
+        this.opponent.HPCurrent -= Math.round(damagesTotal(damages));
 
         const eventData:PlayerAttackEvent = {
             attackingPlayer: pc,

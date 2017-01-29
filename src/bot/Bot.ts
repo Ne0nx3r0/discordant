@@ -7,10 +7,20 @@ const Discord = require('discord.js');
 
 const COMMAND_PREFIX:string = 'd';
 
+interface SetGameFunc{
+    (message:string);
+}
+
+export interface BotHandlers{
+    commands:Map<String,Command>;
+    setGame:SetGameFunc;
+}
+
 export default class DiscordBot{
     client: any;
     game: Game;
     commands: Map<String,Command>;
+    handlers: BotHandlers;
     
     constructor(game:Game,authToken:string){
         this.game = game;
@@ -22,6 +32,11 @@ export default class DiscordBot{
         Object.keys(Commands).forEach((commandName)=>{
             this.commands.set(commandName.toUpperCase(),new Commands[commandName]);
         });
+
+        this.handlers = {
+            commands: this.commands,
+            setGame: this.setGame.bind(this)
+        };
 
         this.client.on('message',this.handleMessage.bind(this))
 
@@ -71,7 +86,7 @@ export default class DiscordBot{
         if(command){
             params.shift();
             
-            command.run(params,message,this.game);
+            command.run(params,message,this.game,this.handlers);
         }
         else if(commandName == 'HELP'){
             let commandsStr = '';
@@ -82,5 +97,9 @@ export default class DiscordBot{
 
             message.channel.sendMessage('Here are the commands you have access to:\n'+commandsStr);
         }
+    }
+
+    setGame(message:string){
+        return this.client.user.setGame(message);
     }
 }
