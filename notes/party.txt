@@ -1,0 +1,4 @@
+dparty - creates a new adventuring party
+dinvite - (in a party as leader) invites a player to join the party
+djoin - join's a party
+
