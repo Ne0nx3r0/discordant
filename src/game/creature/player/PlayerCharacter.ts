@@ -7,6 +7,7 @@ import CreatureEquipment from '../../item/CreatureEquipment';
 import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
 import AttackStep from '../../item/WeaponAttackStep';
 import PlayerInventory from '../../item/PlayerInventory';
+import Party from '../../party/Party';
 
 interface CurrentBattleData{
     battle:CoopMonsterBattle;
@@ -14,6 +15,10 @@ interface CurrentBattleData{
     attackExhaustion:number,
     queuedAttacks:Array<AttackStep>,
     blocking:boolean,
+}
+
+interface CurrentPartyData{
+    party:Party;
 }
 
 interface PCConfig{
@@ -36,6 +41,7 @@ export default class PlayerCharacter extends Creature{
     uid:string;
     discriminator:number;
     currentBattleData:CurrentBattleData;
+    currentPartyData:CurrentPartyData;
     class:CharacterClass;
     xp:number;
     wishes:number;
@@ -62,10 +68,15 @@ export default class PlayerCharacter extends Creature{
         this.karma = o.karma;
 
         this.currentBattleData = null;
+        this.currentPartyData = null;
     }
 
     get inBattle():boolean{
         return this.currentBattleData != null;
+    }
+
+    get inParty():boolean{
+        return this.currentPartyData != null;
     }
 
     calculateDeathWishesLost():number{

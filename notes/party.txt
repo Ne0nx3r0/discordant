@@ -1,4 +1,17 @@
-dparty - creates a new adventuring party
-dinvite - (in a party as leader) invites a player to join the party
-djoin - join's a party
+dparty new [name]
+dparty invite <@user>
+dparty kick <@user>
+dparty accept
 
+Battles need an assigned channel, use party channel.
+all battle/party commands need to make sure they are being used in the right channel
+dbattle needs to check for party first
+
+dpnew [Name]
+dpinvite <@username>
+dpkick <@username>
+dpaccept 
+
+
+
+Pay fee to join party if they are far away

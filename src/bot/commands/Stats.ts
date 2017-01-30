@@ -36,14 +36,19 @@ export default class ChannelId extends Command{
         game.getPlayerCharacter(statsUid)
         .then((pc:PlayerCharacter)=>{
             if(!pc){
-                message.reply('Player not found');
+                if(statsUid == message.author.id){
+                    message.channel.sendMessage('Use `dbegin` to start your journey, '+message.author.username);
+                }
+                else{
+                    message.channel.sendMessage('No player found, '+message.author.username);
+                }
 
                 return;
             }
 
             message.channel
             .sendMessage("",getEmbed(pc))
-            .catch(function(err){message.reply(err);});
+            .catch(function(err){message.reply(err+', '+message.author.username);});
         })
         .catch((err)=>{
             message.reply(err);

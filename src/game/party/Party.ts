@@ -2,8 +2,13 @@ import PlayerCharacter from '../creature/player/PlayerCharacter';
 
 
 export default class Party{
-    constructor(leader:PlayerCharacter,channel:string){
+    leader:PlayerCharacter;
+    members:Map<string,PlayerCharacter>;
+    channel:string;
 
+    constructor(leader:PlayerCharacter,channel:string){
+        this.leader = leader;
+        this.channel = channel;
     }
 }
 

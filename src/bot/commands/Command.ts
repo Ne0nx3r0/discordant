@@ -23,6 +23,10 @@ export default class Command{
         return 'Usage: '+ this.usage;
     }
 
+    getErrorMsg(errorMsg:string,username:string){
+        return '```diff\n- '+username+' -'+errorMsg+'```';
+    }
+
     getEmbed(msg:string,color?:number){
         return {
             embed: {
