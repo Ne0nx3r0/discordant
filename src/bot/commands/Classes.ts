@@ -3,6 +3,7 @@ import Game from '../../game/Game';
 import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
 import { DiscordMessage, CommandBag } from '../Bot';
+import PermissionId from '../../permissions/PermissionIds';
 
 export default class Classes extends Command{
     constructor(){
@@ -10,7 +11,7 @@ export default class Classes extends Command{
             'classes',
             'Shows information on starting classes',
             'classes [name]',
-            'user.classes'
+            PermissionId.Classes
         );
     }
 

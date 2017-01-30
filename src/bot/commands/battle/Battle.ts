@@ -9,6 +9,7 @@ import PlayerCharacter from '../../../game/creature/player/PlayerCharacter';
 import IDamageSet from '../../../game/damage/IDamageSet';
 import Creature from '../../../game/creature/Creature';
 import { DiscordMessage, CommandBag } from '../../Bot';
+import PermissionId from '../../../permissions/PermissionIds';
 
 export default class Battle extends Command{
     constructor(){
@@ -16,7 +17,7 @@ export default class Battle extends Command{
             'battle',
             'begin a battle',
             'battle',
-            'user.battle'
+            PermissionId.Battle
         );
     }
 

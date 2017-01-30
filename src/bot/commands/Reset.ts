@@ -1,6 +1,7 @@
 import Command from '../Command';
 import Game from '../../game/Game';
 import { DiscordMessage, CommandBag } from '../Bot';
+import PermissionId from '../../permissions/PermissionIds';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -8,7 +9,7 @@ export default class ChannelId extends Command{
             'reset',
             'DELETES YOUR CHARACTER DATA DOES NOT WARN YOU',
             'reset',
-            'player.reset'
+            PermissionId.Reset
         );
     }
 

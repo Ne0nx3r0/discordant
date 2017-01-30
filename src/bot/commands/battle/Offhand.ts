@@ -5,6 +5,7 @@ import CharacterClasses from '../../../game/creature/player/CharacterClasses';
 import PlayerCharacter from '../../../game/creature/player/PlayerCharacter';
 import CoopMonsterBattle from '../../../game/battle/CoopMonsterBattle';
 import { DiscordMessage, CommandBag } from '../../Bot';
+import PermissionId from '../../../permissions/PermissionIds';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -12,7 +13,7 @@ export default class ChannelId extends Command{
             'offhand',
             '(in battle) attacks the monster with the default or a specific attack from held offhand weapon',
             'offhand [attackname]',
-            'user.battle.attack'
+            PermissionId.BattleOffhand
         );
     }
 

@@ -1,6 +1,7 @@
 import Command from '../Command';
 import Game from '../../game/Game';
 import { DiscordMessage, CommandBag } from '../Bot';
+import PermissionId from '../../permissions/PermissionIds';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -8,7 +9,7 @@ export default class ChannelId extends Command{
             'help',
             'Shows a list of commands or info on one command',
             'help [command]',
-            'player.help'
+            PermissionId.Help
         );
     }
 

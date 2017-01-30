@@ -2,6 +2,7 @@ import Game from '../game/Game';
 import Command from './Command';
 import * as Commands from "./CommandsIndex";
 import PlayerCharacter from '../game/creature/player/PlayerCharacter';
+import PermissionsService from '../permissions/PermissionsService';
 
 const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
@@ -40,10 +41,14 @@ export interface DiscordMessage{
 export default class DiscordBot{
     client: any;
     game: Game;
+    permissions:PermissionsService;
+    ownerUIDs:Array<string>;
     commands: Map<String,Command>;
     
-    constructor(game:Game,authToken:string){
+    constructor(game:Game,permissions:PermissionsService,authToken:string,ownerUIDs:Array<string>){
         this.game = game;
+        this.permissions = permissions;
+        this.ownerUIDs = ownerUIDs;
 
         this.client = new Discord.Client();
 
@@ -117,8 +122,14 @@ export default class DiscordBot{
 
         this.game.getPlayerCharacter(message.author.id)
         .then(playerFoundOrNot)
-        .catch(function(error){
+        .catch((error)=>{
             message.channel.sendMessage(error+', '+message.author.username);
+
+            if(this.ownerUIDs.indexOf(message.author.id) != -1){
+                message.channel.sendMessage('```diff\n- Owner override detected, attempting command anyway -\n```');
+
+                command.run(params,message as DiscordMessage,bag);
+            }
         });
 
         function playerFoundOrNot(pc){

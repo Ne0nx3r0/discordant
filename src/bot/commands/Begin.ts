@@ -4,6 +4,7 @@ import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
 import {CharacterClassId} from '../../game/creature/player/CharacterClasses';
 import { DiscordMessage, CommandBag } from '../Bot';
+import PermissionId from '../../permissions/PermissionIds';
 
 export default class Begin extends Command {
     constructor() {
@@ -11,7 +12,7 @@ export default class Begin extends Command {
             'begin',
             'Registers the user to play as the given class',
             'begin <class>',
-            'user.begin'
+            PermissionId.Begin
         );
 
         this.allowAnonymous = true;

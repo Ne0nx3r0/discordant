@@ -2,6 +2,7 @@ import Command from '../Command';
 import Game from '../../game/Game';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import { DiscordMessage, CommandBag } from '../Bot';
+import PermissionId from '../../permissions/PermissionIds';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
 
@@ -11,7 +12,7 @@ export default class ChannelId extends Command{
             'stats',
             'Shows your (or another player\'s stats)',
             'stats @player',
-            'user.stats'
+            PermissionId.Stats
         );
     }
 

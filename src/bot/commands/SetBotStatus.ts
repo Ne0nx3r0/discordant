@@ -1,14 +1,15 @@
 import Command from '../Command';
 import Game from '../../game/Game';
 import { CommandBag, DiscordMessage } from '../Bot';
+import PermissionId from '../../permissions/PermissionIds';
 
 export default class ChannelId extends Command{
     constructor(){
         super(
-            'setbotstatus',
+            'setplayinggame',
             'Sets the bots playing message',
-            'setbotstatus <status>',
-            'admin.status'
+            'setplayinggame <status>',
+            PermissionId.SetPlayingGame
         );
     }
 

@@ -16,4 +16,4 @@ export { default as Embed } from "./commands/Embed";
 export { default as Shutdown } from "./commands/Shutdown";
 export { default as SetBotStatus } from "./commands/SetBotStatus";
 
-export { default as PartyNew } from "./commands/party/PartyNew";
+export { default as Party } from "./commands/party/Party";
