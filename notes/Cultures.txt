@@ -26,7 +26,7 @@ Basis: Mongols
 Values:
 - Might makes right
 - Those who are not self-sufficient are fools who do not deserve to survive
-- Extended family not valued but immediate family ties (parents, siblings, children) are scared
+- Extended family not valued but immediate family ties (parents, siblings, children) are sacred
 
 Culture: 
 - Leader known as the Jag
