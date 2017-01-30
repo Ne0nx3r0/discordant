@@ -56,17 +56,31 @@ export default class Creature{
             Luck:this.attributes.Luck,
             Resistances:{
                 Physical:0,
-                Fire:Math.floor(this.attributes.Agility/3)/100,
-                Cold:Math.floor(this.attributes.Strength/3)/100,
-                Thunder:Math.floor(this.attributes.Luck/3)/100,
+                Fire:0,
+                Cold:0,
+                Thunder:0,
                 Chaos:0,
             },
-            HPTotal:this.attributes.Vitality*10,
+            HPTotal: 0,
         };
 
         this.equipment.forEach(function(item:ItemEquippable,slot:EquipmentSlot){
             item.onAddBonuses(stats);
         });
+
+        //These could be adjusted by bonuses
+        stats.HPTotal = stats.Vitality * 10,
+
+        stats.Resistances.Fire = Math.floor(stats.Agility/3)/100;
+        stats.Resistances.Cold = Math.floor(stats.Strength/3)/100;
+        stats.Resistances.Thunder = Math.floor(stats.Luck/3)/100;
+
+        stats.Resistances.Chaos = Math.min(
+            stats.Resistances.Physical,
+            stats.Resistances.Fire,
+            stats.Resistances.Cold,
+            stats.Resistances.Thunder,
+        );
 
         this.stats = stats;
 
