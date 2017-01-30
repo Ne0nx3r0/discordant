@@ -148,8 +148,7 @@ export default class Game{
                     const row = result.rows[0];
 
                     if(!row){
-                        //not found
-                        reject();
+                        resolve();
 
                         return;
                     }
