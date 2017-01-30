@@ -6,9 +6,9 @@ import PermissionId from '../../../permissions/PermissionIds';
 export default class PartyNew extends Command{
     constructor(){
         super(
-            'dpartynew',
+            'dparty new',
             'Creates a new party',
-            'dpartynew [name]',
+            'dparty new [name]',
             PermissionId.PartyNew
         );
     }

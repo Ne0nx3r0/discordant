@@ -3,6 +3,7 @@ import Command from './Command';
 import * as Commands from "./CommandsIndex";
 import PlayerCharacter from '../game/creature/player/PlayerCharacter';
 import PermissionsService from '../permissions/PermissionsService';
+import Logger from '../util/Logger';
 
 const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
@@ -121,18 +122,7 @@ export default class DiscordBot{
         };
 
         this.game.getPlayerCharacter(message.author.id)
-        .then(playerFoundOrNot)
-        .catch((error)=>{
-            message.channel.sendMessage(error+', '+message.author.username);
-
-            if(this.ownerUIDs.indexOf(message.author.id) != -1){
-                message.channel.sendMessage('```diff\n- Owner override detected, attempting command anyway -\n```');
-
-                command.run(params,message as DiscordMessage,bag);
-            }
-        });
-
-        function playerFoundOrNot(pc){
+        .then((pc:PlayerCharacter)=>{
             if(!pc && !command.allowAnonymous){
                 message.channel.sendMessage('You must first register with `dbegin`, '+message.author.username);
 
@@ -141,8 +131,23 @@ export default class DiscordBot{
 
             bag.pc = pc;
 
+            if(!this.permissions.role(pc.role).has(command.permission)){
+                message.channel.sendMessage('You do not have permission to use `'+command.name+'`, '+pc.title);
+
+                return;
+            }
+
             command.run(params,message as DiscordMessage,bag);
-        }
+        })
+        .catch((error)=>{
+            let did = '';
+
+            if(error.stack){
+                did = Logger.error(error);
+            }
+
+            message.channel.sendMessage('An unexpected error occurred, '+message.author.username+' '+did);
+        });
     }//handleMessage
 
     setPlayingGame(message:string){

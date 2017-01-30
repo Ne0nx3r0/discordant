@@ -3,17 +3,17 @@ import Game from '../../game/Game';
 import { DiscordMessage, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
 
-export default class Echo extends Command{
+export default class EvalCommand extends Command{
     constructor(){
         super(
-            'echo',
-            'echos the message sent to it',
-            'echo <message>',
-            PermissionId.Echo
+            'setrole',
+            'Sets the role of a player',
+            'setrole \<@playerName> role',
+            PermissionId.SetRole
         );
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        message.channel.sendMessage(message.content.replace('decho ',''));
+        message.channel.sendMessage('setrole here bra');
     }
 }

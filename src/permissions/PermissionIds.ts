@@ -18,6 +18,9 @@ enum PermissionId{
     Embed,
     Shutdown,
     SetPlayingGame,
+
+    Eval,
+    SetRole,
 }
 
 export default PermissionId;
