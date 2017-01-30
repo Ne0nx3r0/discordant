@@ -1,26 +1,46 @@
 import Game from '../game/Game';
-import Command from './commands/Command';
-import * as Commands from "./commands/Commands";
+import Command from './Command';
+import * as Commands from "./CommandsIndex";
+import PlayerCharacter from '../game/creature/player/PlayerCharacter';
 
 const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
 
 const COMMAND_PREFIX:string = 'd';
 
-interface SetGameFunc{
+interface setPlayingGameFunc{
     (message:string);
 }
 
-export interface BotHandlers{
+export interface CommandBag{
     commands:Map<String,Command>;
-    setGame:SetGameFunc;
+    setPlayingGame:setPlayingGameFunc;
+    game:Game;
+    pc?:PlayerCharacter;
+    message:DiscordMessage;
+}
+
+export interface DiscordAuthor{
+    id:string;
+    username:string;
+    discriminator:number;
+}
+
+export interface DiscordChannel{
+    id:string;
+    sendMessage:Function;
+}
+
+export interface DiscordMessage{
+    channel:DiscordChannel;
+    content:string;
+    author:DiscordAuthor;
 }
 
 export default class DiscordBot{
     client: any;
     game: Game;
     commands: Map<String,Command>;
-    handlers: BotHandlers;
     
     constructor(game:Game,authToken:string){
         this.game = game;
@@ -33,10 +53,7 @@ export default class DiscordBot{
             this.commands.set(commandName.toUpperCase(),new Commands[commandName]);
         });
 
-        this.handlers = {
-            commands: this.commands,
-            setGame: this.setGame.bind(this)
-        };
+        this.setPlayingGame = this.setPlayingGame.bind(this);
 
         this.client.on('message',this.handleMessage.bind(this))
 
@@ -83,23 +100,41 @@ export default class DiscordBot{
 
         const command:Command = this.commands.get(commandName);
 
-        if(command){
-            params.shift();
-            
-            command.run(params,message,this.game,this.handlers);
+        //Command not found
+        if(!command){
+            return;
         }
-        else if(commandName == 'HELP'){
-            let commandsStr = '';
+        
+        //trim the command title
+        params.shift();
 
-            this.commands.forEach(function(command){
-                commandsStr += '\n**'+command.name + '** - ' +command.description;
-            });
+        const bag:CommandBag = {
+            commands: this.commands,
+            setPlayingGame: this.setPlayingGame,
+            game: this.game,
+            message: message,
+        };
 
-            message.channel.sendMessage('Here are the commands you have access to:\n'+commandsStr);
+        this.game.getPlayerCharacter(message.author.id)
+        .then(playerFoundOrNot)
+        .catch(function(error){
+            message.channel.sendMessage(error+', '+message.author.username);
+        });
+
+        function playerFoundOrNot(pc){
+            if(!pc && !command.allowAnonymous){
+                message.channel.sendMessage('You must first register with `dbegin`, '+message.author.username);
+
+                return;
+            }
+
+            bag.pc = pc;
+
+            command.run(params,message as DiscordMessage,bag);
         }
-    }
+    }//handleMessage
 
-    setGame(message:string){
-        return this.client.user.setGame(message);
+    setPlayingGame(message:string){
+        return this.client.user.setPlayingGame(message);
     }
 }

@@ -1,6 +1,6 @@
-import Command from '../Command';
+import Command from '../../Command';
 import Game from '../../../game/Game';
-import { BotHandlers } from '../../Bot';
+import { CommandBag, DiscordMessage } from '../../Bot';
 
 export default class PartyNew extends Command{
     constructor(){
@@ -12,9 +12,7 @@ export default class PartyNew extends Command{
         );
     }
 
-    run(params:Array<string>,message:any,game:Game,bot:BotHandlers){
-        game.getPlayerCharacter(message.author.id)
-        .then()
-        .catch(function(error){message.reply(error);});
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        //TODO: implement partynew
     }
 }

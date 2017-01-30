@@ -1,13 +1,14 @@
-import Command from './Command';
-import Game from '../../game/Game';
-import CharacterClass from '../../game/creature/player/CharacterClass';
-import CharacterClasses from '../../game/creature/player/CharacterClasses';
-import Goblin from '../../game/creature/monsters/Goblin';
-import CoopMonsterBattle from '../../game/battle/CoopMonsterBattle';
-import { CoopMonsterBattleEvent, PlayersAttackedEvent, BattleEndEvent, PlayerDeathEvent, PlayerBlockedEvent, PlayerAttackEvent } from '../../game/battle/CoopMonsterBattle';
-import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
-import IDamageSet from '../../game/damage/IDamageSet';
-import Creature from '../../game/creature/Creature';
+import Command from '../../Command';
+import Game from '../../../game/Game';
+import CharacterClass from '../../../game/creature/player/CharacterClass';
+import CharacterClasses from '../../../game/creature/player/CharacterClasses';
+import Goblin from '../../../game/creature/monsters/Goblin';
+import CoopMonsterBattle from '../../../game/battle/CoopMonsterBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEvent, BattleEndEvent, PlayerDeathEvent, PlayerBlockedEvent, PlayerAttackEvent } from '../../../game/battle/CoopMonsterBattle';
+import PlayerCharacter from '../../../game/creature/player/PlayerCharacter';
+import IDamageSet from '../../../game/damage/IDamageSet';
+import Creature from '../../../game/creature/Creature';
+import { DiscordMessage, CommandBag } from '../../Bot';
 
 export default class Battle extends Command{
     constructor(){
@@ -29,28 +30,16 @@ export default class Battle extends Command{
         return classesStr.slice(0,-2);
     }
 
-    run(params:Array<string>,message:any,game:Game){
-        function errFunc(err){
-            message.reply(err);
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        if(bag.pc.inBattle){
+            message.channel.sendMessage('You are in a battle already, defend yourself!');
+
+            return;
         }
 
-        game.getPlayerCharacter(message.author.id)
-        .then(getPCResult)
+        bag.game.createMonsterBattle([bag.pc],new Goblin())
+        .then(battleCreated)
         .catch(errFunc);
-
-        function getPCResult(pc){
-            if(!pc){
-                message.reply('You must register first with dbegin');
-            }
-            else if(pc.isInBattle){
-                message.reply('You are in a battle already, omg defend yourself!');
-            }
-            else{
-                game.createMonsterBattle([pc],new Goblin())
-                .then(battleCreated)
-                .catch(errFunc);
-            }
-        }
 
         function battleCreated(battle:CoopMonsterBattle){
             message.channel.sendMessage(battle.opponent.title+' rushes towards you, prepare for battle!');
@@ -103,7 +92,11 @@ export default class Battle extends Command{
 
                 message.channel.sendMessage('',getEmbed(msg,0xFFA500));
             });
-        }        
+        }          
+        
+        function errFunc(err){
+            message.channel.sendMessage(err+', '+bag.pc.title);
+        }      
     }
 }
 

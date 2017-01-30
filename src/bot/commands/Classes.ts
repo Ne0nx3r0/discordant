@@ -1,7 +1,8 @@
-import Command from './Command';
+import Command from '../Command';
 import Game from '../../game/Game';
 import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
+import { DiscordMessage, CommandBag } from '../Bot';
 
 export default class Classes extends Command{
     constructor(){
@@ -13,7 +14,7 @@ export default class Classes extends Command{
         );
     }
 
-    run(params:Array<string>,message:any,game:Game){
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         let msgEmbed = 'Available classes:';
 
         CharacterClasses.forEach(function(c:CharacterClass,key){

@@ -1,5 +1,6 @@
-import Command from './Command';
+import Command from '../Command';
 import Game from '../../game/Game';
+import { DiscordMessage, CommandBag } from '../Bot';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -11,9 +12,11 @@ export default class ChannelId extends Command{
         );
     }
 
-    run(params:Array<string>,message:any,game:Game){
-        game.deletePlayerCharacter(message.author.id)
-        .then(()=>{message.reply('Your character data has been reset');})
-        .catch((err)=>{message.reply(err);});
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        bag.game.deletePlayerCharacter(message.author.id)
+        .then(function(){
+            message.channel.sendMessage('Your character data has been reset');
+        })
+        .catch(this.handleError(bag));
     }
 }

@@ -13,6 +13,8 @@ enum CharacterClassId{
     Healer
 }
 
+export {CharacterClassId};
+
 const classes = new Collection();
 
 export default classes;

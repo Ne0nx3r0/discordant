@@ -149,7 +149,7 @@ export default class Game{
 
                     if(!row){
                         //not found
-                        resolve();
+                        reject();
 
                         return;
                     }

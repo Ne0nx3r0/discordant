@@ -1,6 +1,6 @@
-import Command from './Command';
+import Command from '../Command';
 import Game from '../../game/Game';
-import { BotHandlers } from '../Bot';
+import { CommandBag, DiscordMessage } from '../Bot';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -12,9 +12,9 @@ export default class ChannelId extends Command{
         );
     }
 
-    run(params:Array<string>,message:any,game:Game,bot:BotHandlers){
+     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         const status = message.content.substr('setbotstatus '.length);
 
-        bot.setGame(status);
+        bag.setPlayingGame(status);
     }
 }

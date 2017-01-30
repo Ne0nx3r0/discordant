@@ -1,6 +1,7 @@
-import Command from './Command';
+import Command from '../Command';
 import Game from '../../game/Game';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
+import { DiscordMessage, CommandBag } from '../Bot';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
 
@@ -14,11 +15,15 @@ export default class ChannelId extends Command{
         );
     }
 
-    run(params:Array<string>,message:any,game:Game){
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         let statsUid;
 
         if(params.length == 0){
             statsUid = message.author.id;
+
+            message.channel.sendMessage("",getEmbed(bag.pc));
+
+            return;
         }
         else{
             const tag = params[0];
@@ -27,31 +32,24 @@ export default class ChannelId extends Command{
                 statsUid = TAG_REGEX.exec(tag)[1];
             }
             else{
-                message.reply(this.getUsage());
+                message.channel.sendMessage(this.getUsage());
 
                 return;
             }
         }
 
-        game.getPlayerCharacter(statsUid)
-        .then((pc:PlayerCharacter)=>{
-            if(!pc){
-                if(statsUid == message.author.id){
-                    message.channel.sendMessage('Use `dbegin` to start your journey, '+message.author.username);
-                }
-                else{
-                    message.channel.sendMessage('No player found, '+message.author.username);
-                }
+        bag.game.getPlayerCharacter(statsUid)
+        .then((otherPC:PlayerCharacter)=>{
+            if(!otherPC){
+                message.channel.sendMessage('No player found, '+message.author.username);
 
                 return;
             }
 
-            message.channel
-            .sendMessage("",getEmbed(pc))
-            .catch(function(err){message.reply(err+', '+message.author.username);});
+            message.channel.sendMessage("",getEmbed(otherPC));
         })
         .catch((err)=>{
-            message.reply(err);
+            message.channel.sendMessage(err+', '+bag.pc.title);
         });
     }
 }

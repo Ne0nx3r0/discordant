@@ -1,9 +1,11 @@
-import Command from './Command';
+import Command from '../Command';
 import Game from '../../game/Game';
 import CharacterClass from '../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../game/creature/player/CharacterClasses';
+import {CharacterClassId} from '../../game/creature/player/CharacterClasses';
+import { DiscordMessage, CommandBag } from '../Bot';
 
-export default class ChannelId extends Command {
+export default class Begin extends Command {
     constructor() {
         super(
             'begin',
@@ -11,6 +13,8 @@ export default class ChannelId extends Command {
             'begin <class>',
             'user.begin'
         );
+
+        this.allowAnonymous = true;
     }
 
     getAvailableClasses() {
@@ -23,9 +27,16 @@ export default class ChannelId extends Command {
         return classesStr.slice(0, -2) + '\n(`dclass` for more info)';
     }
 
-    run(params: Array<string>, message: any, game: Game) {
+    run(params: Array<string>, message:DiscordMessage, bag:CommandBag) {
+        if(bag.pc){
+            message.channel.sendMessage('You have already begun, '+bag.pc.title);
+
+            return;
+        }
+
         if (params.length < 1) {
-            message.reply('You must choose a class\n\n' + this.getAvailableClasses());
+            message.channel.sendMessage('You must choose a class, '+message.author.username
+            +'\n\n' + this.getAvailableClasses());
 
             return;
         }
@@ -38,35 +49,30 @@ export default class ChannelId extends Command {
         });
 
         if (!wantedClass) {
-            message.reply(params[0] + ' is not a valid class\n\n' + this.getAvailableClasses());
+            message.channel.sendMessage(params[0] + ' is not a valid class, '+message.author.username
+            +'\n\n' + this.getAvailableClasses());
 
             return;
         }
 
-        game.getPlayerCharacter(message.author.id)
-        .then(function(pc){
-            if (pc) {
-                message.reply('You have already begun');
-            }
-            else {
-                registerPlayer();
-            }
+        bag.game.registerPlayerCharacter({
+            uid: message.author.id,
+            discriminator: message.author.discriminator,
+            username: message.author.username,
+            class: wantedClass,
         })
-        .catch(function(err){message.reply(err); });
+        .then(function(pc){
+            let luckMsg = 'Good luck!';
 
-        function registerPlayer() {
-            game.registerPlayerCharacter({
-                uid: message.author.id,
-                discriminator: message.author.discriminator,
-                username: message.author.username,
-                class: wantedClass,
-            })
-            .then(function(pc){
-                message.reply('You have successfully been registered as a ' + wantedClass.title + ', good luck!');
-            })
-            .catch(function(err){
-                message.reply(err);
-            });
-        }
+            if(wantedClass.id == CharacterClassId.Nobody){
+                luckMsg = 'Seek strength. The rest will follow...';
+            }
+
+            message.channel.sendMessage('You have successfully been registered as a ' + wantedClass.title + ', '+message.author.username
+            +'\n\nGood luck!');
+        })
+        .catch(function(err){
+            message.channel.sendMessage(err+', '+message.author.username);
+        });
     }
 }

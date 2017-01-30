@@ -1,5 +1,6 @@
-import Command from './Command';
+import Command from '../Command';
 import Game from '../../game/Game';
+import {DiscordMessage,CommandBag} from '../Bot';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -11,7 +12,7 @@ export default class ChannelId extends Command{
         );
     }
 
-    run(params:Array<string>,message:any,game:Game){
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         message.channel.sendMessage('Channel ID: '+message.channel.id);
     }
 }
