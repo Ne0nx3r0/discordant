@@ -6,5 +6,6 @@
         "**/*.js.map": true
     }
 ,
-"vsicons.presets.angular": false
+"vsicons.presets.angular": false,
+"typescript.check.workspaceVersion": false
 }

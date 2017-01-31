@@ -13,14 +13,20 @@ export default class PartyNew extends Command{
         );
     }
 
-    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){console.log(params);
-        bag.bot.createPrivateChannel(message.guild,params.join(' '),bag.pc)
-        .then(channelCreated)
-        .catch(this.handleError(bag));
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        const errHandler = this.handleError(bag);
 
-        function channelCreated(channel:DiscordTextChannel){
+        async function _run(){
+            try{
+                const channel = await bag.bot.createPrivateChannel(message.guild,params.join(' '),bag.pc);
 
-            message.channel.sendMessage('Your party is ready at <#'+channel.id+'> '+bag.pc.title+'!');
+                message.channel.sendMessage('Your party is ready at <#'+channel.id+'> '+bag.pc.title+'!');
+            }
+            catch(ex){
+                errHandler(ex);
+            }
         }
+
+        _run();
     }
 }
