@@ -1,9 +1,26 @@
+/// <reference path='../../node_modules/discord.js/typings/index.d.ts' />
+
 import Game from '../game/Game';
 import Command from './Command';
 import * as Commands from "./CommandsIndex";
 import PlayerCharacter from '../game/creature/player/PlayerCharacter';
 import PermissionsService from '../permissions/PermissionsService';
 import Logger from '../util/Logger';
+import {
+    Client as DiscordClient, 
+    Message as DiscordMessage, 
+    Channel as DiscordChannel, 
+    User as DiscordAuthor,
+    MessageOptions as DiscordMessageOptions
+} from 'discord.js';
+
+export {
+    DiscordClient,
+    DiscordMessage,
+    DiscordChannel,
+    DiscordAuthor,
+    DiscordMessageOptions,
+}
 
 const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
@@ -30,7 +47,7 @@ export interface CommandBag{
     message:DiscordMessage;
     bot:BotHandlers;
 }
-
+/*
 export interface DiscordAuthor{
     id:string;
     username:string;
@@ -47,21 +64,23 @@ export interface DiscordMessage{
     channel:DiscordChannel;
     content:string;
     author:DiscordAuthor;
-}
+}*/
 
 export default class DiscordBot{
     client: any;
     game: Game;
     permissions:PermissionsService;
     ownerUIDs:Array<string>;
+    mainGuildId:string;
     commands: Map<String,Command>;
     
-    constructor(game:Game,permissions:PermissionsService,authToken:string,ownerUIDs:Array<string>){
+    constructor(game:Game,permissions:PermissionsService,authToken:string,ownerUIDs:Array<string>,mainGuildId:string){
         this.game = game;
         this.permissions = permissions;
         this.ownerUIDs = ownerUIDs;
+        this.mainGuildId = mainGuildId;
 
-        this.client = new Discord.Client();
+        this.client = new Discord.Client() as DiscordClient;
 
         this.commands = new Map();
 
@@ -163,10 +182,15 @@ export default class DiscordBot{
     getPrivateChannel(pc:PlayerCharacter){
         return new Promise((resolve,reject)=>{
             if(pc.inParty){
-                reject('You are already in a party, '+pc.title);
+                reject('You are already in a party,'+pc.title);
 
                 return;
             }
+
+            this.client.guilds.get(this.mainGuildId)
+            .createChannel()
+            .then()
+            .fail();
 
             resolve();
         });

@@ -1,7 +1,7 @@
 import Command from '../Command';
 import Game from '../../game/Game';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
-import { DiscordMessage, CommandBag } from '../Bot';
+import { DiscordMessage, DiscordMessageOptions, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
@@ -22,7 +22,7 @@ export default class ChannelId extends Command{
         if(params.length == 0){
             statsUid = message.author.id;
 
-            message.channel.sendMessage("",getEmbed(bag.pc));
+            message.channel.sendMessage("",getEmbed(bag.pc) as DiscordMessageOptions);
 
             return;
         }
@@ -47,7 +47,7 @@ export default class ChannelId extends Command{
                 return;
             }
 
-            message.channel.sendMessage("",getEmbed(otherPC));
+            message.channel.sendMessage("",getEmbed(otherPC) as DiscordMessageOptions);
         })
         .catch((err)=>{
             message.channel.sendMessage(err+', '+bag.pc.title);

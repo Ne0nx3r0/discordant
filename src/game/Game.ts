@@ -17,7 +17,7 @@ import Logger from '../util/Logger';
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
-    discriminator:number;
+    discriminator:string;
     username:string;
     class:CharacterClass;
 }
