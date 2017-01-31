@@ -90,25 +90,6 @@ export default class DiscordBot{
         this.client.guilds.array().forEach(function(guild){
             console.log(guild.id + ' - ' + guild.name);
         });
-
-        const client = this.client;;
-
-        function makeChannel(){
-            client.guilds.get('275124937356869642').createChannel('Party-'+channelCardinality,'text')
-            .then(function(channel:DiscordChannel){
-                console.log('Channel '+channel.name+' created');
-
-                channelCardinality = channelCardinality+1;
-
-                setTimeout(makeChannel,2000);
-            })
-            .catch(function(error){
-                console.log(JSON.stringify(error));
-                console.log(error.stack);
-            });
-        }
-
-        makeChannel();
     }
 
     handleMessage(message:any){
@@ -121,7 +102,7 @@ export default class DiscordBot{
         if(message.author.bot){
             return;
         }
-        
+
         if(!message.content.startsWith(COMMAND_PREFIX)){
             return;
         }
