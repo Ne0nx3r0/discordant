@@ -84,12 +84,6 @@ export default class DiscordBot{
         this.client.channels
             .get('263031735770415104')//discordant server #testing
             .sendMessage('I\'m online!');
-
-        let channelCardinality = 375;
-
-        this.client.guilds.array().forEach(function(guild){
-            console.log(guild.id + ' - ' + guild.name);
-        });
     }
 
     handleMessage(message:any){
