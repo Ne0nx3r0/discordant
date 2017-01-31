@@ -1,6 +1,6 @@
 import Command from '../../Command';
 import Game from '../../../game/Game';
-import { CommandBag, DiscordMessage } from '../../Bot';
+import { CommandBag, DiscordMessage, DiscordChannel } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
 
 export default class PartyNew extends Command{
@@ -14,6 +14,12 @@ export default class PartyNew extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        message.channel.sendMessage('new bra');
+        bag.bot.getPrivateChannel(bag.pc)
+        .then(gotPrivateChannel)
+        .catch(this.handleError(bag));
+
+        function gotPrivateChannel(channel:DiscordChannel){
+
+        }
     }
 }

@@ -4,7 +4,7 @@ import { CommandBag, DiscordMessage } from '../../Bot';
 import PartyNew from './Partynew';
 import PermissionId from '../../../permissions/PermissionIds';
 
-export default class Party extends Command{
+export default class PartyCommand extends Command{
     subCommands:Map<String,Command>;
     
     constructor(){

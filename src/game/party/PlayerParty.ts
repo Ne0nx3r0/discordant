@@ -1,7 +1,7 @@
 import PlayerCharacter from '../creature/player/PlayerCharacter';
 
 
-export default class Party{
+export default class PlayerParty{
     leader:PlayerCharacter;
     members:Map<string,PlayerCharacter>;
     channel:string;

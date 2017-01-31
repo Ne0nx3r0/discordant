@@ -16,6 +16,6 @@ export default class ChannelId extends Command{
      run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         const status = message.content.substr('setbotstatus '.length);
 
-        bag.setPlayingGame(status);
+        bag.bot.setPlayingGame(status);
     }
 }

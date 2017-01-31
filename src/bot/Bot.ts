@@ -14,12 +14,21 @@ interface setPlayingGameFunc{
     (message:string);
 }
 
-export interface CommandBag{
+interface privateChannelFunc{
+    (pc:PlayerCharacter);
+}
+
+export interface BotHandlers{
     commands:Map<String,Command>;
     setPlayingGame:setPlayingGameFunc;
+    getPrivateChannel:privateChannelFunc;
+}
+
+export interface CommandBag{
     game:Game;
     pc?:PlayerCharacter;
     message:DiscordMessage;
+    bot:BotHandlers;
 }
 
 export interface DiscordAuthor{
@@ -30,6 +39,7 @@ export interface DiscordAuthor{
 
 export interface DiscordChannel{
     id:string;
+    name:string;
     sendMessage:Function;
 }
 
@@ -74,6 +84,31 @@ export default class DiscordBot{
         this.client.channels
             .get('263031735770415104')//discordant server #testing
             .sendMessage('I\'m online!');
+
+        let channelCardinality = 375;
+
+        this.client.guilds.array().forEach(function(guild){
+            console.log(guild.id + ' - ' + guild.name);
+        });
+
+        const client = this.client;;
+
+        function makeChannel(){
+            client.guilds.get('275124937356869642').createChannel('Party-'+channelCardinality,'text')
+            .then(function(channel:DiscordChannel){
+                console.log('Channel '+channel.name+' created');
+
+                channelCardinality = channelCardinality+1;
+
+                setTimeout(makeChannel,2000);
+            })
+            .catch(function(error){
+                console.log(JSON.stringify(error));
+                console.log(error.stack);
+            });
+        }
+
+        makeChannel();
     }
 
     handleMessage(message:any){
@@ -86,14 +121,7 @@ export default class DiscordBot{
         if(message.author.bot){
             return;
         }
-
-        //For now ignore all but #testing on discordant
-        if(message.channel.id != '263031735770415104'
-        && message.channel.id != '274971874939764736'
-        && message.channel.id != '274972041164226561'){
-            return;
-        }
-
+        
         if(!message.content.startsWith(COMMAND_PREFIX)){
             return;
         }
@@ -115,8 +143,11 @@ export default class DiscordBot{
         params.shift();
 
         const bag:CommandBag = {
-            commands: this.commands,
-            setPlayingGame: this.setPlayingGame,
+            bot:{            
+               commands: this.commands,
+               setPlayingGame: this.setPlayingGame,
+               getPrivateChannel: this.getPrivateChannel,
+            },
             game: this.game,
             message: message,
         };
@@ -152,5 +183,17 @@ export default class DiscordBot{
 
     setPlayingGame(message:string){
         return this.client.user.setPlayingGame(message);
+    }
+
+    getPrivateChannel(pc:PlayerCharacter){
+        return new Promise((resolve,reject)=>{
+            if(pc.inParty){
+                reject('You are already in a party, '+pc.title);
+
+                return;
+            }
+
+            resolve();
+        });
     }
 }

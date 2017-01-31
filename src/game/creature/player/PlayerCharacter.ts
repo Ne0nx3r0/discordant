@@ -7,7 +7,7 @@ import CreatureEquipment from '../../item/CreatureEquipment';
 import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
 import AttackStep from '../../item/WeaponAttackStep';
 import PlayerInventory from '../../item/PlayerInventory';
-import Party from '../../party/Party';
+import PlayerParty from '../../party/PlayerParty';
 
 interface CurrentBattleData{
     battle:CoopMonsterBattle;
@@ -18,7 +18,7 @@ interface CurrentBattleData{
 }
 
 interface CurrentPartyData{
-    party:Party;
+    party:PlayerParty;
 }
 
 interface PCConfig{

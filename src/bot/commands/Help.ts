@@ -16,7 +16,7 @@ export default class ChannelId extends Command{
      run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         let commandsStr = '';
 
-        bag.commands.forEach(function(command){
+        bag.bot.commands.forEach(function(command){
             commandsStr += '\n**'+command.name + '** - ' +command.description;
         });
 
