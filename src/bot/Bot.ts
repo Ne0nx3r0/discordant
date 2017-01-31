@@ -9,16 +9,20 @@ import Logger from '../util/Logger';
 import {
     Client as DiscordClient, 
     Message as DiscordMessage, 
-    Channel as DiscordChannel, 
+   // Channel as DiscordChannel, 
+    TextChannel as DiscordTextChannel, 
     User as DiscordAuthor,
-    MessageOptions as DiscordMessageOptions
+    MessageOptions as DiscordMessageOptions,
+    PermissionOverwrites as DiscordPermissionOverwrites,
+    Guild as DiscordGuild
 } from 'discord.js';
 
 export {
     DiscordClient,
     DiscordMessage,
-    DiscordChannel,
+    DiscordTextChannel,
     DiscordAuthor,
+    DiscordGuild,
     DiscordMessageOptions,
 }
 
@@ -32,13 +36,13 @@ interface setPlayingGameFunc{
 }
 
 interface privateChannelFunc{
-    (pc:PlayerCharacter);
+    (guild:DiscordGuild,partyName:string,pc:PlayerCharacter):Promise<DiscordTextChannel>;
 }
 
 export interface BotHandlers{
     commands:Map<String,Command>;
     setPlayingGame:setPlayingGameFunc;
-    getPrivateChannel:privateChannelFunc;
+    createPrivateChannel:privateChannelFunc;
 }
 
 export interface CommandBag{
@@ -47,27 +51,9 @@ export interface CommandBag{
     message:DiscordMessage;
     bot:BotHandlers;
 }
-/*
-export interface DiscordAuthor{
-    id:string;
-    username:string;
-    discriminator:number;
-}
-
-export interface DiscordChannel{
-    id:string;
-    name:string;
-    sendMessage:Function;
-}
-
-export interface DiscordMessage{
-    channel:DiscordChannel;
-    content:string;
-    author:DiscordAuthor;
-}*/
 
 export default class DiscordBot{
-    client: any;
+    client:DiscordClient;
     game: Game;
     permissions:PermissionsService;
     ownerUIDs:Array<string>;
@@ -80,7 +66,7 @@ export default class DiscordBot{
         this.ownerUIDs = ownerUIDs;
         this.mainGuildId = mainGuildId;
 
-        this.client = new Discord.Client() as DiscordClient;
+        this.client = new Discord.Client();
 
         this.commands = new Map();
 
@@ -100,14 +86,20 @@ export default class DiscordBot{
     handleReady(){
         console.log('Bot: logged in');
 
-        this.client.channels
-            .get('263031735770415104')//discordant server #testing
-            .sendMessage('I\'m online!');
+        //discordant server #testing
+        const notificationChannel:DiscordTextChannel = this.client.channels.get('263031735770415104') as DiscordTextChannel;
+        
+        notificationChannel.sendMessage('I\'m online!');
+
+        //Clean up any party channels
+        this.client.channels.array().forEach(function(channel:DiscordTextChannel){
+            
+        });
     }
 
     handleMessage(message:any){
         // Ignore self
-        if(message.author.id == this.client.id){
+        if(message.author.id == this.client.user.id){
             return;
         }
 
@@ -140,7 +132,7 @@ export default class DiscordBot{
             bot:{            
                commands: this.commands,
                setPlayingGame: this.setPlayingGame,
-               getPrivateChannel: this.getPrivateChannel,
+               createPrivateChannel: this.createPrivateChannel,
             },
             game: this.game,
             message: message,
@@ -176,23 +168,35 @@ export default class DiscordBot{
     }//handleMessage
 
     setPlayingGame(message:string){
-        return this.client.user.setPlayingGame(message);
+        return this.client.user.setGame(message);
     }
 
-    getPrivateChannel(pc:PlayerCharacter){
-        return new Promise((resolve,reject)=>{
-            if(pc.inParty){
-                reject('You are already in a party,'+pc.title);
+    async createPrivateChannel(guild:DiscordGuild,partyName:string,pc:PlayerCharacter):Promise<DiscordTextChannel>{
+        if(pc.inParty){
+            throw 'You are already in a party, ' + pc.title;
+        }
 
-                return;
-            }
+        try{
+            const channelname = 'party-'+partyName
+                .replace(/[^A-Za-z0-9-]+/g,'')
+                .substr(0,10);
 
-            this.client.guilds.get(this.mainGuildId)
-            .createChannel()
-            .then()
-            .fail();
+            const overwrites = [
+                {id: guild.id, type: 'role', deny: 1024, allow: 0} as DiscordPermissionOverwrites
+            ];
 
-            resolve();
-        });
+            const channel:DiscordTextChannel = await guild.createChannel(channelname,'text',overwrites) as DiscordTextChannel;
+
+            channel.overwritePermissions(pc.uid,{
+                SEND_MESSAGES: true
+            });
+
+            return channel;
+        }
+        catch(ex){
+            const did = Logger.error(ex);
+
+            throw 'An unexpected error occurred ('+did+')';
+        }
     }
 }

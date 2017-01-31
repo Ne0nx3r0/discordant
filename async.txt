@@ -1,0 +1,12 @@
+async function foo() {
+    try {
+        await delay(1000);
+        var val = await game.getPlayerCharacter('42');
+        await delay(1000);
+        console.log('done',val);
+    }
+    catch(err) {
+        console.log('Error: ', err.message);
+    }
+}
+await foo();

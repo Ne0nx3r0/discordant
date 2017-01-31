@@ -1,6 +1,6 @@
 import Command from '../../Command';
 import Game from '../../../game/Game';
-import { CommandBag, DiscordMessage, DiscordChannel } from '../../Bot';
+import { CommandBag, DiscordMessage, DiscordTextChannel } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
 
 export default class PartyNew extends Command{
@@ -13,13 +13,14 @@ export default class PartyNew extends Command{
         );
     }
 
-    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        bag.bot.getPrivateChannel(bag.pc)
-        .then(gotPrivateChannel)
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){console.log(params);
+        bag.bot.createPrivateChannel(message.guild,params.join(' '),bag.pc)
+        .then(channelCreated)
         .catch(this.handleError(bag));
 
-        function gotPrivateChannel(channel:DiscordChannel){
+        function channelCreated(channel:DiscordTextChannel){
 
+            message.channel.sendMessage('Your party is ready at <#'+channel.id+'> '+bag.pc.title+'!');
         }
     }
 }
