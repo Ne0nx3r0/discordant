@@ -30,6 +30,8 @@ export default class PartyLeave extends Command{
 
         party.playerActionLeave(bag.pc);
 
-        message.channel.sendMessage('You have left '+party.title+', '+bag.pc.title);
+        bag.bot.revokeAccessToPrivateChannel(bag.pc,party.channel);
+
+        message.client.users.get(bag.pc.uid).sendMessage('You have left '+party.title+', '+bag.pc.title);
     }
 }

@@ -16,6 +16,18 @@ export default class PartyNew extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        if(!bag.pc.inParty){
+            message.channel.sendMessage('You are already in a party, '+bag.pc.title);
+
+            return;
+        }
+
+        if(!bag.pc.hasPendingPartyInvite){
+            message.channel.sendMessage('You are currently considering a party invite, '+bag.pc.title);
+
+            return;
+        }
+
         const userTag = params[0];
 
         if(!TAG_REGEX.test(userTag)){

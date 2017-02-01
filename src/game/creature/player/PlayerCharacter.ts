@@ -84,6 +84,7 @@ export default class PlayerCharacter extends Creature{
         return this._currentPartyData.party;
     }
 
+    //Has party data but expires is set marking it as an invite
     get hasPendingPartyInvite():boolean{
         if(this._currentPartyData != null){
             if(this._currentPartyData.expires > new Date().getTime()){

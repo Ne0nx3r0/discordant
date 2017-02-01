@@ -45,11 +45,16 @@ interface grantPrivateChannelFunc{
     (pc:PlayerCharacter,channel:DiscordTextChannel):Promise<void>;
 }
 
+interface revokePrivateChannelFunc{
+    (pc:PlayerCharacter,channel:DiscordTextChannel):Promise<void>;
+}
+
 export interface BotHandlers{
     commands:Map<String,Command>;
     setPlayingGame:setPlayingGameFunc;
     createPrivateChannel:privateChannelFunc;
     grantAccessToPrivateChannel: grantPrivateChannelFunc;
+    revokeAccessToPrivateChannel: revokePrivateChannelFunc;
 }
 
 export interface CommandBag{
@@ -165,6 +170,7 @@ export default class DiscordBot{
                     setPlayingGame: this.setPlayingGame,
                     createPrivateChannel: this.createPrivateChannel,
                     grantAccessToPrivateChannel: this.grantAccessToPrivateChannel,
+                    revokeAccessToPrivateChannel: this.revokeAccessToPrivateChannel,
                 },
                 game: this.game,
                 message: message,
@@ -248,6 +254,16 @@ export default class DiscordBot{
             SEND_MESSAGES: true,
             READ_MESSAGES: true,
             ADD_REACTIONS: true,
+        } as DiscordPermissionOverwriteOptions;
+
+        await channel.overwritePermissions(pc.uid,overwrites);
+    }
+
+    async revokeAccessToPrivateChannel(pc:PlayerCharacter,channel:DiscordTextChannel){
+        const overwrites = {
+            SEND_MESSAGES: false,
+            READ_MESSAGES: false,
+            ADD_REACTIONS: false,
         } as DiscordPermissionOverwriteOptions;
 
         await channel.overwritePermissions(pc.uid,overwrites);
