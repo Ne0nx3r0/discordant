@@ -14,19 +14,27 @@ export default class PartyNew extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        if(params.length == 0){
+            message.channel.sendMessage('You must specify a name for your party, '+bag.pc.title);
+            
+            return;
+        }
+
         const errHandler = this.handleError(bag);
 
-        async function _run(){
+        (async function(){
             try{
-                const channel = await bag.bot.createPrivateChannel(message.guild,params.join(' '),bag.pc);
+                const partyName = params.join(' ').replace(/ /g,'-');
+
+                const channel = await bag.bot.createPrivateChannel(message.guild,partyName,bag.pc);
+
+                const party = bag.game.createPlayerParty(partyName,bag.pc,channel);
 
                 message.channel.sendMessage('Your party is ready at <#'+channel.id+'> '+bag.pc.title+'!');
             }
             catch(ex){
                 errHandler(ex);
             }
-        }
-
-        _run();
+        })();
     }
 }

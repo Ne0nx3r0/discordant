@@ -21,6 +21,11 @@ interface CurrentPartyData{
     party:PlayerParty;
 }
 
+interface PendingPartyInvite{
+    party:PlayerParty;
+    expires:number;
+}
+
 interface PCConfig{
     id:number,
     uid:string;
@@ -42,6 +47,7 @@ export default class PlayerCharacter extends Creature{
     discriminator:number;
     currentBattleData:CurrentBattleData;
     currentPartyData:CurrentPartyData;
+    pendingPartyInvite:PendingPartyInvite;
     class:CharacterClass;
     xp:number;
     wishes:number;
@@ -69,6 +75,7 @@ export default class PlayerCharacter extends Creature{
 
         this.currentBattleData = null;
         this.currentPartyData = null;
+        this.pendingPartyInvite = null;
     }
 
     get inBattle():boolean{
@@ -77,6 +84,19 @@ export default class PlayerCharacter extends Creature{
 
     get inParty():boolean{
         return this.currentPartyData != null;
+    }
+
+    get hasPendingPartyInvite():boolean{
+        if(this.pendingPartyInvite != null){
+            if(this.pendingPartyInvite.expires > new Date().getTime()){
+                return true;
+            }
+            else{
+                this.pendingPartyInvite = null;
+            }
+        }
+
+        return false;
     }
 
     calculateDeathWishesLost():number{

@@ -91,9 +91,27 @@ export default class DiscordBot{
         
         notificationChannel.sendMessage('I\'m online!');
 
+        let deleteChannelDelay = 0;
+
         //Clean up any party channels
-        this.client.channels.array().forEach(function(channel:DiscordTextChannel){
-            
+        this.client.channels.array()
+        .forEach(function(channel:DiscordTextChannel,index:number){
+            if(channel.name.startsWith('party-')){
+                deleteChannelDelay = deleteChannelDelay + 2000;
+
+                setTimeout(function(){
+                    try{
+                        Logger.info('Deleting channel '+channel.id);
+                        
+                        channel.delete();
+                    }
+                    catch(ex){
+                        ex.msg = 'Error deleting channel';
+
+                        Logger.error(ex);
+                    }
+                },deleteChannelDelay);
+            }
         });
     }
 
@@ -173,13 +191,13 @@ export default class DiscordBot{
 
     async createPrivateChannel(guild:DiscordGuild,partyName:string,pc:PlayerCharacter):Promise<DiscordTextChannel>{
         if(pc.inParty){
-            throw 'You are already in a party, ' + pc.title;
+            throw 'You are already in a party';
         }
 
         try{
             const channelname = 'party-'+partyName
                 .replace(/[^A-Za-z0-9-]+/g,'')
-                .substr(0,10);
+                .substr(0,20);
 
             const overwrites = [
                 {id: guild.id, type: 'role', deny: 1024, allow: 0} as DiscordPermissionOverwrites

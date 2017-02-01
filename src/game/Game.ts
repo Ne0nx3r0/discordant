@@ -14,6 +14,8 @@ import PlayerInventory from './item/PlayerInventory';
 import ItemEquippable from './item/ItemEquippable';
 import Weapon from './item/Weapon';
 import Logger from '../util/Logger';
+import PlayerParty from './party/PlayerParty';
+import {DiscordTextChannel} from '../bot/Bot';
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
@@ -26,17 +28,21 @@ export default class Game{
     items:AllItems;
     db:DatabaseService;
     cachedPlayers:Map<string,PlayerCharacter>;
-    battleCardinality:number;
+
     activeBattles:Map<number,CoopMonsterBattle>;
+    battleCardinality:number;
+
+    playerParties:Map<string,PlayerParty>;
 
     constructor(db:DatabaseService){
         this.db = db;
         this.cachedPlayers = new Map();
+        this.playerParties = new Map();
+        this.activeBattles = new Map();
+
+        this.battleCardinality = 1;
 
         this.items = new AllItems();
-
-        this.activeBattles = new Map();
-        this.battleCardinality = 1;
     }
 
     registerPlayerCharacter(playerBag:IPlayerRegisterBag){
@@ -123,7 +129,7 @@ export default class Game{
         });
     }
 
-    getPlayerCharacter(uid:string){
+    getPlayerCharacter(uid:string):Promise<PlayerCharacter>{
         return new Promise((resolve,reject)=>{
             try{
                 const cachedPC = this.cachedPlayers.get(uid);
@@ -369,6 +375,18 @@ export default class Game{
                 }
             });
         });
+    }
+
+    createPlayerParty(name:string,leader:PlayerCharacter,channel:DiscordTextChannel):PlayerParty{
+        if(leader.inParty){
+            throw 'You are already in a party';
+        }
+
+        const party = new PlayerParty(name,leader,channel);
+
+        this.playerParties.set(leader.uid,party);
+        
+        return party;
     }
 /*
     transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{

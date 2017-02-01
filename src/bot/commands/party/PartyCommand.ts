@@ -1,7 +1,10 @@
 import Command from '../../Command';
 import Game from '../../../game/Game';
 import { CommandBag, DiscordMessage } from '../../Bot';
-import PartyNew from './Partynew';
+import PartyNew from './PartyNew';
+import PartyInvite from './PartyInvite';
+import PartyLeave from './PartyLeave';
+import PartyDisband from './PartyDisband';
 import PermissionId from '../../../permissions/PermissionIds';
 
 export default class PartyCommand extends Command{
@@ -18,18 +21,21 @@ export default class PartyCommand extends Command{
         this.subCommands = new Map();
 
         this.subCommands.set('new',new PartyNew());
+        this.subCommands.set('invite',new PartyInvite());
+        this.subCommands.set('leave',new PartyLeave());
+        this.subCommands.set('disband',new PartyDisband());
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         const subCommand = params.length == 0 ? 'help' : params[0];
 
-        if(subCommand == 'help' || !this.subCommands.has(subCommand)){
+        if(!this.subCommands.has(subCommand)){
             message.channel.sendMessage(`\`\`\`diff
 + Party commands +
-dparty help - This screen
 dparty new [name] - Create a new party
-dparty disband - Remove all members and delete the party
 dparty invite \<@username> - Invite a player to join
+dparty leave - Leave your current party
+dparty disband - Remove all members and delete the party
 \`\`\``);
 
             return;
