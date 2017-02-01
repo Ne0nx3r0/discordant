@@ -20,7 +20,7 @@ export default class PartyDisband extends Command{
             return;
         }
 
-        const party = bag.pc.currentPartyData.party;
+        const party = bag.pc.party;
 
         if(party.leader != bag.pc){
             message.channel.sendMessage('Only the party leader can disband the party');

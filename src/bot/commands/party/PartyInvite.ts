@@ -50,21 +50,12 @@ export default class PartyNew extends Command{
                     return;
                 }
 
-                const party = bag.pc.currentPartyData.party;
+                const party = bag.pc.party;
 
-                invitedPC.pendingPartyInvite = {
-                    party: party,
-                    expires: new Date().getTime()+60000
-                };
-
-                setTimeout(function() {
-                    invitedPC.pendingPartyInvite = null;
-
-                    message.channel.sendMessage('Invitation to '+invitedPC.title+' expired, '+bag.pc.title);
-                }, 60000);
+                party.playerActionInvite(invitedPC);
 
                 message.channel.sendMessage('<@'+invitedPC.uid+'>, you have been invited to join party '+party.title
-                +'\n\nYou can use `daccept` or `ddecline` or let the invite expire in 30 seconds');
+                +'\n\nYou can use `daccept` or `ddecline` or let the invite expire in 1 minute');
             }
             catch(ex){
                 errHandler(ex);

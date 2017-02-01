@@ -386,13 +386,14 @@ export default class Game{
         const party = new PlayerParty(name,leader,channel);
 
         party.on(PlayerPartyEvent.PartyDisbanded,(e:PartyDisbandedEvent)=>{
-            this.playerParties.delete(e.party.leader.uid);
+            this.playerParties.delete(e.party.id);
         });
 
-        this.playerParties.set(leader.uid,party);
+        this.playerParties.set(party.id,party);
         
         return party;
     }
+
 /*
     transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
 

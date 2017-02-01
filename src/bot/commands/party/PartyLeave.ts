@@ -20,7 +20,7 @@ export default class PartyLeave extends Command{
             return;
         }
 
-        const party = bag.pc.currentPartyData.party;
+        const party = bag.pc.party;
 
         if(party.leader == bag.pc){
             message.channel.sendMessage('Leaders cannot leave a party, you must use `party disband`, '+bag.pc.title);

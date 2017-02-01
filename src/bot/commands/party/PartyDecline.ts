@@ -22,7 +22,7 @@ export default class PartyDecline extends Command{
             return;
         }
         
-        bag.pc.pendingPartyInvite = null;
+        bag.pc.party.playerActionDecline(bag.pc);
 
         message.channel.sendMessage('Party invitation declined, '+bag.pc.title);
     }

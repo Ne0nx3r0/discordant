@@ -3,6 +3,8 @@ import {DiscordTextChannel} from '../../bot/Bot';
 import EventDispatcher from '../../util/EventDispatcher';
 import PartyDisband from '../../bot/commands/party/PartyDisband';
 
+const INVITE_EXPIRES_MS = 60000;
+
 export default class PlayerParty{
     leader:PlayerCharacter;
     title: string;
@@ -19,8 +21,8 @@ export default class PlayerParty{
         this.members = new Map();
         this.invited = new Map();
 
-        this.leader.currentPartyData = {
-            party: this
+        this.leader._currentPartyData = {
+            party: this,
         };
         
         this._events = new EventDispatcher();
@@ -30,8 +32,13 @@ export default class PlayerParty{
         return this.leader.uid;
     }
 
-    playerActionInvited(pc:PlayerCharacter){
+    playerActionInvite(pc:PlayerCharacter){
         this.invited.set(pc.uid,pc);
+
+        pc._currentPartyData = {
+            party:this,
+            expires: new Date().getTime()+INVITE_EXPIRES_MS,
+        };
 
         const eventData:PlayerInvitedEvent = {
             party: this,
@@ -39,14 +46,36 @@ export default class PlayerParty{
         };
 
         this.dispatch(PlayerPartyEvent.PlayerInvited,eventData);
+
+        const party = this;
+
+        setTimeout(function(){
+            //If this invite is still pending
+            if(pc._currentPartyData && pc._currentPartyData.party.id == party.id){
+                pc._currentPartyData = null;
+            }
+
+            party.invited.delete(pc.uid);
+        },INVITE_EXPIRES_MS);
+    }
+
+    playerActionDecline(pc:PlayerCharacter){
+        this.invited.delete(pc.uid);
+
+        const eventData:PlayerDeclinedToJoinEvent = {
+            party:this,
+            pc:pc,
+        };
+
+        this.dispatch(PlayerPartyEvent.PlayerDeclined,eventData);
     }
 
     playerActionJoin(pc:PlayerCharacter){
-        pc.pendingPartyInvite = null;
-
         this.members.set(pc.uid,pc);
 
-        pc.currentPartyData = {
+        this.invited.delete(pc.uid);
+
+        pc._currentPartyData = {
             party: this
         };
 
@@ -61,7 +90,7 @@ export default class PlayerParty{
     playerActionLeave(pc:PlayerCharacter){
         this.members.delete(pc.uid);
 
-        pc.currentPartyData = null;
+        pc._currentPartyData = null;
 
         const eventData:PlayerLeftEvent = {
             party:this,
@@ -75,21 +104,20 @@ export default class PlayerParty{
         const members:Array<PlayerCharacter> = [];
 
         this.members.forEach(function(pc){
-            pc.currentPartyData = null;
-
-            members.push(pc);
+            pc._currentPartyData = null;
         });
 
-        this.leader.currentPartyData = null;
+        this.invited.forEach(function(pc){
+            pc._currentPartyData = null;
+        });
+
+        this.leader._currentPartyData = null;
 
         const eventData:PartyDisbandedEvent = {
             party:this
         };
 
         this.dispatch(PlayerPartyEvent.PartyDisbanded,eventData);
-
-        this.leader = null;
-        this.members = null;
     }
 
     //Event methods
@@ -101,6 +129,7 @@ export default class PlayerParty{
 export enum PlayerPartyEvent{
     PlayerJoined,
     PlayerInvited,
+    PlayerDeclined,
     PlayerLeft,
     PartyDisbanded
 }
@@ -111,6 +140,11 @@ export interface PlayerJoinedEvent{
 }
 
 export interface PlayerInvitedEvent{
+    party:PlayerParty,
+    pc:PlayerCharacter,
+}
+
+export interface PlayerDeclinedToJoinEvent{
     party:PlayerParty,
     pc:PlayerCharacter,
 }

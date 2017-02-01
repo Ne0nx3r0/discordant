@@ -2,7 +2,6 @@ import Command from '../../Command';
 import Game from '../../../game/Game';
 import { CommandBag, DiscordMessage, DiscordTextChannel } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
-import { PendingPartyInvite } from '../../../game/creature/player/PlayerCharacter';
 import PlayerParty from '../../../game/party/PlayerParty';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
@@ -28,7 +27,7 @@ export default class PartyJoin extends Command{
 
         (async function(){
             try{
-                const party:PlayerParty = bag.pc.pendingPartyInvite.party;
+                const party:PlayerParty = bag.pc.party;
 
                 party.playerActionJoin(bag.pc);
 

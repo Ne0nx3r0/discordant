@@ -31,6 +31,12 @@ export default class PartyCommand extends Command{
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         const subCommand = params.length == 0 ? 'help' : params[0];
 
+        if(subCommand == 'rocking'){
+            message.channel.sendMessage(':tada: SORRY. FOR. PARTY. ROCKING. :tada:');
+
+            return;
+        }
+
         if(!this.subCommands.has(subCommand)){
             message.channel.sendMessage(`\`\`\`diff
 + Party commands +

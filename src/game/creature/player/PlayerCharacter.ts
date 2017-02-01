@@ -19,11 +19,7 @@ interface CurrentBattleData{
 
 interface CurrentPartyData{
     party:PlayerParty;
-}
-
-export interface PendingPartyInvite{
-    party:PlayerParty;
-    expires:number;
+    expires?:number;
 }
 
 interface PCConfig{
@@ -46,8 +42,7 @@ export default class PlayerCharacter extends Creature{
     uid:string;
     discriminator:number;
     currentBattleData:CurrentBattleData;
-    currentPartyData:CurrentPartyData;
-    pendingPartyInvite:PendingPartyInvite;
+    _currentPartyData:CurrentPartyData;
     class:CharacterClass;
     xp:number;
     wishes:number;
@@ -74,8 +69,7 @@ export default class PlayerCharacter extends Creature{
         this.karma = o.karma;
 
         this.currentBattleData = null;
-        this.currentPartyData = null;
-        this.pendingPartyInvite = null;
+        this._currentPartyData = null;
     }
 
     get inBattle():boolean{
@@ -83,16 +77,17 @@ export default class PlayerCharacter extends Creature{
     }
 
     get inParty():boolean{
-        return this.currentPartyData != null;
+        return this._currentPartyData != null && !this._currentPartyData.expires;
+    }
+
+    get party():PlayerParty{
+        return this._currentPartyData.party;
     }
 
     get hasPendingPartyInvite():boolean{
-        if(this.pendingPartyInvite != null){
-            if(this.pendingPartyInvite.expires > new Date().getTime()){
+        if(this._currentPartyData != null){
+            if(this._currentPartyData.expires > new Date().getTime()){
                 return true;
-            }
-            else{
-                this.pendingPartyInvite = null;
             }
         }
 
