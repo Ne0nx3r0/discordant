@@ -3,6 +3,7 @@ import Game from '../../../game/Game';
 import { CommandBag, DiscordMessage } from '../../Bot';
 import PartyNew from './PartyNew';
 import PartyInvite from './PartyInvite';
+import PartyJoin from './PartyJoin';
 import PartyLeave from './PartyLeave';
 import PartyDisband from './PartyDisband';
 import PermissionId from '../../../permissions/PermissionIds';
@@ -22,6 +23,7 @@ export default class PartyCommand extends Command{
 
         this.subCommands.set('new',new PartyNew());
         this.subCommands.set('invite',new PartyInvite());
+        this.subCommands.set('join',new PartyJoin());
         this.subCommands.set('leave',new PartyLeave());
         this.subCommands.set('disband',new PartyDisband());
     }
@@ -34,6 +36,8 @@ export default class PartyCommand extends Command{
 + Party commands +
 dparty new [name] - Create a new party
 dparty invite \<@username> - Invite a player to join
+dparty accept - accept a party invite
+dparty decline - decline a party invite
 dparty leave - Leave your current party
 dparty disband - Remove all members and delete the party
 \`\`\``);

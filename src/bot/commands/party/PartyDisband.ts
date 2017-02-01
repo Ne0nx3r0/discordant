@@ -28,10 +28,18 @@ export default class PartyDisband extends Command{
             return;
         }
 
+        const leaderUser = message.client.users.get(party.leader.uid);
+
+        leaderUser.sendMessage('Your party has been disbanded');
+
+        party.members.forEach(function(member){
+            const memberUser = message.client.users.get(member.uid);
+
+            memberUser.sendMessage('Your party has been disbanded');
+        });
+        
+        party.channel.delete();
+
         party.playerActionDisband();
-
-        const pcUser = message.client.users.get(bag.pc.uid);
-
-        pcUser.sendMessage('Your party has been disbanded');
     }
 }

@@ -54,14 +54,14 @@ export default class PartyNew extends Command{
 
                 invitedPC.pendingPartyInvite = {
                     party: party,
-                    expires: new Date().getTime()+30000
+                    expires: new Date().getTime()+60000
                 };
 
                 setTimeout(function() {
                     invitedPC.pendingPartyInvite = null;
 
                     message.channel.sendMessage('Invitation to '+invitedPC.title+' expired, '+bag.pc.title);
-                }, 30000);
+                }, 60000);
 
                 message.channel.sendMessage('<@'+invitedPC.uid+'>, you have been invited to join party '+party.title
                 +'\n\nYou can use `daccept` or `ddecline` or let the invite expire in 30 seconds');

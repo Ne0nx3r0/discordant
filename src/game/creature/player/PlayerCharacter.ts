@@ -21,7 +21,7 @@ interface CurrentPartyData{
     party:PlayerParty;
 }
 
-interface PendingPartyInvite{
+export interface PendingPartyInvite{
     party:PlayerParty;
     expires:number;
 }

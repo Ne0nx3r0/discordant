@@ -14,6 +14,7 @@ import {
     User as DiscordAuthor,
     MessageOptions as DiscordMessageOptions,
     PermissionOverwrites as DiscordPermissionOverwrites,
+    PermissionOverwriteOptions as DiscordPermissionOverwriteOptions,
     Guild as DiscordGuild
 } from 'discord.js';
 
@@ -24,6 +25,7 @@ export {
     DiscordAuthor,
     DiscordGuild,
     DiscordMessageOptions,
+    DiscordPermissionOverwriteOptions,
 }
 
 const SpawnArgs = require('spawn-args');
@@ -39,10 +41,15 @@ interface privateChannelFunc{
     (guild:DiscordGuild,partyName:string,pc:PlayerCharacter):Promise<DiscordTextChannel>;
 }
 
+interface grantPrivateChannelFunc{
+    (pc:PlayerCharacter,channel:DiscordTextChannel):Promise<void>;
+}
+
 export interface BotHandlers{
     commands:Map<String,Command>;
     setPlayingGame:setPlayingGameFunc;
     createPrivateChannel:privateChannelFunc;
+    grantAccessToPrivateChannel: grantPrivateChannelFunc;
 }
 
 export interface CommandBag{
@@ -93,96 +100,114 @@ export default class DiscordBot{
 
         let deleteChannelDelay = 0;
 
-        //Clean up any party channels
-        this.client.channels.array()
-        .forEach(function(channel:DiscordTextChannel,index:number){
-            if(channel.name.startsWith('party-')){
-                deleteChannelDelay = deleteChannelDelay + 2000;
+        try{
+            //Clean up any party channels
+            this.client.channels.array()
+            .forEach(function(channel:DiscordTextChannel,index:number){
+                if(channel.name && channel.name.startsWith('party-')){
+                    deleteChannelDelay = deleteChannelDelay + 2000;
 
-                setTimeout(function(){
-                    try{
-                        Logger.info('Deleting channel '+channel.id);
-                        
-                        channel.delete();
-                    }
-                    catch(ex){
-                        ex.msg = 'Error deleting channel';
+                    setTimeout(function(){
+                        try{
+                            Logger.info('Deleting channel '+channel.name);
+                            
+                            channel.delete();
+                        }
+                        catch(ex){
+                            ex.msg = 'Error deleting channel';
 
-                        Logger.error(ex);
-                    }
-                },deleteChannelDelay);
-            }
-        });
+                            Logger.error(ex);
+                        }
+                    },deleteChannelDelay);
+                }
+            });
+        }
+        catch(ex){
+            Logger.error(ex);
+        }
     }
 
     handleMessage(message:any){
-        // Ignore self
-        if(message.author.id == this.client.user.id){
-            return;
-        }
-
-        // Ignore bots
-        if(message.author.bot){
-            return;
-        }
-
-        if(!message.content.startsWith(COMMAND_PREFIX)){
-            return;
-        }
-
-        const messageRaw = message.content.substr(COMMAND_PREFIX.length);
-
-        const params = SpawnArgs(messageRaw,{ removequotes: 'always' });
-
-        const commandName = params[0].toUpperCase();
-
-        const command:Command = this.commands.get(commandName);
-
-        //Command not found
-        if(!command){
-            return;
-        }
-        
-        //trim the command title
-        params.shift();
-
-        const bag:CommandBag = {
-            bot:{            
-               commands: this.commands,
-               setPlayingGame: this.setPlayingGame,
-               createPrivateChannel: this.createPrivateChannel,
-            },
-            game: this.game,
-            message: message,
-        };
-
-        this.game.getPlayerCharacter(message.author.id)
-        .then((pc:PlayerCharacter)=>{
-            if(!pc && !command.allowAnonymous){
-                message.channel.sendMessage('You must first register with `dbegin`, '+message.author.username);
-
+        try{
+            // Ignore self
+            if(message.author.id == this.client.user.id){
                 return;
             }
 
-            bag.pc = pc;
-
-            if(!this.permissions.role(pc.role).has(command.permission)){
-                message.channel.sendMessage('You do not have permission to use `'+command.name+'`, '+pc.title);
-
+            // Ignore bots
+            if(message.author.bot){
                 return;
             }
 
-            command.run(params,message as DiscordMessage,bag);
-        })
-        .catch((error)=>{
-            let did = '';
-
-            if(error.stack){
-                did = Logger.error(error);
+            if(!message.content.startsWith(COMMAND_PREFIX)){
+                return;
             }
+
+            const messageRaw = message.content.substr(COMMAND_PREFIX.length);
+
+            const params = SpawnArgs(messageRaw,{ removequotes: 'always' });
+
+            const commandName = params[0].toUpperCase();
+
+            const command:Command = this.commands.get(commandName);
+
+            //Command not found
+            if(!command){
+                return;
+            }
+            
+            //trim the command title
+            params.shift();
+
+            const bag:CommandBag = {
+                bot:{            
+                    commands: this.commands,
+                    setPlayingGame: this.setPlayingGame,
+                    createPrivateChannel: this.createPrivateChannel,
+                    grantAccessToPrivateChannel: this.grantAccessToPrivateChannel,
+                },
+                game: this.game,
+                message: message,
+            };
+
+            this.game.getPlayerCharacter(message.author.id)
+            .then((pc:PlayerCharacter)=>{
+                if(!pc){
+                    if(command.allowAnonymous){
+                        command.run(params,message as DiscordMessage,bag);
+                    }
+                    else{
+                        message.channel.sendMessage('You must first register with `dbegin`, '+message.author.username);
+                    }
+
+                    return;
+                }
+
+                bag.pc = pc;
+
+                if(!this.permissions.role(pc.role).has(command.permission)){
+                    message.channel.sendMessage('You do not have permission to use `'+command.name+'`, '+pc.title);
+
+                    return;
+                }
+
+                command.run(params,message as DiscordMessage,bag);
+            })
+            .catch((error)=>{
+                let did = '';
+
+                if(error.stack){
+                    did = Logger.error(error);
+                }
+
+                message.channel.sendMessage('An unexpected error occurred, '+message.author.username+' '+did);
+            });
+        }
+        catch(ex){
+            const did = Logger.error(ex);
 
             message.channel.sendMessage('An unexpected error occurred, '+message.author.username+' '+did);
-        });
+        }
     }//handleMessage
 
     setPlayingGame(message:string){
@@ -216,5 +241,15 @@ export default class DiscordBot{
 
             throw 'An unexpected error occurred ('+did+')';
         }
+    }
+
+    async grantAccessToPrivateChannel(pc:PlayerCharacter,channel:DiscordTextChannel){
+        const overwrites = {
+            SEND_MESSAGES: true,
+            READ_MESSAGES: true,
+            ADD_REACTIONS: true,
+        } as DiscordPermissionOverwriteOptions;
+
+        await channel.overwritePermissions(pc.uid,overwrites);
     }
 }

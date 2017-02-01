@@ -8,6 +8,7 @@ enum PermissionId{
     Party,
     PartyNew,
     PartyInvite,
+    PartyJoin,
 
     Battle,
     BattleAttack,

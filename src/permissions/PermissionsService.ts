@@ -8,6 +8,7 @@ const playerPermissions = [
     PermissionId.Party,
     PermissionId.PartyNew,
     PermissionId.PartyInvite,
+    PermissionId.PartyJoin,
     PermissionId.Battle,
     PermissionId.BattleAttack,
     PermissionId.BattleOffhand,

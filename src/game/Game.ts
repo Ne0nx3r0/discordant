@@ -16,6 +16,7 @@ import Weapon from './item/Weapon';
 import Logger from '../util/Logger';
 import PlayerParty from './party/PlayerParty';
 import {DiscordTextChannel} from '../bot/Bot';
+import { PlayerPartyEvent, PartyDisbandedEvent } from './party/PlayerParty';
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
@@ -383,6 +384,10 @@ export default class Game{
         }
 
         const party = new PlayerParty(name,leader,channel);
+
+        party.on(PlayerPartyEvent.PartyDisbanded,(e:PartyDisbandedEvent)=>{
+            this.playerParties.delete(e.party.leader.uid);
+        });
 
         this.playerParties.set(leader.uid,party);
         

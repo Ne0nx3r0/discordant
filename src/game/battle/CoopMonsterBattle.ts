@@ -5,6 +5,7 @@ import WeaponAttackStep from '../item/WeaponAttackStep';
 import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
 import AttackStep from '../item/WeaponAttackStep';
+import EventDispatcher from '../../util/EventDispatcher';
 
 const winston = require('winston');
 
@@ -75,7 +76,11 @@ export default class CoopMonsterBattle{
     _currentAttack:WeaponAttack;
     _currentAttackStep:number;
 
+    _events:EventDispatcher;
+
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
+        this._events = new EventDispatcher();
+
         this._battleEnded = false;
 
         this.id = id;
@@ -314,38 +319,8 @@ export default class CoopMonsterBattle{
         });
     }
 
-    //Really need to abstract these into a generic class somehow but maintain CoopMonsterBattleEvent restriction
-    on(event:CoopMonsterBattleEvent,handler){
-        if(!this._handlers[event]){
-            this._handlers[event] = [];
-        }
-
-        this._handlers[event].push(handler);
-    }
-
-    off(event:CoopMonsterBattleEvent,handler){
-        const handlers = this._handlers[event];
-
-        if(handlers){
-            for(var i = handlers.length - 1; i >= 0; i--) {
-                if(handlers[i] == handler) {
-                    handlers.splice(i, 1);
-                }
-            }
-        }
-    }
-
-    dispatch(event:CoopMonsterBattleEvent,eventData){
-        //is anyone even listening?
-        if(this._handlers[event]){
-            this._handlers[event].forEach(function(handler){
-                try{
-                    handler(eventData);
-                }
-                catch(ex){
-                    winston.error('Error in handler',ex);
-                }
-            });
-        }
-    }
+    //Event methods
+    on(event:CoopMonsterBattleEvent,handler:Function){ this._events.on(event,handler); }
+    off(event:CoopMonsterBattleEvent,handler:Function){ this._events.off(event,handler); }
+    dispatch<T>(event:CoopMonsterBattleEvent,eventData:T){ this._events.dispatch(event,eventData); }
 }
