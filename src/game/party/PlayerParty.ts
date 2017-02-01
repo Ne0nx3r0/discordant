@@ -51,7 +51,9 @@ export default class PlayerParty{
 
         setTimeout(function(){
             //If this invite is still pending
-            if(pc._currentPartyData && pc._currentPartyData.party.id == party.id){
+            if(pc._currentPartyData 
+            && pc._currentPartyData.party.id == party.id
+            && 'expires' in pc._currentPartyData){
                 pc._currentPartyData = null;
             }
 

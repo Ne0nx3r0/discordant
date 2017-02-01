@@ -55,7 +55,7 @@ export default class PartyNew extends Command{
                 party.playerActionInvite(invitedPC);
 
                 message.channel.sendMessage('<@'+invitedPC.uid+'>, you have been invited to join party '+party.title
-                +'\n\nYou can use `daccept` or `ddecline` or let the invite expire in 1 minute');
+                +'\n\nYou can use `dparty join` or `dparty decline` or let the invite expire in 1 minute');
             }
             catch(ex){
                 errHandler(ex);

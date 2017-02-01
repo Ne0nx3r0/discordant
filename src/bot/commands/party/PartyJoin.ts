@@ -33,7 +33,7 @@ export default class PartyJoin extends Command{
 
                 await bag.bot.grantAccessToPrivateChannel(bag.pc,party.channel);
 
-                message.channel.sendMessage('Your party is waiting for you at <#'+party.channel.id+'> !');
+                message.channel.sendMessage('Your party is waiting for you at <#'+party.channel.id+'>, '+bag.pc.title+'!');
             }
             catch(ex){
                 errHandler(ex);
