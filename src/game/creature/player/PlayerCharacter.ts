@@ -9,6 +9,15 @@ import AttackStep from '../../item/WeaponAttackStep';
 import PlayerInventory from '../../item/PlayerInventory';
 import PlayerParty from '../../party/PlayerParty';
 
+enum PlayerPartyStatus{
+    NoParty,
+    InvitedToParty,
+    InParty,
+    LeadingParty
+}
+
+export {PlayerPartyStatus};
+
 interface CurrentBattleData{
     battle:CoopMonsterBattle;
     defeated:boolean;
@@ -17,9 +26,10 @@ interface CurrentBattleData{
     blocking:boolean,
 }
 
-interface CurrentPartyData{
-    party:PlayerParty;
-    expires?:number;
+interface PartyData{
+    status:PlayerPartyStatus;
+    inviteExpires?:number;
+    party?:PlayerParty;
 }
 
 interface PCConfig{
@@ -42,7 +52,8 @@ export default class PlayerCharacter extends Creature{
     uid:string;
     discriminator:number;
     currentBattleData:CurrentBattleData;
-    _currentPartyData:CurrentPartyData;
+    partyData:PartyData;
+    PlayerPartyStatus:PlayerPartyStatus;
     class:CharacterClass;
     xp:number;
     wishes:number;
@@ -69,7 +80,9 @@ export default class PlayerCharacter extends Creature{
         this.karma = o.karma;
 
         this.currentBattleData = null;
-        this._currentPartyData = null;
+        this.partyData = {
+            status: PlayerPartyStatus.NoParty
+        };
     }
 
     get inBattle():boolean{
@@ -77,22 +90,17 @@ export default class PlayerCharacter extends Creature{
     }
 
     get inParty():boolean{
-        return this._currentPartyData != null && !this._currentPartyData.expires;
+        return this.partyData.status == PlayerPartyStatus.InParty 
+        || this.partyData.status == PlayerPartyStatus.LeadingParty;
     }
 
     get party():PlayerParty{
-        return this._currentPartyData.party;
+        return this.partyData.party;
     }
 
     //Has party data but expires is set marking it as an invite
     get hasPendingPartyInvite():boolean{
-        if(this._currentPartyData != null){
-            if(this._currentPartyData.expires > new Date().getTime()){
-                return true;
-            }
-        }
-
-        return false;
+        return this.partyData.status == PlayerPartyStatus.InvitedToParty;
     }
 
     calculateDeathWishesLost():number{
