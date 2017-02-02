@@ -5,7 +5,7 @@ import PermissionId from '../../../permissions/PermissionIds';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
 
-export default class PartyNew extends Command{
+export default class PartyInvite extends Command{
     constructor(){
         super(
             'dparty invite',
@@ -16,14 +16,8 @@ export default class PartyNew extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.inParty){
-            message.channel.sendMessage('You are already in a party, '+bag.pc.title);
-
-            return;
-        }
-
-        if(!bag.pc.hasPendingPartyInvite){
-            message.channel.sendMessage('You are currently considering a party invite, '+bag.pc.title);
+        if(!bag.pc.isLeadingParty){
+            message.channel.sendMessage('You are not the party leader, '+bag.pc.title);
 
             return;
         }

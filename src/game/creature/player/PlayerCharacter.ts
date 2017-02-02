@@ -103,6 +103,10 @@ export default class PlayerCharacter extends Creature{
         return this.partyData.status == PlayerPartyStatus.InvitedToParty;
     }
 
+    get isLeadingParty():boolean{
+        return this.partyData.status == PlayerPartyStatus.LeadingParty;
+    }
+
     calculateDeathWishesLost():number{
         return this.wishes / 2;
     }
