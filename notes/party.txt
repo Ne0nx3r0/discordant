@@ -15,3 +15,10 @@ dpaccept
 
 
 Pay fee to join party if they are far away
+
+
+non-leaders can:
+scavenge
+    -> maybe advanced scavenging can scavenge nearby areas
+scout
+set ambushes
