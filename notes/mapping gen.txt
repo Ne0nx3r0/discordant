@@ -1,0 +1,7 @@
+Start with tiled map export
+
+Iterate through map image from x=1,y=1 to x=limit,y=limit and crop the image
+
+overlay the HUD on top of the cropped images
+
+export the images using a naming scheme so they can be identified by x,y

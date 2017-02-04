@@ -20,7 +20,7 @@ export default new Weapon(
                     '{attacker} swings a fist at {defender}',
                     1,
                     function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(5,attacker.stats.Strength*2);
+                        const physicalDamage = DamageScaling.ByAttribute(5,attacker.stats.Agility*2);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)

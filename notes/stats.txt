@@ -1,0 +1,5 @@
+Strength: required to use heavy weapons, increases cold resistance
+Agility: required to use light weapons, increases fire resistance
+Vitality: increases hp
+Spirit: required to use legends
+Luck: Chance for criticals, increases thunder resistance

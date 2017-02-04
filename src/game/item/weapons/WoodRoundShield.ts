@@ -6,6 +6,7 @@ import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
 
+//TODO: Add passive resistances to shields
 export default new Weapon(
     ItemId.WoodRoundShield,
     'Wood Round Shield',

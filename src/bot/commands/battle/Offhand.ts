@@ -24,30 +24,28 @@ export default class ChannelId extends Command{
 
         const wantedAttackStr = params.join(' ').toUpperCase();
 
-        function playerAttack(pc:PlayerCharacter){
-            const pcWeaponOffhand = pc.equipment.offhandweapon;
-            let attack;
-            
-            if(params.length == 0){
-                attack = pcWeaponOffhand.attacks[0];
-            }
-            else{
-                attack = pcWeaponOffhand.findAttack(wantedAttackStr);
-            }
+        const pcWeaponOffhand = bag.pc.equipment.offhandweapon;
+        let attack;
+        
+        if(params.length == 0){
+            attack = pcWeaponOffhand.attacks[0];
+        }
+        else{
+            attack = pcWeaponOffhand.findAttack(wantedAttackStr);
+        }
 
-            if(!attack){
-                let validAttacks = '';
+        if(!attack){
+            let validAttacks = '';
 
-                pcWeaponOffhand.attacks.forEach((attack)=>{
-                    validAttacks += ', '+attack.title;
-                });
+            pcWeaponOffhand.attacks.forEach((attack)=>{
+                validAttacks += ', '+attack.title;
+            });
 
-                message.channel.sendMessage(wantedAttackStr+' is not a valid attack, '+bag.pc.title+'. '+pcWeaponOffhand.title+' has: '+validAttacks.substr(2));
-            }
-            else{
-                pc.currentBattleData.battle.playerActionAttack(pc,attack)
-                .catch(function(error){message.channel.sendMessage(error+', '+bag.pc.title);});
-            }
+            message.channel.sendMessage(wantedAttackStr+' is not a valid attack, '+bag.pc.title+'. '+pcWeaponOffhand.title+' has: '+validAttacks.substr(2));
+        }
+        else{
+            bag.pc.currentBattleData.battle.playerActionAttack(bag.pc,attack)
+            .catch(function(error){message.channel.sendMessage(error+', '+bag.pc.title);});
         }
     }
 }
