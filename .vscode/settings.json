@@ -4,8 +4,6 @@
         "node_modules/": true,
         "**/*.js": true,
         "**/*.js.map": true
-    }
-,
-"vsicons.presets.angular": false,
-"typescript.check.workspaceVersion": false
+    },
+    "vsicons.presets.angular": false
 }

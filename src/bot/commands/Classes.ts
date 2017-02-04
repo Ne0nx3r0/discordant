@@ -8,11 +8,15 @@ import PermissionId from '../../permissions/PermissionIds';
 export default class Classes extends Command{
     constructor(){
         super(
-            'classes',
+            'class',
             'Shows information on starting classes',
-            'classes [name]',
+            'class [name]',
             PermissionId.Classes
         );
+
+        this.allowAnonymous = true;
+
+        this.aliases = ['classes'];
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
