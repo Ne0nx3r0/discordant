@@ -86,12 +86,6 @@ export default class DiscordBot{
             const command:Command = new Commands[commandName];
 
             this.commands.set(commandName.toUpperCase(),command);
-
-            if(command.aliases){
-                command.aliases.forEach((aliasStr)=>{
-                    
-                });
-            }
         });
 
         this.setPlayingGame = this.setPlayingGame.bind(this);

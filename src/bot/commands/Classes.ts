@@ -15,8 +15,6 @@ export default class Classes extends Command{
         );
 
         this.allowAnonymous = true;
-
-        this.aliases = ['classes'];
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){

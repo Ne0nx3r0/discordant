@@ -10,7 +10,6 @@ export default class Command{
     usage:String;
     permission:PermissionId;
     allowAnonymous:boolean;//set true to allow unregistered players to use the command
-    aliases:Array<string>;//Set any aliases for a command here
 
     constructor(name:string,description:string,usage:string,permission:PermissionId){
         this.name = name;
