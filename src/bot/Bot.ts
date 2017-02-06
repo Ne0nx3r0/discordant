@@ -239,6 +239,7 @@ export default class DiscordBot{
             const channel:DiscordTextChannel = await guild.createChannel(channelname,'text',overwrites) as DiscordTextChannel;
 
             channel.overwritePermissions(pc.uid,{
+                READ_MESSAGES: true,
                 SEND_MESSAGES: true
             });
 
