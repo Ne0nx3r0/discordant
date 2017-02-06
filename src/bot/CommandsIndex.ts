@@ -18,3 +18,4 @@ export { default as SetBotStatus } from "./commands/SetBotStatus";
 //export { default as EvalCommand} from './commands/Eval';
 
 export { default as Party } from "./commands/party/PartyCommand";
+export { default as Explore } from "./commands/Explore";
