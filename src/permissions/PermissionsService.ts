@@ -1,4 +1,5 @@
 import PermissionId from './PermissionIds';
+import PartyExplore from '../bot/commands/party/PartyExplore';
 
 //Hard coded permissions assigned to each role
 const playerPermissions = [
@@ -9,6 +10,8 @@ const playerPermissions = [
     PermissionId.PartyNew,
     PermissionId.PartyInvite,
     PermissionId.PartyJoin,
+    PermissionId.PartyExplore,
+    PermissionId.PartyMove,
     PermissionId.Battle,
     PermissionId.BattleAttack,
     PermissionId.BattleOffhand,

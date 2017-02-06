@@ -9,8 +9,8 @@ enum PermissionId{
     PartyNew,
     PartyInvite,
     PartyJoin,
-
-    Explore,
+    PartyExplore,
+    PartyMove,
 
     Battle,
     BattleAttack,

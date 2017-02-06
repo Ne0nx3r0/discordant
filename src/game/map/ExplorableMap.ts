@@ -41,8 +41,8 @@ export default class{
         }
     }
 
-    getMapSlicePath(x:number,y:number){
-        return '../../../assets/maps/'+this.name+'/slices/'+x+'-'+y+'.png';
+    getMapSlicePath(x:number,y:number):string{
+        return './assets/maps/'+this.name+'/slices/'+x+'-'+y+'.png';
     }
 
     getStartingPoint():StartingPoint{

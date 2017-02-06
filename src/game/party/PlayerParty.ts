@@ -3,8 +3,20 @@ import {PlayerPartyStatus} from '../creature/player/PlayerCharacter';
 import {DiscordTextChannel} from '../../bot/Bot';
 import EventDispatcher from '../../util/EventDispatcher';
 import PartyDisband from '../../bot/commands/party/PartyDisband';
+import PartyExploringMap from './PartyExploringMap';
+import ExplorableMap from '../map/ExplorableMap';
+import {PartyMoveDirection} from './PartyExploringMap';
+import PartyMove from '../../bot/commands/party/PartyMove';
 
 const INVITE_EXPIRES_MS = 60000;
+
+enum PartyStatus{
+    InTown,
+    Exploring,
+    Battling
+}
+
+export {PartyStatus};
 
 export default class PlayerParty{
     leader:PlayerCharacter;
@@ -12,6 +24,8 @@ export default class PlayerParty{
     members:Map<string,PlayerCharacter>;
     invited:Map<string,PlayerCharacter>;
     channel:DiscordTextChannel;
+    partyStatus:PartyStatus;
+    exploration:PartyExploringMap;
 
     _events: EventDispatcher;
 
@@ -21,6 +35,7 @@ export default class PlayerParty{
         this.channel = channel;
         this.members = new Map();
         this.invited = new Map();
+        this.partyStatus = PartyStatus.InTown;
 
         this.leader.partyData = {
             party: this,
@@ -32,6 +47,33 @@ export default class PlayerParty{
 
     get id():string{
         return this.leader.uid;
+    }
+
+    get status():PartyStatus{
+        return this.partyStatus;
+    }
+
+    explore(map:ExplorableMap){
+        this.exploration = new PartyExploringMap(map);
+        this.partyStatus = PartyStatus.Exploring;
+
+        const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
+
+        this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party arrives...');
+    }
+
+    move(direction:PartyMoveDirection){
+        if(!this.exploration.canMove(direction)){
+            this.channel.sendMessage('The party cannot move '+direction+', the way is impassably blocked by a small bush or something.');
+
+            return;
+        }
+
+        this.exploration.move(direction);
+
+        const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
+
+        this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party moved');
     }
 
     playerActionInvite(pc:PlayerCharacter){
@@ -147,7 +189,8 @@ export enum PlayerPartyEvent{
     PlayerInvited,
     PlayerDeclined,
     PlayerLeft,
-    PartyDisbanded
+    PartyDisbanded,
+    PartyAtNewLocation,
 }
 
 export interface PlayerJoinedEvent{
@@ -172,4 +215,8 @@ export interface PlayerLeftEvent{
 
 export interface PartyDisbandedEvent{
     party:PlayerParty
+}
+
+export interface PartyAtNewLocationEvent{
+    imageSrc:string;
 }

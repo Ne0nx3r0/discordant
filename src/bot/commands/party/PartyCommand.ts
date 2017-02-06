@@ -7,6 +7,8 @@ import PartyDisband from './PartyDisband';
 import PartyJoin from './PartyJoin';
 import PartyLeave from './PartyLeave';
 import PartyDecline from './PartyDecline';
+import PartyExplore from './PartyExplore';
+import PartyMove from './PartyMove';
 import PermissionId from '../../../permissions/PermissionIds';
 
 export default class PartyCommand extends Command{
@@ -28,6 +30,11 @@ export default class PartyCommand extends Command{
         this.subCommands.set('leave',new PartyLeave());
         this.subCommands.set('disband',new PartyDisband());
         this.subCommands.set('decline',new PartyDecline());
+        this.subCommands.set('explore',new PartyExplore());
+        this.subCommands.set('left',new PartyMove('left'));
+        this.subCommands.set('up',new PartyMove('up'));
+        this.subCommands.set('down',new PartyMove('down'));
+        this.subCommands.set('right',new PartyMove('right'));
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
@@ -50,6 +57,11 @@ dparty join - accept a party invite
 dparty decline - decline a party invite
 dparty leave - Leave your current party
 dparty disband - Remove all members and delete the party
+dparty explore - Go out and explore
+dparty left - go left on the current map
+dparty right - go right on the current map
+dparty up - go up on the current map
+dparty down - go down on the current map
 \`\`\``);
 
             return;
