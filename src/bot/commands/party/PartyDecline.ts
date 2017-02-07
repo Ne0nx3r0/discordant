@@ -16,13 +16,13 @@ export default class PartyDecline extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.hasPendingPartyInvite){
+        if(!bag.pc.isConsideringPartyInvite){
             message.channel.sendMessage('You do not have a pending party invitation, '+bag.pc.title);
 
             return;
         }
         
-        bag.pc.party.playerActionDecline(bag.pc);
+        bag.pc.partyData.party.playerActionDecline(bag.pc);
 
         message.channel.sendMessage('Party invitation declined, '+bag.pc.title);
     }

@@ -10,6 +10,7 @@ import PartyMove from '../../bot/commands/party/PartyMove';
 import CoopMonsterBattle from '../battle/CoopMonsterBattle';
 import Game from '../Game';
 import Goblin from '../creature/monsters/Goblin';
+import { CoopMonsterBattleEvent, BattleEndEvent } from '../battle/CoopMonsterBattle';
 
 const INVITE_EXPIRES_MS = 60000;
 
@@ -24,7 +25,7 @@ export {PartyStatus};
 export default class PlayerParty{
     leader:PlayerCharacter;
     title: string;
-    members:Array<PlayerCharacter>;
+    members:Map<string,PlayerCharacter>;
     invited:Map<string,PlayerCharacter>;
     channel:DiscordTextChannel;
     partyStatus:PartyStatus;
@@ -38,7 +39,10 @@ export default class PlayerParty{
         this.leader = leader;
         this.title = title;
         this.channel = channel;
-        this.members = [];
+
+        this.members = new Map();
+        this.members.set(leader.uid,leader);
+
         this.invited = new Map();
         this.partyStatus = PartyStatus.InTown;
         this.game = game;
@@ -88,11 +92,31 @@ export default class PlayerParty{
     }
 
     monsterEncounter(){
-        this.game.createMonsterBattle(this.members,new Goblin())
+        const partyMembers = [];
+
+        this.members.forEach(function(pc){
+            partyMembers.push(pc);
+        });
+
+        this.game.createMonsterBattle(partyMembers,new Goblin())
         .then((battle:CoopMonsterBattle)=>{
             this.currentBattle = battle; 
+            this.partyStatus = PartyStatus.Battling;
 
-            
+            battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+                if(e.victory){
+                    this.partyStatus = PartyStatus.Exploring;
+                }
+                else{
+                    this.members.forEach((pc)=>{
+                        this.channel.client.users.get(pc.uid).sendMessage('Your party was defeated!');
+                    });
+
+                    this.playerActionDisband();
+                }
+
+                this.currentBattle = null;
+            });
         })
         .catch((err)=>{
             this.channel.sendMessage('Error occured while finding encounter: '+err);
@@ -199,6 +223,18 @@ export default class PlayerParty{
         };
 
         this.dispatch(PlayerPartyEvent.PartyDisbanded,eventData);
+    }
+
+    get isInBattle():boolean{
+        return this.partyStatus == PartyStatus.Battling;
+    }
+
+    get isInTown():boolean{
+        return this.partyStatus == PartyStatus.InTown;
+    }
+
+    get isExploring():boolean{
+        return this.partyStatus == PartyStatus.Exploring;
     }
 
     //Event methods

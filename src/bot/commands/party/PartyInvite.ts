@@ -1,6 +1,7 @@
 import Command from '../../Command';
 import Game from '../../../game/Game';
 import { CommandBag, DiscordMessage, DiscordTextChannel } from '../../Bot';
+import {PartyStatus} from '../../../game/party/PlayerParty';
 import PermissionId from '../../../permissions/PermissionIds';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
@@ -18,6 +19,12 @@ export default class PartyInvite extends Command{
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         if(!bag.pc.isLeadingParty){
             message.channel.sendMessage('You are not the party leader, '+bag.pc.title);
+
+            return;
+        }
+
+        if(!bag.pc.partyData.party.isInTown){
+            message.channel.sendMessage('Your party has already left town, '+bag.pc.title);
 
             return;
         }
@@ -44,19 +51,19 @@ export default class PartyInvite extends Command{
                     return;
                 }
 
-                if(invitedPC.inParty){
+                if(invitedPC.isInParty){
                     message.channel.sendMessage(invitedPC.title+' is already in a party, '+bag.pc.title);
 
                     return;
                 }
                 
-                if(invitedPC.hasPendingPartyInvite){
+                if(invitedPC.isConsideringPartyInvite){
                     message.channel.sendMessage(invitedPC.title+' is considering another party invite, '+bag.pc.title);
 
                     return;
                 }
 
-                const party = bag.pc.party;
+                const party = bag.pc.partyData.party;
 
                 party.playerActionInvite(invitedPC);
 

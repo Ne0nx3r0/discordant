@@ -85,13 +85,12 @@ export default class PlayerCharacter extends Creature{
         };
     }
 
-    get inBattle():boolean{
-        return this.currentBattleData != null;
+    calculateDeathWishesLost():number{
+        return this.wishes / 2;
     }
 
-    get inParty():boolean{
-        return this.partyData.status == PlayerPartyStatus.InParty 
-        || this.partyData.status == PlayerPartyStatus.LeadingParty;
+    calculateDeathXPLost():number{
+        return this.xp * 0.01;
     }
 
     get party():PlayerParty{
@@ -99,19 +98,20 @@ export default class PlayerCharacter extends Creature{
     }
 
     //Has party data but expires is set marking it as an invite
-    get hasPendingPartyInvite():boolean{
+    get isConsideringPartyInvite():boolean{
         return this.partyData.status == PlayerPartyStatus.InvitedToParty;
+    }
+
+    get isInParty():boolean{
+        return this.partyData.status == PlayerPartyStatus.InParty 
+        || this.partyData.status == PlayerPartyStatus.LeadingParty;
     }
 
     get isLeadingParty():boolean{
         return this.partyData.status == PlayerPartyStatus.LeadingParty;
     }
 
-    calculateDeathWishesLost():number{
-        return this.wishes / 2;
-    }
-
-    calculateDeathXPLost():number{
-        return this.xp * 0.01;
+    get isInBattle():boolean{
+        return this.partyData.party.isInBattle;
     }
 }

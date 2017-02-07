@@ -32,7 +32,7 @@ export default class Battle extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(bag.pc.inBattle){
+        if(bag.pc.isInBattle){
             message.channel.sendMessage('You are in a battle already, defend yourself!');
 
             return;

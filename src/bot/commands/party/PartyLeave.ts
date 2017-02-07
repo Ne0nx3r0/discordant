@@ -14,7 +14,7 @@ export default class PartyLeave extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.inParty){
+        if(!bag.pc.isInParty){
             message.channel.sendMessage('You are not currently in a party, '+bag.pc.title);
 
             return;

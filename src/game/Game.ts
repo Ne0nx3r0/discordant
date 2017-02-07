@@ -221,7 +221,7 @@ export default class Game{
             for(var i=0;i<players.length;i++){
                 const player:PlayerCharacter = players[i];
 
-                if(player.inBattle){
+                if(player.isInBattle){
                     reject(player.title + ' is already in a battle');
 
                     return;
@@ -379,7 +379,7 @@ export default class Game{
     }
 
     createPlayerParty(name:string,leader:PlayerCharacter,channel:DiscordTextChannel):PlayerParty{
-        if(leader.inParty){
+        if(leader.isInParty){
             throw 'You are already in a party';
         }
 

@@ -223,10 +223,6 @@ export default class DiscordBot{
     }
 
     async createPrivateChannel(guild:DiscordGuild,partyName:string,pc:PlayerCharacter):Promise<DiscordTextChannel>{
-        if(pc.inParty){
-            throw 'You are already in a party';
-        }
-
         try{
             const channelname = 'party-'+partyName
                 .replace(/[^A-Za-z0-9-]+/g,'')

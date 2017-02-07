@@ -3,6 +3,7 @@ import Game from '../../../game/Game';
 import { CommandBag, DiscordMessage, DiscordTextChannel } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
 import PlayerParty from '../../../game/party/PlayerParty';
+import {PartyStatus} from '../../../game/party/PlayerParty';
 
 const TAG_REGEX = new RegExp(/<@([0-9]+)>/);
 
@@ -17,17 +18,23 @@ export default class PartyJoin extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.hasPendingPartyInvite){
+        if(!bag.pc.isConsideringPartyInvite){
             message.channel.sendMessage('You do not have a pending invite, '+bag.pc.title);
 
             return;
-        }       
+        }     
+
+        if(!bag.pc.partyData.party.isInTown){
+            message.channel.sendMessage('That party has already left town, '+bag.pc.title);
+
+            return;
+        }  
 
         const errHandler = this.handleError(bag);
 
         (async function(){
             try{
-                const party:PlayerParty = bag.pc.party;
+                const party:PlayerParty = bag.pc.partyData.party;
 
                 party.playerActionJoin(bag.pc);
 

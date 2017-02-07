@@ -20,6 +20,10 @@ export default class PartyNew extends Command{
             return;
         }
 
+        if(bag.pc.isInParty){
+            
+        }
+
         const errHandler = this.handleError(bag);
 
         (async function(){

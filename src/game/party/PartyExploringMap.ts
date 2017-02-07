@@ -1,11 +1,13 @@
 import ExplorableMap from '../map/ExplorableMap';
-import EventDispatcher from '../../util/EventDispatcher';
+
+type PartyMoveDirection = 'up' | 'left' | 'down' | 'right';
+
+export {PartyMoveDirection}
 
 export default class PartyExploringMap{
     map:ExplorableMap;
     currentX:number;
     currentY:number;
-    _events:EventDispatcher;
 
     constructor(map:ExplorableMap){
         this.map = map;
@@ -14,8 +16,6 @@ export default class PartyExploringMap{
 
         this.currentX = startingPoint.x;
         this.currentY = startingPoint.y;
-        
-        this._events = new EventDispatcher();
     }
 
     getCurrentLocationImage(){
@@ -39,19 +39,4 @@ export default class PartyExploringMap{
     getEncounterChance():number{
         return this.map.getEncounterChance();
     }
-
-    //Event methods
-    on(event:PartyExploringMapEvent,handler:Function){ this._events.on(event,handler); }
-    off(event:PartyExploringMapEvent,handler:Function){ this._events.off(event,handler); }
-    dispatch<T>(event:PartyExploringMapEvent,eventData:T){ this._events.dispatch(event,eventData); }
 }
-
-enum PartyExploringMapEvent{
-    
-}
-
-export {PartyExploringMapEvent};
-
-type PartyMoveDirection = 'up' | 'left' | 'down' | 'right';
-
-export {PartyMoveDirection}

@@ -20,7 +20,7 @@ export default class ChannelId extends Command{
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         const wantedAttackStr = params.join(' ').toUpperCase();
 
-        if(!bag.pc.inBattle){
+        if(!bag.pc.isInBattle){
             message.channel.sendMessage('You are not currently in a battle, '+bag.pc.title);
         }
 
