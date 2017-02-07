@@ -383,7 +383,7 @@ export default class Game{
             throw 'You are already in a party';
         }
 
-        const party = new PlayerParty(name,leader,channel);
+        const party = new PlayerParty(name,leader,channel,this);
 
         party.on(PlayerPartyEvent.PartyDisbanded,(e:PartyDisbandedEvent)=>{
             this.playerParties.delete(e.party.id);

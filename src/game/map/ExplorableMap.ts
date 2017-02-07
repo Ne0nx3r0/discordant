@@ -10,7 +10,7 @@ interface MapLayer{
     data:Array<number>;
 }
 
-interface MapData{
+interface MapJson{
     layers:Array<MapLayer>;
     height:number;
     width:number;
@@ -18,17 +18,23 @@ interface MapData{
     tilewidth:number;
 }
 
+interface MapDataJson{
+    encounterChance:number;
+}
+
 export default class{
     name:string;
     triggersLayer:number;
-    mapData:MapData;
+    mapJson:MapJson;
+    mapDataJson:MapDataJson;
 
-    constructor(name:string,mapData:MapData){
+    constructor(name:string,mapJson:MapJson,mapDataJson:MapDataJson){
         this.name = name;
-        this.mapData = mapData;
+        this.mapJson = mapJson;
+        this.mapDataJson = mapDataJson;
         
-        for(var i=0;i<this.mapData.layers.length;i++){
-            const layer = this.mapData.layers[i];
+        for(var i=0;i<this.mapJson.layers.length;i++){
+            const layer = this.mapJson.layers[i];
 
             if(layer.name == 'triggers'){
                 this.triggersLayer = i;
@@ -46,13 +52,13 @@ export default class{
     }
 
     getStartingPoint():StartingPoint{
-        const triggerData = this.mapData.layers[this.triggersLayer].data;
+        const triggerData = this.mapJson.layers[this.triggersLayer].data;
 
         for(var i=0;i<triggerData.length;i++){
             if(triggerData[i] == TRIGGER_START_POINT){
                 return {
-                    x: i % this.mapData.width + 1,
-                    y: Math.floor(i/this.mapData.width)+1,
+                    x: i % this.mapJson.width + 1,
+                    y: Math.floor(i/this.mapJson.width)+1,
                 };
             }
         }
@@ -61,6 +67,10 @@ export default class{
     }
 
     isWalkable(x,y):boolean{
-        return this.mapData.layers[1].data[(y-1)*this.mapData.width+x-1] == 0;
+        return this.mapJson.layers[1].data[(y-1)*this.mapJson.width+x-1] == 0;
+    }
+
+    getEncounterChance(){
+        return this.mapDataJson.encounterChance;
     }
 }

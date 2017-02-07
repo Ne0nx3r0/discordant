@@ -36,6 +36,10 @@ export default class PartyExploringMap{
         else if(direction == 'right') this.currentX += 1;
     }
 
+    getEncounterChance():number{
+        return this.map.getEncounterChance();
+    }
+
     //Event methods
     on(event:PartyExploringMapEvent,handler:Function){ this._events.on(event,handler); }
     off(event:PartyExploringMapEvent,handler:Function){ this._events.off(event,handler); }

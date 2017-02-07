@@ -7,6 +7,9 @@ import PartyExploringMap from './PartyExploringMap';
 import ExplorableMap from '../map/ExplorableMap';
 import {PartyMoveDirection} from './PartyExploringMap';
 import PartyMove from '../../bot/commands/party/PartyMove';
+import CoopMonsterBattle from '../battle/CoopMonsterBattle';
+import Game from '../Game';
+import Goblin from '../creature/monsters/Goblin';
 
 const INVITE_EXPIRES_MS = 60000;
 
@@ -21,21 +24,25 @@ export {PartyStatus};
 export default class PlayerParty{
     leader:PlayerCharacter;
     title: string;
-    members:Map<string,PlayerCharacter>;
+    members:Array<PlayerCharacter>;
     invited:Map<string,PlayerCharacter>;
     channel:DiscordTextChannel;
     partyStatus:PartyStatus;
     exploration:PartyExploringMap;
+    currentBattle:CoopMonsterBattle;
+    game:Game;
 
     _events: EventDispatcher;
 
-    constructor(title:string,leader:PlayerCharacter,channel:DiscordTextChannel){
+    constructor(title:string,leader:PlayerCharacter,channel:DiscordTextChannel,game:Game){
         this.leader = leader;
         this.title = title;
         this.channel = channel;
-        this.members = new Map();
+        this.members = [];
         this.invited = new Map();
         this.partyStatus = PartyStatus.InTown;
+        this.game = game;
+        this.currentBattle = null;
 
         this.leader.partyData = {
             party: this,
@@ -74,6 +81,22 @@ export default class PlayerParty{
         const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
 
         this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party moved');
+
+        if(this.exploration.getEncounterChance() > Math.random()){
+            this.monsterEncounter();
+        }
+    }
+
+    monsterEncounter(){
+        this.game.createMonsterBattle(this.members,new Goblin())
+        .then((battle:CoopMonsterBattle)=>{
+            this.currentBattle = battle; 
+
+            
+        })
+        .catch((err)=>{
+            this.channel.sendMessage('Error occured while finding encounter: '+err);
+        });
     }
 
     playerActionInvite(pc:PlayerCharacter){
