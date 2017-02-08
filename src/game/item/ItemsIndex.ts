@@ -5,3 +5,5 @@ export { default as WoodRoundShield } from './weapons/WoodRoundShield';
 export { default as WornLeathers } from './clothing/WornLeathers';
 export { default as TabletOfHealing } from './weapons/TabletOfHealing';
 export { default as SonicLongsword } from './weapons/SonicLongsword';
+
+export { default as HealingVial } from './misc/HealingVial';
