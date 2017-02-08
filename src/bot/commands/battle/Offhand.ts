@@ -20,6 +20,14 @@ export default class ChannelId extends Command{
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         if(!bag.pc.isInBattle){
             message.channel.sendMessage('You are not currently in a battle, '+bag.pc.title);
+            
+            return;
+        }
+        
+        if(bag.pc.party.channel.id != message.channel.id){
+            message.channel.sendMessage('Your battle is in <#'+bag.pc.party.channel.id+'>, '+bag.pc.title);
+
+            return;
         }
 
         const wantedAttackStr = params.join(' ').toUpperCase();
@@ -44,7 +52,7 @@ export default class ChannelId extends Command{
             message.channel.sendMessage(wantedAttackStr+' is not a valid attack, '+bag.pc.title+'. '+pcWeaponOffhand.title+' has: '+validAttacks.substr(2));
         }
         else{
-            bag.pc.currentBattleData.battle.playerActionAttack(bag.pc,attack)
+            bag.pc.battleData.battle.playerActionAttack(bag.pc,attack)
             .catch(function(error){message.channel.sendMessage(error+', '+bag.pc.title);});
         }
     }

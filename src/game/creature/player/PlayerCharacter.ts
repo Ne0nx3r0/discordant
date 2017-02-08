@@ -18,7 +18,7 @@ enum PlayerPartyStatus{
 
 export {PlayerPartyStatus};
 
-interface CurrentBattleData{
+interface BattleData{
     battle:CoopMonsterBattle;
     defeated:boolean;
     attackExhaustion:number,
@@ -51,7 +51,7 @@ interface PCConfig{
 export default class PlayerCharacter extends Creature{
     uid:string;
     discriminator:number;
-    currentBattleData:CurrentBattleData;
+    battleData:BattleData;
     partyData:PartyData;
     PlayerPartyStatus:PlayerPartyStatus;
     class:CharacterClass;
@@ -79,7 +79,7 @@ export default class PlayerCharacter extends Creature{
         this.role = o.role;
         this.karma = o.karma;
 
-        this.currentBattleData = null;
+        this.battleData = null;
         this.partyData = {
             status: PlayerPartyStatus.NoParty
         };

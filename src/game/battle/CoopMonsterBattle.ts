@@ -88,7 +88,7 @@ export default class CoopMonsterBattle{
         this.defeatedPCs = [];
 
         this.pcs.forEach((pc)=>{
-            pc.currentBattleData = {
+            pc.battleData = {
                 battle: this,
                 defeated: false,
                 attackExhaustion: 1,//pc can't attack the mob until the mob attacks the pc
@@ -145,7 +145,7 @@ export default class CoopMonsterBattle{
             //damages calculates resistances
             const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,pc);
 
-            if(pc.currentBattleData.blocking){
+            if(pc.battleData.blocking){
                 Object.keys(pcDamages).forEach(function(type){
                     pcDamages[type] = Math.floor(pcDamages[type] * (1-pc.damageBlocked));
                 });
@@ -160,10 +160,10 @@ export default class CoopMonsterBattle{
             eventData.players.push({
                 pc:pc,
                 damages:pcDamages,
-                blocked:pc.currentBattleData.blocking,
+                blocked:pc.battleData.blocking,
             });
 
-            pc.currentBattleData.blocking = false;
+            pc.battleData.blocking = false;
         });
 
         this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);
@@ -178,7 +178,7 @@ export default class CoopMonsterBattle{
 
                 this.pcs.splice(this.pcs.indexOf(pc),1);
 
-                pc.currentBattleData.defeated = true;
+                pc.battleData.defeated = true;
 
                 this.defeatedPCs.push(pc);
                 
@@ -187,21 +187,23 @@ export default class CoopMonsterBattle{
         });
 
         //drain a step of any queued attacks players have
-        this.pcs.some((pc:PlayerCharacter)=>{
+        for(var i=0;i<this.pcs.length;i++){
+            const pc = this.pcs[i];
+            
             //one queued attack per round
-            if(pc.currentBattleData.queuedAttacks.length>0){
-                const attackStep = pc.currentBattleData.queuedAttacks.shift();
+            if(pc.battleData.queuedAttacks.length>0){
+                const attackStep = pc.battleData.queuedAttacks.shift();
 
                 this._sendAttackStep(pc,attackStep);
             }
 
             //remove one exhaustion point each round
-            if(pc.currentBattleData.attackExhaustion>0){
-                pc.currentBattleData.attackExhaustion--;
+            if(pc.battleData.attackExhaustion>0){
+                pc.battleData.attackExhaustion--;
             }
 
-            return !this._battleEnded;
-        });
+            if(this._battleEnded) break;
+        }
 
         if(this.pcs.length == 0){
             this.endBattle(false);
@@ -210,21 +212,21 @@ export default class CoopMonsterBattle{
 
     playerActionBlock(pc:PlayerCharacter){
         return new Promise((resolve,reject)=>{
-            if(pc.currentBattleData.blocking){
+            if(pc.battleData.blocking){
                 reject('You are already blocking');
             }
-            else if(pc.currentBattleData.defeated){
+            else if(pc.battleData.defeated){
                 reject('You have already been defeated :(');
             }
-            else if(pc.currentBattleData.attackExhaustion > 0){
+            else if(pc.battleData.attackExhaustion > 0){
                 reject('You are too exhausted to block!');
             }
             else if(this.pcs.indexOf(pc)){
                 reject('You are not in this battle');
             }
             else{
-                pc.currentBattleData.attackExhaustion++;
-                pc.currentBattleData.blocking = true;
+                pc.battleData.attackExhaustion++;
+                pc.battleData.blocking = true;
 
                 const eventData:PlayerBlockedEvent = {
                     pc:pc
@@ -239,13 +241,13 @@ export default class CoopMonsterBattle{
 
     playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack){
         return new Promise((resolve,reject)=>{
-            if(pc.currentBattleData.blocking){
+            if(pc.battleData.blocking){
                 reject('You are currently blocking');
             }
-            else if(pc.currentBattleData.defeated){
+            else if(pc.battleData.defeated){
                 reject('You have already been defeated :(');
             }
-            else if(pc.currentBattleData.attackExhaustion > 0){
+            else if(pc.battleData.attackExhaustion > 0){
                 reject('You are too exhausted to attack!');
             }
             else if(this.pcs.indexOf(pc)){
@@ -255,7 +257,7 @@ export default class CoopMonsterBattle{
                 this._sendAttackStep(pc,attack.steps[0]);
 
                 if(!this._battleEnded && attack.steps.length>1){
-                    pc.currentBattleData.queuedAttacks = attack.steps.slice(1);
+                    pc.battleData.queuedAttacks = attack.steps.slice(1);
                 }
 
                 resolve();
@@ -266,7 +268,7 @@ export default class CoopMonsterBattle{
     _sendAttackStep(pc:PlayerCharacter,step:AttackStep){
         const damages:IDamageSet = step.getDamages(pc,this.opponent);
 
-        pc.currentBattleData.attackExhaustion += step.exhaustion;
+        pc.battleData.attackExhaustion += step.exhaustion;
 
         this.opponent.HPCurrent -= Math.round(damagesTotal(damages));
 
@@ -313,8 +315,13 @@ export default class CoopMonsterBattle{
         this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
 
         //release players from the battle lock
-        this.pcs.concat(this.defeatedPCs).forEach((pc)=>{
-            pc.currentBattleData = null;
+        this.pcs.forEach((pc)=>{
+            pc.battleData = null;
+        });
+
+        //give some hp back to defeated players
+        this.defeatedPCs.forEach((pc)=>{
+            pc.battleData = null;
             pc.HPCurrent = pc.stats.HPTotal/10;
         });
     }

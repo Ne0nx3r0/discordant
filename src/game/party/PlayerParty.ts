@@ -11,6 +11,7 @@ import CoopMonsterBattle from '../battle/CoopMonsterBattle';
 import Game from '../Game';
 import Goblin from '../creature/monsters/Goblin';
 import { CoopMonsterBattleEvent, BattleEndEvent } from '../battle/CoopMonsterBattle';
+import BattleMessengerDiscord from '../battle/BattleMessengerDiscord';
 
 const INVITE_EXPIRES_MS = 60000;
 
@@ -31,6 +32,7 @@ export default class PlayerParty{
     partyStatus:PartyStatus;
     exploration:PartyExploringMap;
     currentBattle:CoopMonsterBattle;
+    battleMessenger:BattleMessengerDiscord;
     game:Game;
 
     _events: EventDispatcher;
@@ -47,6 +49,7 @@ export default class PlayerParty{
         this.partyStatus = PartyStatus.InTown;
         this.game = game;
         this.currentBattle = null;
+        this.battleMessenger = null;
 
         this.leader.partyData = {
             party: this,
@@ -98,9 +101,12 @@ export default class PlayerParty{
             partyMembers.push(pc);
         });
 
+        this.channel.sendMessage('The party is attacked!');
+
         this.game.createMonsterBattle(partyMembers,new Goblin())
         .then((battle:CoopMonsterBattle)=>{
             this.currentBattle = battle; 
+            this.battleMessenger = new BattleMessengerDiscord(battle,this.channel);
             this.partyStatus = PartyStatus.Battling;
 
             battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
@@ -116,6 +122,7 @@ export default class PlayerParty{
                 }
 
                 this.currentBattle = null;
+                this.battleMessenger = null;
             });
         })
         .catch((err)=>{

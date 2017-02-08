@@ -4,7 +4,7 @@ export { default as Classes } from "./commands/Classes";
 export { default as Stats } from "./commands/Stats";
 export { default as Reset } from "./commands/Reset";
 
-export { default as Battle } from "./commands/battle/Battle";
+//export { default as Battle } from "./commands/battle/Battle";
 export { default as Attack } from "./commands/battle/Attack";
 export { default as Offhand } from "./commands/battle/Offhand";
 export { default as Block } from "./commands/battle/Block";

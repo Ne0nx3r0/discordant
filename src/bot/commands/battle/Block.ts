@@ -20,11 +20,19 @@ export default class ChannelId extends Command{
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         if(!bag.pc.isInBattle){
             message.channel.sendMessage('You are not currently in a battle, '+bag.pc.title);
+
+            return;
+        }
+
+        if(bag.pc.party.channel.id != message.channel.id){
+            message.channel.sendMessage('Your battle is in <#'+bag.pc.party.channel.id+'>, '+bag.pc.title);
+
+            return;
         }
 
         const wantedAttackStr = params.join(' ').toUpperCase();
 
-        bag.pc.currentBattleData.battle.playerActionBlock(bag.pc)
+        bag.pc.battleData.battle.playerActionBlock(bag.pc)
         .catch(this.handleError(bag));
     }
 }
