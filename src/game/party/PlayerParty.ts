@@ -114,6 +114,10 @@ export default class PlayerParty{
             battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
                 if(e.victory){
                     this.partyStatus = PartyStatus.Exploring;
+                
+                    const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
+
+                    this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party survived!');
                 }
                 else{
                     this.members.forEach((pc)=>{
@@ -125,10 +129,6 @@ export default class PlayerParty{
 
                 this.currentBattle = null;
                 this.battleMessenger = null;
-                
-                const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
-
-                this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party survived!');
             });
         })
         .catch((err)=>{
