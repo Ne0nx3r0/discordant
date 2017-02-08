@@ -107,6 +107,10 @@ export default class CoopMonsterBattle{
     }
 
     _attackTick(){   
+        if(this._battleEnded){
+            return;
+        }
+
         if(!this._currentAttack){
             this._currentAttack = this.opponent.getRandomAttack();
             this._currentAttackStep = 0;
@@ -128,9 +132,7 @@ export default class CoopMonsterBattle{
 
         this.attackPlayers(attackStep);
 
-        if(!this._battleEnded){
-            setTimeout(this._attackTick,ATTACK_TICK_MS);
-        }
+        setTimeout(this._attackTick,ATTACK_TICK_MS);
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
@@ -197,12 +199,12 @@ export default class CoopMonsterBattle{
                 this._sendAttackStep(pc,attackStep);
             }
 
+            if(this._battleEnded) break;
+
             //remove one exhaustion point each round
             if(pc.battleData.attackExhaustion>0){
                 pc.battleData.attackExhaustion--;
             }
-
-            if(this._battleEnded) break;
         }
 
         if(this.pcs.length == 0){
@@ -221,7 +223,7 @@ export default class CoopMonsterBattle{
             else if(pc.battleData.attackExhaustion > 0){
                 reject('You are too exhausted to block!');
             }
-            else if(this.pcs.indexOf(pc)){
+            else if(this.pcs.indexOf(pc) != -1){
                 reject('You are not in this battle');
             }
             else{
@@ -250,7 +252,7 @@ export default class CoopMonsterBattle{
             else if(pc.battleData.attackExhaustion > 0){
                 reject('You are too exhausted to attack!');
             }
-            else if(this.pcs.indexOf(pc)){
+            else if(this.pcs.indexOf(pc) == -1){
                 reject('You are not in this battle');
             }
             else{

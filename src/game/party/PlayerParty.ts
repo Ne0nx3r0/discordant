@@ -85,13 +85,15 @@ export default class PlayerParty{
 
         this.exploration.move(direction);
 
+        if(this.exploration.getEncounterChance() > Math.random()){
+            this.monsterEncounter();
+
+            return;
+        }
+
         const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
 
         this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party moved');
-
-        if(this.exploration.getEncounterChance() > Math.random()){
-            this.monsterEncounter();
-        }
     }
 
     monsterEncounter(){
@@ -123,6 +125,10 @@ export default class PlayerParty{
 
                 this.currentBattle = null;
                 this.battleMessenger = null;
+                
+                const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
+
+                this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party survived!');
             });
         })
         .catch((err)=>{

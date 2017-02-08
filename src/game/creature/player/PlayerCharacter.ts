@@ -112,6 +112,6 @@ export default class PlayerCharacter extends Creature{
     }
 
     get isInBattle():boolean{
-        return this.partyData.party.isInBattle;
+        return this.partyData.party && this.partyData.party.isInBattle;
     }
 }

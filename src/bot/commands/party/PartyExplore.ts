@@ -36,6 +36,12 @@ export default class PartyExplore extends Command{
             return;
         }
 
+        if(party.channel.id != message.channel.id){
+            message.channel.sendMessage('Your party is at <#'+party.channel.id+'>, '+bag.pc.title);
+
+            return;
+        }
+
         party.explore(TestMap);
     }
 }
