@@ -12,7 +12,7 @@ export default class ItemUsable extends ItemBase{
         super(
             id,
             title,
-            description
+            description,
         );
 
         this.useFunc = useFunc;
