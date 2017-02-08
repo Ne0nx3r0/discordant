@@ -44,8 +44,6 @@ export default class PartyDisband extends Command{
             memberUser.sendMessage('Your party has been disbanded');
         });
         
-        party.channel.delete();
-
         party.playerActionDisband();
     }
 }

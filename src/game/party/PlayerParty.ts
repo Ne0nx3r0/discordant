@@ -236,6 +236,8 @@ export default class PlayerParty{
         };
 
         this.dispatch(PlayerPartyEvent.PartyDisbanded,eventData);
+
+        this.channel.delete();
     }
 
     get isInBattle():boolean{
