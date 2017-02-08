@@ -128,7 +128,7 @@ export default class PlayerParty{
                         });
                         
                         this.playerActionDisband();
-                    },5000);
+                    },10000);
                 }
 
                 this.currentBattle = null;
