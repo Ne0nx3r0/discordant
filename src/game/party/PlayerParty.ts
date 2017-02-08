@@ -120,11 +120,15 @@ export default class PlayerParty{
                     this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party survived!');
                 }
                 else{
-                    this.members.forEach((pc)=>{
-                        this.channel.client.users.get(pc.uid).sendMessage('Your party was defeated!');
-                    });
+                    this.channel.sendMessage('Your party was defeated!');
 
-                    this.playerActionDisband();
+                    setTimeout(()=>{
+                        this.members.forEach((pc)=>{
+                            this.channel.client.users.get(pc.uid).sendMessage('Your party was defeated!');
+                        });
+                        
+                        this.playerActionDisband();
+                    },5000);
                 }
 
                 this.currentBattle = null;
