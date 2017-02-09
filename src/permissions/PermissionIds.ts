@@ -25,6 +25,8 @@ enum PermissionId{
 
     Eval,
     SetRole,
+
+    Inventory
 }
 
 export default PermissionId;

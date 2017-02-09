@@ -17,6 +17,7 @@ const playerPermissions = [
     PermissionId.BattleOffhand,
     PermissionId.BattleBlock,
     PermissionId.Classes,
+    PermissionId.Inventory,
 ].sort();
 
 const testerPermissions = [

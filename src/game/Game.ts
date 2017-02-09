@@ -75,7 +75,7 @@ export default class Game{
                         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
                 `;
 
-                const pcInventory = {};//TODO: implement starting inventory for classes
+                const pcInventory = [];//TODO: implement starting inventory for classes
 
                 const pcEquipment = playerBag.class.startingEquipment.toDatabase();
 

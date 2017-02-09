@@ -20,4 +20,8 @@ export default class PlayerInventory{
             this.items.set(base.id,new InventoryItem(base,amount));
         }
     }
+
+    toDatabase(){
+        here bra
+    }
 }
