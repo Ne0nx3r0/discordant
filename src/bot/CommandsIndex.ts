@@ -20,3 +20,4 @@ export { default as SetBotStatus } from "./commands/SetBotStatus";
 export { default as Party } from "./commands/party/PartyCommand";
 
 export { default as Inventory } from "./commands/Inventory";
+export { default as Help } from "./commands/Help";

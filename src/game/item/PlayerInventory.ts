@@ -2,11 +2,16 @@ import InventoryItem from './InventoryItem';
 import Collection from '../../util/Collection';
 import ItemBase from './ItemBase';
 
+export interface DBItemBag{
+    id:number;
+    amount:number;
+}
+
 export default class PlayerInventory{
     items: Map<number,InventoryItem>;
 
-    constructor(){
-        this.items = new Map();
+    constructor(items?:Map<number,InventoryItem>){
+        this.items = items || new Map();
     }
 
     //TODO: Remember to update this to account for metadata when metadata is implemented
@@ -21,7 +26,16 @@ export default class PlayerInventory{
         }
     }
 
-    toDatabase(){
-        here bra
+    toDatabase():Array<DBItemBag>{
+        const dbItems:Array<DBItemBag> = [];
+
+        this.items.forEach((item)=>{
+            dbItems.push({
+                id: item.base.id,
+                amount:item.amount
+            });
+        });
+
+        return dbItems;
     }
 }

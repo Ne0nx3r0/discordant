@@ -11,12 +11,14 @@ import CoopMonsterBattle from './battle/CoopMonsterBattle';
 import { CoopMonsterBattleEvent, BattleEndEvent } from './battle/CoopMonsterBattle';
 import { EquipmentBag } from './item/CreatureEquipment';
 import PlayerInventory from './item/PlayerInventory';
+import {DBItemBag} from './item/PlayerInventory';
 import ItemEquippable from './item/ItemEquippable';
 import Weapon from './item/Weapon';
 import Logger from '../util/Logger';
 import PlayerParty from './party/PlayerParty';
 import {DiscordTextChannel} from '../bot/Bot';
 import { PlayerPartyEvent, PartyDisbandedEvent } from './party/PlayerParty';
+import InventoryItem from './item/InventoryItem';
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
@@ -175,8 +177,11 @@ export default class Game{
                     const pcInventory:PlayerInventory = new PlayerInventory();
 
                     if(row.inventory){
-                        Object.keys(row.inventory).forEach((itemId)=>{
-                            pcInventory.addItem(this.items.get(Number(itemId)),row.inventory[itemId].amount);
+                        row.inventory.forEach((item:DBItemBag)=>{
+                            const itemBase = this.items.get(item.id);
+                            const inventoryItem = new InventoryItem(itemBase,item.amount);
+
+                            pcInventory.items.set(item.id,inventoryItem);
                         });
                     }
                     
