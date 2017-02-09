@@ -2,9 +2,11 @@ interface ItemBaseBag{
     id:number;
     title:string;
     description:string;
-    hiddenDescription:string;
-    hiddenDescriptionLoreNeeded:number;
+    hiddenDescription?:string;
+    hiddenDescriptionLoreNeeded?:number;
 }
+
+export {ItemBaseBag}
 
 export default class ItemBase{
     id:number;

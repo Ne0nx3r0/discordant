@@ -1,17 +1,26 @@
 import ItemBase from './ItemBase';
-import {EquipmentSlot} from '../item/CreatureEquipment';
+import {ItemBaseBag} from './ItemBase';
 import DamageSet from '../damage/IDamageSet';
 import Creature from '../creature/Creature';
 import Weapon from './Weapon';
 import {IStatSet} from '../creature/Creature';
+import { EquipmentSlot } from './CreatureEquipment';
+
+export interface ItemEquippableBag extends ItemBaseBag{
+    slotType:EquipmentSlot;
+}
 
 export default class ItemEquippable extends ItemBase{
     slotType:EquipmentSlot;
 
-    constructor(id:number,title:string,description:string,slotType:EquipmentSlot){
-        super(id,title,description);
+    constructor(bag:ItemEquippableBag){
+        super({
+            id: bag.id,
+            title: bag.title,
+            description: bag.description
+        });
 
-        this.slotType = slotType;
+        this.slotType = bag.slotType;
     }
 
     //Modifies the damageset if bonuses/penalties apply

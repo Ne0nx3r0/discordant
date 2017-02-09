@@ -10,14 +10,20 @@ interface DamageFunc{
     ):IDamageSet;
 }
 
-export default class AttackStep{
+export interface WeaponAttackStepBag{
+    attackMessage:string;
+    exhaustion:number;
+    damageFunc?:DamageFunc;
+}
+
+export default class WeaponAttackStep{
     attackMessage:string;
     exhaustion:number;
     getDamages:DamageFunc;
 
-    constructor(attackMessage:string,exhaustion:number,damageFunc?:DamageFunc){
-        this.attackMessage = attackMessage;
-        this.exhaustion = exhaustion;
-        this.getDamages = damageFunc;
+    constructor(bag:WeaponAttackStepBag){
+        this.attackMessage = bag.attackMessage;
+        this.exhaustion = bag.exhaustion;
+        this.getDamages = bag.damageFunc;
     }
 }

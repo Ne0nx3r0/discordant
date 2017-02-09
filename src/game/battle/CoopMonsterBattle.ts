@@ -11,10 +11,10 @@ const winston = require('winston');
 
 const ATTACK_TICK_MS = 10000;
 
-const dummyAttack = new WeaponAttackStep(
-    '{attacker} doesn\'t know what to do!',
-    10000
-);
+const dummyAttack = new WeaponAttackStep({
+    attackMessage: '{attacker} doesn\'t know what to do!',
+    exhaustion: 1,
+});
 
 interface PlayerDamaged{
     pc:PlayerCharacter,

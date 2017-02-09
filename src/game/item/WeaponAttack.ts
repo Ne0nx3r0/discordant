@@ -5,6 +5,13 @@ interface AIShouldUseFunc{
     (attacker:Creature):boolean;
 }
 
+export interface WeaponAttackBag{
+    title:string;
+    steps:Array<WeaponAttackStep>;
+    aiUseWeight:number;
+    aiShouldIUseThisAttack?: AIShouldUseFunc;
+}
+
 export default class WeaponAttack{
     title:string;
     steps:Array<WeaponAttackStep>;
@@ -16,10 +23,10 @@ export default class WeaponAttack{
     //master is in the case where this is a pet
     aiShouldIUseThisAttack:AIShouldUseFunc;
 
-    constructor(title:string,steps:Array<WeaponAttackStep>,aiUseWeight:number,aiShouldUseFunc?:AIShouldUseFunc){
-        this.title = title;
-        this.steps = steps;
-        this.aiUseWeight = aiUseWeight;
-        this.aiShouldIUseThisAttack = aiShouldUseFunc || function(attacker:Creature){return true};
+    constructor(bag:WeaponAttackBag){
+        this.title = bag.title;
+        this.steps = bag.steps;
+        this.aiUseWeight = bag.aiUseWeight;
+        this.aiShouldIUseThisAttack = bag.aiShouldIUseThisAttack || function(attacker:Creature){return true};
     }
 }

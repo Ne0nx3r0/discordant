@@ -1,24 +1,31 @@
 import ItemBase from './ItemBase';
+import {ItemBaseBag} from './ItemBase';
 import PlayerCharacter from '../creature/player/PlayerCharacter';
 
 interface ItemUseFunction{
     (user:PlayerCharacter):boolean;
 }
 
+interface ItemUsableBag extends ItemBaseBag{
+    onUse: ItemUseFunction;
+}
+
 export default class ItemUsable extends ItemBase{
-    useFunc: ItemUseFunction;
+    _useFunc: ItemUseFunction;
 
-    constructor(id:number,title:string,description:string,useFunc:ItemUseFunction){
-        super(
-            id,
-            title,
-            description,
-        );
+    constructor(bag:ItemUsableBag){
+        super({
+            id:bag.id,
+            title:bag.title,
+            description:bag.description,
+            hiddenDescription:bag.hiddenDescription,
+            hiddenDescriptionLoreNeeded:bag.hiddenDescriptionLoreNeeded
+        });
 
-        this.useFunc = useFunc;
+        this._useFunc = bag.onUse;
     }
 
-    onUsed(user:PlayerCharacter):boolean{
-        return this.useFunc(user);
+    onUse(user:PlayerCharacter):boolean{
+        return this._useFunc(user);
     }
 }

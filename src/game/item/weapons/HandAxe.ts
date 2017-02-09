@@ -6,48 +6,48 @@ import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
 
-export default new Weapon(
-    ItemId.HandAxe,
-    'Hand Axe',
-    'A basic weapon whose history and use dates back to prehistoric times',
-    0.05,
-    {
+export default new Weapon({
+    id: ItemId.HandAxe,
+    title: 'Hand Axe',
+    description: 'A basic weapon whose history and use dates back to prehistoric times',
+    damageBlocked: 0.05,
+    useRequirements:{
         Strength: 10
     },
-    [
-        new WeaponAttack(
-            'light',
-            [
-                new WeaponAttackStep(
-                    '{attacker} swings a hand axe at {defender}',
-                    1,
-                    function(attacker:Creature,defender:Creature,master?:Creature){
+    attacks:[
+        new WeaponAttack({
+            title: 'light',
+            steps: [
+                new WeaponAttackStep({
+                    attackMessage: '{attacker} swings a hand axe at {defender}',
+                    exhaustion: 1,
+                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
                         const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
                         };
                     }
-                )
+                })
             ],
-            0.8
-        ),
-        new WeaponAttack(
-            'heavy',
-            [
-                new WeaponAttackStep(
-                    '{attacker} leaps at {defender} with their hand axe',
-                    2,
-                    function(attacker:Creature,defender:Creature,master?:Creature){
+            aiUseWeight: 0.8
+        }),
+        new WeaponAttack({
+            title: 'heavy',
+            steps: [
+                new WeaponAttackStep({
+                    attackMessage: '{attacker} leaps at {defender} with their hand axe',
+                    exhaustion: 2,
+                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
                         const physicalDamage = DamageScaling.ByAttribute(25,attacker.stats.Strength);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
                         };
                     }
-                ),
+                }),
             ],
-            0.2
-        ),
+            aiUseWeight: 0.2
+        }),
     ]
-);
+});

@@ -7,31 +7,31 @@ import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
 
 //TODO: Add passive resistances to shields
-export default new Weapon(
-    ItemId.WoodRoundShield,
-    'Wood Round Shield',
-    'A classic defense among foot soldiers and city guard, many of these were shattered as militia steel quelled the great beasts that took to roaming the plains.',
-    0.30,
-    {
+export default new Weapon({
+    id: ItemId.WoodRoundShield,
+    title: 'Wood Round Shield',
+    description: 'A classic defense among foot soldiers and city guard, many of these were shattered as militia steel quelled the great beasts that took to roaming the plains.',
+    damageBlocked: 0.30,
+    useRequirements: {
         Strength: 10
     },
-    [
-        new WeaponAttack(
-            'shove',
-            [
-                new WeaponAttackStep(
-                    '{attacker} shoves {defender} with their shield',
-                    1,
-                    function(attacker:Creature,defender:Creature,master?:Creature){
+    attacks: [
+        new WeaponAttack({
+            title: 'shove',
+            steps: [
+                new WeaponAttackStep({
+                    attackMessage: '{attacker} shoves {defender} with their shield',
+                    exhaustion: 1,
+                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
                         const physicalDamage = DamageScaling.ByAttribute(5,attacker.stats.Strength);
 
                         return {
                             Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
                         };
                     }
-                )
+                })
             ],
-            0.8
-        ),
+            aiUseWeight: 0.8
+        }),
     ]
-);
+});
