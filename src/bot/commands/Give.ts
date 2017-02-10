@@ -34,23 +34,33 @@ export default class Give extends Command{
 
         const amountWantedStr = params[params.length-1];
         let amountWanted:number = ParseNumber(amountWantedStr);
-        let itemWanted;
+        let itemWantedStr;
 
         //assume everything after the first element is the item name
         if(isNaN(amountWanted)){
             amountWanted = 1;
-            itemWanted = params.slice(1).join(' ');
+            itemWantedStr = params.slice(1).join(' ');
         }
         else{
-            itemWanted = params.slice(1,-1).join(' ');
+            itemWantedStr = params.slice(1,-1).join(' ');
         }
 
-        message.channel.sendMessage(usernameTo+' ' + amountWanted+' ' +itemWanted+', '+bag.pc.title);
+        message.channel.sendMessage(usernameTo+' ' + amountWanted+' ' +itemWantedStr+', '+bag.pc.title);
 
-        //check if the item exists
+        const itemWanted = bag.game.items.findByName(itemWantedStr);
 
-        //check if the player has the item
-        
+        if(!itemWanted){
+            message.channel.sendMessage('Unable to find '+itemWantedStr+', '+bag.pc.title);
+
+            return;
+        }
+
+        if(!bag.pc.inventory.has(itemWanted,amountWanted)){
+            message.channel.sendMessage('You have less than '+amountWanted+' '+itemWanted.title+', '+bag.pc.title);
+
+            return;
+        }
+
         //run a game async command to move the item to the new player
 
         //notify the player
