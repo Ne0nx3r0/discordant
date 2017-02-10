@@ -85,7 +85,7 @@ export default class DiscordBot{
         Object.keys(Commands).forEach((commandName)=>{
             const command:Command = new Commands[commandName];
 
-            this.commands.set(commandName.toUpperCase(),command);
+            this.commands.set(command.name.toUpperCase(),command);
         });
 
         this.setPlayingGame = this.setPlayingGame.bind(this);

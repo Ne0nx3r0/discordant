@@ -15,7 +15,7 @@ export default class Inventory extends Command{
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         const playerItems = [];
-        
+
         bag.pc.inventory.items.forEach((item)=>{
             playerItems.push(item.base.title+' ('+item.amount+')');
         });
