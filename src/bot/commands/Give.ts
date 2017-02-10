@@ -46,5 +46,13 @@ export default class Give extends Command{
         }
 
         message.channel.sendMessage(usernameTo+' ' + amountWanted+' ' +itemWanted+', '+bag.pc.title);
+
+        //check if the item exists
+
+        //check if the player has the item
+        
+        //run a game async command to move the item to the new player
+
+        //notify the player
     }
 }

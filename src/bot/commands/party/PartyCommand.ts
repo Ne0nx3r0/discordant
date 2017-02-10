@@ -16,9 +16,9 @@ export default class PartyCommand extends Command{
     
     constructor(){
         super(
-            'dparty',
+            'party',
             'Party management commands',
-            'dparty [action]',
+            'party [action]',
             PermissionId.Party
         );
 
