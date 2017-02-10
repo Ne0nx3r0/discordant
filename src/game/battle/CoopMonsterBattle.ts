@@ -149,7 +149,7 @@ export default class CoopMonsterBattle{
 
             if(pc.battleData.blocking){
                 Object.keys(pcDamages).forEach(function(type){
-                    pcDamages[type] = Math.floor(pcDamages[type] * (1-pc.damageBlocked));
+                    pcDamages[type] = Math.round(pcDamages[type] * (1-pc.damageBlocked));
                 });
 
                 const eventData:PlayerBlockedEvent = {
@@ -157,7 +157,7 @@ export default class CoopMonsterBattle{
                 };
             }
 
-            pc.HPCurrent -= damagesTotal(pcDamages);
+            pc.HPCurrent -= Math.round(damagesTotal(pcDamages));
 
             eventData.players.push({
                 pc:pc,
