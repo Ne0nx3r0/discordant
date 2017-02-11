@@ -8,6 +8,7 @@ import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
 import AttackStep from '../../item/WeaponAttackStep';
 import PlayerInventory from '../../item/PlayerInventory';
 import PlayerParty from '../../party/PlayerParty';
+import InventoryItem from '../../item/InventoryItem';
 
 enum PlayerPartyStatus{
     NoParty,

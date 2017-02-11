@@ -38,4 +38,14 @@ export default class PlayerInventory{
 
         return dbItems;
     }
+
+    has(itemId:number,amount:number):boolean{
+        const item = this.items.get(itemId);  
+
+        if(item && item.amount >= amount){
+            return true;
+        }  
+
+        return false;
+    }
 }

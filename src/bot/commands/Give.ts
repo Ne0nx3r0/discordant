@@ -55,12 +55,13 @@ export default class Give extends Command{
             return;
         }
 
-        if(!bag.pc.inventory.has(itemWanted,amountWanted)){
+        if(!bag.pc.inventory.has(itemWanted.id,amountWanted)){
             message.channel.sendMessage('You have less than '+amountWanted+' '+itemWanted.title+', '+bag.pc.title);
 
             return;
         }
 
+        message.channel.sendMessage('would do it now');
         //run a game async command to move the item to the new player
 
         //notify the player
