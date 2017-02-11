@@ -19,6 +19,7 @@ import PlayerParty from './party/PlayerParty';
 import {DiscordTextChannel} from '../bot/Bot';
 import { PlayerPartyEvent, PartyDisbandedEvent } from './party/PlayerParty';
 import InventoryItem from './item/InventoryItem';
+import ItemBase from './item/ItemBase';
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
@@ -397,6 +398,63 @@ export default class Game{
         this.playerParties.set(party.id,party);
         
         return party;
+    }
+
+    async transferItem(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,itemBase:ItemBase,amount:number){
+        try{
+            const pcFromItem = pcFrom.inventory.items.get(itemBase.id);
+
+            if(!pcFromItem){
+                throw 'You do not have '+itemBase.title;
+            }
+
+            if(pcFromItem.amount < amount){
+                throw 'You have less than '+amount+' '+itemBase.title;
+            }
+
+            const pcFromInvClone = pcFrom.inventory.clone();
+            const pcToInvClone = pcTo.inventory.clone();
+
+            pcFromInvClone.removeItem(itemBase,amount);
+            pcToInvClone.addItem(itemBase,amount);
+
+            const query = `
+                UPDATE player as p set
+                    inventory = pc.inventory
+                FROM (values
+                    ($1, CAST($2 as jsonb)),
+                    ($3, CAST($4 as jsonb))  
+                ) as pc(uid, inventory) 
+                WHERE pc.uid = pc.uid
+                RETURNING p.uid,p.inventory;
+            `;
+console.log(pcFromInvClone.toDatabase(),pcToInvClone.toDatabase());
+            const queryParams = [
+                pcFrom.uid,
+                pcFromInvClone.toDatabase(),
+                pcTo.uid,
+                pcToInvClone.toDatabase()
+            ];
+
+            const result = await this.db.getPool().query(query,queryParams);
+
+            console.log(JSON.stringify(result));
+
+            if(result.error){
+                const did = Logger.error(result.error);
+
+                throw 'An unexpected error occurred '+did;
+            }
+
+            //Update their inventories since the database call succeeded
+            pcFrom.inventory = pcFromInvClone;
+            pcTo.inventory = pcToInvClone;
+        }
+        catch(ex){
+            const did = Logger.error(ex);
+
+            throw 'An unexpected error occurred '+did;
+        }
     }
 
 /*

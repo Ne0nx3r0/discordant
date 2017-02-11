@@ -4,6 +4,7 @@ import { DiscordMessage, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
 import {TagRegex} from '../../util/Regex';
 import ParseNumber from '../../util/ParseNumber';
+import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 
 export default class Give extends Command{
     constructor(){
@@ -30,40 +31,44 @@ export default class Give extends Command{
             return;
         }
 
-        const usernameTo = TagRegex.exec(userTag)[1];
+        const usernameToUID = TagRegex.exec(userTag)[1];
 
-        const amountWantedStr = params[params.length-1];
-        let amountWanted:number = ParseNumber(amountWantedStr);
-        let itemWantedStr;
+        asyncCommand();
 
-        //assume everything after the first element is the item name
-        if(isNaN(amountWanted)){
-            amountWanted = 1;
-            itemWantedStr = params.slice(1).join(' ');
+        async function asyncCommand(){
+            try{
+                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(usernameToUID);
+
+                const amountWantedStr = params[params.length-1];
+                let amountWanted:number = ParseNumber(amountWantedStr);
+                let itemWantedStr;
+
+                //assume everything after the first element is the item name
+                if(isNaN(amountWanted)){
+                    amountWanted = 1;
+                    itemWantedStr = params.slice(1).join(' ');
+                }
+                else{
+                    itemWantedStr = params.slice(1,-1).join(' ');
+                }
+
+                const itemWanted = bag.game.items.findByName(itemWantedStr);
+
+                if(!itemWanted){
+                    message.channel.sendMessage('Unable to find '+itemWantedStr+', '+bag.pc.title);
+
+                    return;
+                }
+
+                await bag.game.transferItem(bag.pc,giveItemTo,itemWanted,amountWanted);
+            
+                message.channel.sendMessage(`{bag.pc.title} gave {amountWanted} {itemWanted.title} to {giveItemTo.title}`);
+            }
+            catch(ex){
+                message.channel.sendMessage(ex+', '+bag.pc.title);
+
+                return;
+            }
         }
-        else{
-            itemWantedStr = params.slice(1,-1).join(' ');
-        }
-
-        message.channel.sendMessage(usernameTo+' ' + amountWanted+' ' +itemWantedStr+', '+bag.pc.title);
-
-        const itemWanted = bag.game.items.findByName(itemWantedStr);
-
-        if(!itemWanted){
-            message.channel.sendMessage('Unable to find '+itemWantedStr+', '+bag.pc.title);
-
-            return;
-        }
-
-        if(!bag.pc.inventory.has(itemWanted.id,amountWanted)){
-            message.channel.sendMessage('You have less than '+amountWanted+' '+itemWanted.title+', '+bag.pc.title);
-
-            return;
-        }
-
-        message.channel.sendMessage('would do it now');
-        //run a game async command to move the item to the new player
-
-        //notify the player
     }
 }

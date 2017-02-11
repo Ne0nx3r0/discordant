@@ -12,7 +12,7 @@ interface dbClientCallback{
 }
 
 interface dbClient{
-    query(query:string,params:Array<any>,callback:dbClientCallback):Function;
+    query(query:string,params:Array<any>,callback?:dbClientCallback);
 }
 
 export default class DatabaseService{

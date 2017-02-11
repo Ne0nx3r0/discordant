@@ -18,11 +18,30 @@ export default class PlayerInventory{
     addItem(base:ItemBase,amount:number){
         const existingItem:InventoryItem = this.items.get(base.id);
 
-        if(!existingItem){
+        if(existingItem){
             existingItem.amount += amount;
         }
         else{
             this.items.set(base.id,new InventoryItem(base,amount));
+        }
+    }
+
+    removeItem(base:ItemBase,amount:number){
+        const existingItem:InventoryItem = this.items.get(base.id);
+
+        //Really these two checks should have already been run
+        //but this may prevent a duping exploit
+        if(!existingItem){
+            throw 'Item not in inventory: '+base.id+' ('+base.title+') '+amount;
+        }
+        else if(amount > existingItem.amount){
+            throw 'Only '+existingItem.amount+' of '+base.id+' ('+base.title+') in inventory, less than '+amount;
+        }
+        else if(amount == existingItem.amount){
+            this.items.delete(base.id);
+        }
+        else{
+            existingItem.amount = existingItem.amount - amount;
         }
     }
 
@@ -32,13 +51,23 @@ export default class PlayerInventory{
         this.items.forEach((item)=>{
             dbItems.push({
                 id: item.base.id,
-                amount:item.amount
+                amount: item.amount
             });
         });
 
         return dbItems;
     }
 
+    clone():PlayerInventory{
+        const itemsClone = new Map<number,InventoryItem>();
+
+        this.items.forEach((item)=>{
+            itemsClone.set(item.base.id,new InventoryItem(item.base,item.amount));
+        });
+
+        return new PlayerInventory(itemsClone);
+    }
+/*
     has(itemId:number,amount:number):boolean{
         const item = this.items.get(itemId);  
 
@@ -47,5 +76,7 @@ export default class PlayerInventory{
         }  
 
         return false;
-    }
+    }*/
+
+
 }
