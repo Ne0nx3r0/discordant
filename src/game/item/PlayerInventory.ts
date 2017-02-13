@@ -1,12 +1,10 @@
 import InventoryItem from './InventoryItem';
 import Collection from '../../util/Collection';
 import ItemBase from './ItemBase';
-import ItemMetadata from './ItemMetadata';
 
 export interface DBItemBag{
     id:number;
     amount:number;
-    metadata:ItemMetadata;
 }
 
 export default class PlayerInventory{
@@ -17,7 +15,7 @@ export default class PlayerInventory{
     }
 
     //TODO: Remember to update this to account for metadata when metadata is implemented
-    addItem(base:ItemBase,amount:number,metadata?:ItemMetadata){
+    addItem(base:ItemBase,amount:number){
         const existingItem:InventoryItem = this.items.get(base.id);
 
         if(existingItem){
@@ -53,8 +51,7 @@ export default class PlayerInventory{
         this.items.forEach((item)=>{
             dbItems.push({
                 id: item.base.id,
-                amount: item.amount,
-                metadata: item.metadata.export()
+                amount: item.amount
             });
         });
 
