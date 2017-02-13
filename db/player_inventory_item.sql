@@ -7,7 +7,6 @@ CREATE TABLE public.player_inventory_item
     player_uid bigint NOT NULL,
     item_id integer NOT NULL,
     amount integer NOT NULL,
-    metadata jsonb,
     CONSTRAINT player_item_pkey PRIMARY KEY (player_uid, item_id),
     CONSTRAINT player_uid FOREIGN KEY (player_uid)
         REFERENCES public.player (uid) MATCH SIMPLE
