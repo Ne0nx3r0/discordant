@@ -428,7 +428,7 @@ export default class Game{
                 WHERE pc.uid = pc.uid
                 RETURNING p.uid,p.inventory;
             `;
-console.log(pcFromInvClone.toDatabase(),pcToInvClone.toDatabase());
+
             const queryParams = [
                 pcFrom.uid,
                 pcFromInvClone.toDatabase(),

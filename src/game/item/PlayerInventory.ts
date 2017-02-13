@@ -1,10 +1,12 @@
 import InventoryItem from './InventoryItem';
 import Collection from '../../util/Collection';
 import ItemBase from './ItemBase';
+import ItemMetadata from './ItemMetadata';
 
 export interface DBItemBag{
     id:number;
     amount:number;
+    metadata:ItemMetadata;
 }
 
 export default class PlayerInventory{
@@ -15,7 +17,7 @@ export default class PlayerInventory{
     }
 
     //TODO: Remember to update this to account for metadata when metadata is implemented
-    addItem(base:ItemBase,amount:number){
+    addItem(base:ItemBase,amount:number,metadata?:ItemMetadata){
         const existingItem:InventoryItem = this.items.get(base.id);
 
         if(existingItem){
@@ -51,32 +53,11 @@ export default class PlayerInventory{
         this.items.forEach((item)=>{
             dbItems.push({
                 id: item.base.id,
-                amount: item.amount
+                amount: item.amount,
+                metadata: item.metadata.export()
             });
         });
 
         return dbItems;
     }
-
-    clone():PlayerInventory{
-        const itemsClone = new Map<number,InventoryItem>();
-
-        this.items.forEach((item)=>{
-            itemsClone.set(item.base.id,new InventoryItem(item.base,item.amount));
-        });
-
-        return new PlayerInventory(itemsClone);
-    }
-/*
-    has(itemId:number,amount:number):boolean{
-        const item = this.items.get(itemId);  
-
-        if(item && item.amount >= amount){
-            return true;
-        }  
-
-        return false;
-    }*/
-
-
 }
