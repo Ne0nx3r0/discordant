@@ -201,15 +201,44 @@ export default class Game{
                 return cachedPlayer;
             }
 
-            const playerResult = await this.db.getPool().query(getPlayerQuery,getPlayerParams);
+            const result = await this.db.getPool().query(getPlayerQuery,getPlayerParams);
 
-            console.log('playerResult',playerResult);
+            console.log('playerResult',result);
 
-            if(!playerResult){
+            if(!result.rows){
                 return null;
             }
+            
+            const row = result.rows[0];
 
-            //TODO: process player result into a player object and cache it
+            const pcInventory = new PlayerInventory();
+            const pcEquipment = 
+
+            const pc = new PlayerCharacter({
+                id: row.id,
+                uid: uid,
+                discriminator: row.discriminator,
+                description: row.description,
+                title: row.username,
+                xp: row.xp,
+                wishes: row.wishes,
+                class: CharacterClasses.get(row.class),
+                attributes: new AttributeSet(
+                    row.attribute_strength,
+                    row.attribute_agility,
+                    row.attribute_vitality,
+                    row.attribute_spirit,
+                    row.attribute_luck
+                ),
+                equipment: new CreatureEquipment(pcEquipment),
+                inventory: pcInventory,
+                role: row.role,
+                karma: row.karma
+            });
+
+            this.cachedPlayers.set(pc.uid,pc);
+
+            return pc;
         })();
     }
 
