@@ -60,7 +60,7 @@ export default class Give extends Command{
                     return;
                 }
 
-                await bag.game.transferItem(bag.pc,giveItemTo,itemWanted,amountWanted);
+               // await bag.game.transferItem(bag.pc,giveItemTo,itemWanted,amountWanted);
             
                 message.channel.sendMessage(`{bag.pc.title} gave {amountWanted} {itemWanted.title} to {giveItemTo.title}`);
             }

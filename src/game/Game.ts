@@ -49,6 +49,10 @@ export default class Game{
         this.items = new AllItems();
     }
 
+    async a_registerPlayerCharacter(playerBag:IPlayerRegisterBag){
+        
+    }
+
     registerPlayerCharacter(playerBag:IPlayerRegisterBag){
         return new Promise((resolve,reject)=>{
             const cachedPlayer = this.cachedPlayers.get(playerBag.uid);
@@ -71,11 +75,9 @@ export default class Game{
                             attribute_vitality,
                             attribute_spirit,
                             attribute_luck,
-                            inventory,
-                            equipment,
                             role
                         )
-                        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
+                        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
                 `;
 
                 const pcInventory = [];//TODO: implement starting inventory for classes
@@ -92,8 +94,6 @@ export default class Game{
                     playerBag.class.startingAttributes.Vitality,
                     playerBag.class.startingAttributes.Spirit,
                     playerBag.class.startingAttributes.Luck,
-                    JSON.stringify(pcInventory),
-                    JSON.stringify(pcEquipment),
                     'player'
                 ];
 
@@ -399,7 +399,7 @@ export default class Game{
         
         return party;
     }
-
+/*
     async transferItem(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,itemBase:ItemBase,amount:number){
         try{
             const pcFromItem = pcFrom.inventory.items.get(itemBase.id);
@@ -455,7 +455,7 @@ export default class Game{
 
             throw 'An unexpected error occurred '+did;
         }
-    }
+    }*/
 
 /*
     transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
