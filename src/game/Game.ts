@@ -49,11 +49,59 @@ export default class Game{
         this.items = new AllItems();
     }
 
-    async a_registerPlayerCharacter(playerBag:IPlayerRegisterBag){
-        
+    registerPlayerCharacter(playerBag:IPlayerRegisterBag){
+        return (async ()=>{
+            //try to grab the existing player from the database or cache
+            const dbPlayer = await this.getPlayerCharacter(playerBag.uid);
+
+            if(dbPlayer){
+                throw dbPlayer.title+' is already registered!';
+            }
+
+            const insertPlayerQuery = `
+                INSERT INTO player (
+                        uid,
+                        discriminator,
+                        username,
+                        class,
+                        attribute_strength,
+                        attribute_agility,
+                        attribute_vitality,
+                        attribute_spirit,
+                        attribute_luck,
+                        role
+                    )
+                    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
+            `;
+
+            const insertPlayerParams:Array<any> = [
+                playerBag.uid,
+                playerBag.discriminator,
+                playerBag.username,
+                playerBag.class.id,
+                playerBag.class.startingAttributes.Strength,
+                playerBag.class.startingAttributes.Agility,
+                playerBag.class.startingAttributes.Vitality,
+                playerBag.class.startingAttributes.Spirit,
+                playerBag.class.startingAttributes.Luck,
+                'player'
+            ];
+
+            const queries = [
+                {query: insertPlayerQuery, params: insertPlayerParams}
+            ];
+            
+            if(playerBag.class.startingEquipment._items){
+                
+            }
+
+            const insertPlayer = await this.db.runBatch(queries);          
+
+            return await this.getPlayerCharacter(playerBag.uid);
+        })();
     }
 
-    registerPlayerCharacter(playerBag:IPlayerRegisterBag){
+    _old_registerPlayerCharacter(playerBag:IPlayerRegisterBag){
         return new Promise((resolve,reject)=>{
             const cachedPlayer = this.cachedPlayers.get(playerBag.uid);
             
@@ -131,6 +179,38 @@ export default class Game{
                 reject('An unexpected promise error occurred '+did);
             }
         });
+    }
+
+    a_getPlayerCharacter(uid:string):Promise<PlayerCharacter>{
+        const getPlayerQuery = `
+            SELECT 
+                (SELECT array_agg(row_to_json(row))
+                FROM (
+                SELECT * FROM player_equipment_item WHERE player_uid = $1
+                ) as row) as equipment,
+                *
+            FROM player WHERE uid = $1;
+        `;
+
+        const getPlayerParams = [uid];
+
+        return (async ()=>{
+            const cachedPlayer = await this.cachedPlayers.get(uid);
+
+            if(cachedPlayer){
+                return cachedPlayer;
+            }
+
+            const playerResult = await this.db.getPool().query(getPlayerQuery,getPlayerParams);
+
+            console.log('playerResult',playerResult);
+
+            if(!playerResult){
+                return null;
+            }
+
+            //TODO: process player result into a player object and cache it
+        })();
     }
 
     getPlayerCharacter(uid:string):Promise<PlayerCharacter>{

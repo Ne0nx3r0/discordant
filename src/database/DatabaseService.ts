@@ -29,26 +29,6 @@ export default class DatabaseService{
 
         //TODO: try using this
         //this.pool.connect();//connect to deter that initial lag
-
-
-        const runBatch = this.runBatch;
-
-        async();
-
-        async function async(){
-            try{
-                const result = await runBatch([
-                    { query:'SELECT 1;', params:['test'] },
-                    { query:'SELECT 2;' },
-                    { query:'SELECT 3' }
-                ]);
-
-                console.log('res',result);
-            }
-            catch(ex){
-                console.log('it was',ex);
-            }
-        }
     }
 
 /* Usage:
@@ -67,44 +47,76 @@ export default class DatabaseService{
         return this.pool;
     }
 
+    //https://github.com/brianc/node-postgres/wiki/Transactions
     runBatch(queries:Array<batchQuery>){
-       // const pool = this.pool;
-        const test = 42;
+        const pool = this.pool;
 
-        async function async(){
-            throw 'butt';
-            return test;
-        }
+        return new Promise((resolve,reject)=>{
+            try{
+                pool.connect(function(err, client, done) {
+                    if(err) throw err;
 
-        return async();
-        
-        //https://github.com/brianc/node-postgres/wiki/Transactions
+                    client.query('BEGIN', function(err) {
+                        if(err){
+                            const did = Logger.error(err);
 
-/*
-            this.pool.query('BEGIN', function(err, result){
-                if(err) return rollback(client,done);
-            });
+                            reject('A DB error occurred '+did);
 
-            client.query('BEGIN', function(err, result) {
-            if(err) return rollback(client);
-            client.query('INSERT INTO account(money) VALUES(100) WHERE id = $1', [1], function(err, result) {
-                if(err) return rollback(client);
-                client.query('INSERT INTO account(money) VALUES(-100) WHERE id = $1', [2], function(err, result) {
-                    if(err) return rollback(client);
-                    //disconnect after successful commit
-                    client.query('COMMIT', client.end.bind(client));
+                            return batchRollback(client, done);
+                        }
+                        //as long as we do not call the `done` callback we can do 
+                        //whatever we want...the client is ours until we call `done`
+                        //on the flip side, if you do call `done` before either COMMIT or ROLLBACK
+                        //what you are doing is returning a client back to the pool while it 
+                        //is in the middle of a transaction.  
+                        //Returning a client while its in the middle of a transaction
+                        //will lead to weird & hard to diagnose errors.
+
+                        nestedQuery(client,queries,done);
+                    });
                 });
-            });*/
+            }
+            catch(ex){
+                const did = Logger.error(ex);
+
+                reject('A DB error occurred '+did);
+            }
+
+            function nestedQuery(client,queries,done){
+                const q = queries[0];
+                const queriesSlice = queries.slice(1);
+
+                client.query(q.query,q.params,function(err,result){
+                    if(err){
+                        const did = Logger.error(err);
+
+                        reject('A DB error occurred '+did);
+
+                        return batchRollback(client, done);
+                    }
+
+                    if(queriesSlice.length == 0){
+                            client.query('COMMIT', done);
+
+                            resolve(result);
+
+                            return;
+                    }
+
+                    nestedQuery(client,queriesSlice,done);
+                });
+            }
+
+            function batchRollback(client, done) {
+                client.query('ROLLBACK', function(err) {
+                    //if there was a problem rolling back the query
+                    //something is seriously messed up.  Return the error
+                    //to the done function to close & remove this client from
+                    //the pool.  If you leave a client in the pool with an unaborted
+                    //transaction weird, hard to diagnose problems might happen.
+                    return done(err);
+                });
+            };
+        });
     }
 }
-
-function batchRollback(client, done) {
-    client.query('ROLLBACK', function(err) {
-        //if there was a problem rolling back the query
-        //something is seriously messed up.  Return the error
-        //to the done function to close & remove this client from
-        //the pool.  If you leave a client in the pool with an unaborted
-        //transaction weird, hard to diagnose problems might happen.
-        return done(err);
-    });
-};
