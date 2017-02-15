@@ -8,7 +8,7 @@ export default class CharacterClass {
     startingAttributes:AttributeSet;
     startingEquipment:CreatureEquipment;
 
-    constructor(id:number,title:string,description:string,startingAttributes:AttributeSet,startingEquipment:CreatureEquipment){
+    constructor(id:number,title:string,description:string,startingAttributes:AttributeSet,startingEquipment?:CreatureEquipment){
         this.id = id;
         this.title = title;
         this.description = description;

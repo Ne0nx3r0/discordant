@@ -24,12 +24,12 @@ export default class Classes extends Command{
             let equipStr = '';
             
             if(c.startingEquipment.amulet) equipStr += ', '+c.startingEquipment.amulet.title;
-            if(c.startingEquipment.earring) equipStr += ', '+c.startingEquipment.earring.title;
+            if(c.startingEquipment.bracer) equipStr += ', '+c.startingEquipment.bracer.title;
             if(c.startingEquipment.ring) equipStr += ', '+c.startingEquipment.ring.title;
             if(c.startingEquipment.hat) equipStr += ', '+c.startingEquipment.hat.title;
             if(c.startingEquipment.armor) equipStr += ', '+c.startingEquipment.armor.title;
-            if(c.startingEquipment.primaryweapon) equipStr += ', '+c.startingEquipment.primaryweapon.title;
-            if(c.startingEquipment.offhandweapon) equipStr += ', '+c.startingEquipment.offhandweapon.title;
+            if(c.startingEquipment.weapon) equipStr += ', '+c.startingEquipment.weapon.title;
+            if(c.startingEquipment.offhand) equipStr += ', '+c.startingEquipment.offhand.title;
 
             equipStr = equipStr.substr(2);
 

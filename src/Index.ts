@@ -13,11 +13,7 @@ class Discordant {
 
         const game:Game = new Game(db);
 
-       // const bot:Bot = new Bot(game,permissions,Config.GameBotAuthToken,Config.OwnerUIDs,Config.MainGuildId);
-
-       game.a_getPlayerCharacter('42')
-       .then(function(er){console.log('index says ',er);})
-       .catch(function(er){console.log('index says ',er);});
+        const bot:Bot = new Bot(game,permissions,Config.GameBotAuthToken,Config.OwnerUIDs,Config.MainGuildId);
 
         return 0;
     }

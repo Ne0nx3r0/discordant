@@ -27,8 +27,7 @@ addClass(new CharacterClass(
     CharacterClassId.Nobody,
     'Nobody',
     'Your path is your own, but you will receive no help along the way.',
-    new AttributeSet(10,10,10,10,10),
-    new CreatureEquipment({}),
+    new AttributeSet(10,10,10,10,10)
 ));
 
 addClass(new CharacterClass(
@@ -38,8 +37,8 @@ addClass(new CharacterClass(
     new AttributeSet(12,12,14,4,8),
     new CreatureEquipment({
         armor: WornLeathers,
-        primaryweapon: HuntingSword,
-        offhandweapon: WoodRoundShield,
+        weapon: HuntingSword,
+        offhand: WoodRoundShield,
     }),
 ));
 
@@ -49,7 +48,7 @@ addClass(new CharacterClass(
     'I have homework to do remind me to fill this in later.',
     new AttributeSet(6,6,12,16,10),
     new CreatureEquipment({
-        primaryweapon: HuntingSword,
-        offhandweapon: TabletOfHealing,
+        weapon: HuntingSword,
+        offhand: TabletOfHealing,
     }),
 ));

@@ -36,7 +36,7 @@ export default class Weapon extends ItemEquippable{
             description:bag.description,
             hiddenDescription:bag.hiddenDescription,
             hiddenDescriptionLoreNeeded:bag.hiddenDescriptionLoreNeeded,
-            slotType:'primaryweapon'//also offhandweapon, but for our purposes they are all primary's
+            slotType:'weapon'//also offhandweapon, but for our purposes they are all primary's
         });
 
         this.damageBlocked = bag.damageBlocked;

@@ -83,6 +83,35 @@ export default class CreatureEquipment{
         return this._items;
     }
 
+    get hat():ItemEquippable{
+        return this._items.hat;
+    }
+
+    get armor():ItemEquippable{
+        return this._items.armor;
+    }
+
+    get ring():ItemEquippable{
+        return this._items.ring;
+    }
+
+    get amulet():ItemEquippable{
+        return this._items.amulet;
+    }
+
+    get bracer():ItemEquippable{
+        return this._items.bracer;
+    }
+
+    get weapon():ItemEquippable{
+        return this._items.weapon;
+    }
+
+    get offhand():ItemEquippable{
+        return this._items.offhand;
+    }
+
+
     get primaryweapon():Weapon{
         return this._items.weapon || BareHands;
     }
