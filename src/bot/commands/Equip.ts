@@ -71,7 +71,7 @@ export default class Grant extends Command{
                     
                 }
 
-                message.channel.sendMessage(`${bag.pc.title} equipped ${itemBaseToEquip.title}${deEquippedStr}`);
+                message.channel.sendMessage(`${bag.pc.title} equipped ${itemBaseToEquip.title}${deEquippedStr} (not really database not setup yet for this)`);
             }
             catch(ex){
                 message.channel.sendMessage(ex+', '+bag.pc.title);
