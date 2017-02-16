@@ -279,9 +279,9 @@ export default class Game{
     equipItem(pc:PlayerCharacter,item:ItemEquippable,slot:EquipmentSlot):Promise<ItemEquippable>{
         return (async ()=>{
             try{
-                await this.db.getPool().query(query,params);
+                //await this.db.getPool().query(query,params);
 
-                to.inventory.addItem(item,amount);
+//                to.inventory.addItem(item,amount);
 
                 return null;
             }
