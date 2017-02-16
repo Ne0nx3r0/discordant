@@ -66,6 +66,14 @@ export default class GiveItem extends Command{
                     return;
                 }
 
+                const pcItemAmount = bag.pc.inventory.getItemAmount(itemWanted);
+
+                if(pcItemAmount < amountWanted){
+                    message.channel.sendMessage(`You only have ${pcItemAmount} ${itemWanted.title}, '+bag.pc.title`);
+
+                    return;
+                }
+
                 await bag.game.transferItem(bag.pc,giveItemTo,itemWanted,amountWanted);
             
                 message.channel.sendMessage(`${bag.pc.title} gave ${amountWanted} ${itemWanted.title} to ${giveItemTo.title}`);

@@ -6,6 +6,7 @@ enum PermissionId{
     Classes,
     Give,
     Grant,
+    Equip,
 
     Party,
     PartyNew,

@@ -276,6 +276,23 @@ export default class Game{
         })();
     }
 
+    equipItem(pc:PlayerCharacter,item:ItemEquippable,slot:EquipmentSlot):Promise<ItemEquippable>{
+        return (async ()=>{
+            try{
+                await this.db.getPool().query(query,params);
+
+                to.inventory.addItem(item,amount);
+
+                return null;
+            }
+            catch(ex){
+                const did = Logger.error(ex);
+
+                throw 'An unexpected database error occurred '+did;
+            }
+        })();
+    }
+
     createMonsterBattle(players:Array<PlayerCharacter>,opponent:CreatureAIControlled){
         return new Promise((resolve,reject)=>{
             //Verify no player is currently in a battle

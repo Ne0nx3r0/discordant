@@ -45,6 +45,16 @@ export default class PlayerInventory{
         }
     }
 
+    hasItem(item:ItemBase,amount?:number){
+        if(!amount) amount = 1;
+
+        return this.items.get(item.id).amount >= amount;
+    }
+
+    getItemAmount(item:ItemBase){
+        return this.items.get(item.id).amount;
+    }
+
     toDatabase():Array<DBItemBag>{
         const dbItems:Array<DBItemBag> = [];
 
