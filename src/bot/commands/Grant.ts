@@ -6,13 +6,13 @@ import {TagRegex} from '../../util/Regex';
 import ParseNumber from '../../util/ParseNumber';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 
-export default class GiveItem extends Command{
+export default class Grant extends Command{
     constructor(){
         super(
-            'give',
-            'Give another player an item',
-            'give <@username> <item name|wishes> [amount]',
-            PermissionId.Give
+            'grant',
+            'Create an item/xp/wishes for player',
+            'grant <@username> <item name|wishes|xp> [amount]',
+            PermissionId.Grant
         );
     }
 
@@ -66,9 +66,9 @@ export default class GiveItem extends Command{
                     return;
                 }
 
-                await bag.game.transferItem(bag.pc,giveItemTo,itemWanted,amountWanted);
+                await bag.game.grantItem(giveItemTo,itemWanted,amountWanted);
             
-                message.channel.sendMessage(`${bag.pc.title} gave ${amountWanted} ${itemWanted.title} to ${giveItemTo.title}`);
+                message.channel.sendMessage(`${bag.pc.title} created ${amountWanted} ${itemWanted.title} for ${giveItemTo.title}`);
             }
             catch(ex){
                 message.channel.sendMessage(ex+', '+bag.pc.title);

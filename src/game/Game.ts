@@ -128,12 +128,12 @@ export default class Game{
             catch(ex){
                 const did = Logger.error(ex);
 
-                throw 'An unexpected database occurred '+did;
+                throw 'An unexpected database error occurred '+did;
             }
         })();
     }
 
-    getPlayerCharacter(uid:string):Promise<PlayerCharacter>{
+    getPlayerCharacter(uid:string,refreshPlayerData?:boolean):Promise<PlayerCharacter>{
         const getPlayerQuery = `
             SELECT 
 
@@ -151,16 +151,14 @@ export default class Game{
             FROM player WHERE uid = $1;
         `;
 
-        const getPlayerParams = [uid];
-
         return (async ()=>{
-            const cachedPlayer = await this.cachedPlayers.get(uid);
+            let cachedPlayer = await this.cachedPlayers.get(uid);
 
-            if(cachedPlayer){
+            if(cachedPlayer && !refreshPlayerData){
                 return cachedPlayer;
             }
 
-            const result = await this.db.getPool().query(getPlayerQuery,getPlayerParams);
+            const result = await this.db.getPool().query(getPlayerQuery,[uid]);
 
             if(result.rows.length == 0){
                 return null;
@@ -188,36 +186,98 @@ export default class Game{
 
             const pcEquipment = new CreatureEquipment(equipment);
 
-            const pc = new PlayerCharacter({
-                id: row.id,
-                uid: uid,
-                discriminator: row.discriminator,
-                description: row.description,
-                title: row.username,
-                xp: row.xp,
-                wishes: row.wishes,
-                class: CharacterClasses.get(row.class),
-                attributes: new AttributeSet(
-                    row.attribute_strength,
-                    row.attribute_agility,
-                    row.attribute_vitality,
-                    row.attribute_spirit,
-                    row.attribute_luck
-                ),
-                equipment: pcEquipment,
-                inventory: pcInventory,
-                role: row.role,
-                karma: row.karma
-            });
+            //create a new cached entry
+            if(!cachedPlayer){
+                cachedPlayer = new PlayerCharacter({
+                    id: row.id,
+                    uid: uid,
+                    discriminator: row.discriminator,
+                    description: row.description,
+                    title: row.username,
+                    xp: row.xp,
+                    wishes: row.wishes,
+                    class: CharacterClasses.get(row.class),
+                    attributes: new AttributeSet(
+                        row.attribute_strength,
+                        row.attribute_agility,
+                        row.attribute_vitality,
+                        row.attribute_spirit,
+                        row.attribute_luck
+                    ),
+                    equipment: pcEquipment,
+                    inventory: pcInventory,
+                    role: row.role,
+                    karma: row.karma
+                });
 
-            this.cachedPlayers.set(pc.uid,pc);
+                this.cachedPlayers.set(cachedPlayer.uid,cachedPlayer);
+            }
+            //Update existing entry
+            else{
+                cachedPlayer.description = row.description;
+                cachedPlayer.title = row.username;
+                cachedPlayer.xp = row.xp;
+                cachedPlayer.wishes = row.wishes;
+                cachedPlayer.class = CharacterClasses.get(row.class);
+                cachedPlayer.attributes.Strength = row.attribute_strength;
+                cachedPlayer.attributes.Agility = row.attribute_agility;
+                cachedPlayer.attributes.Vitality = row.attribute_vitality;
+                cachedPlayer.attributes.Spirit = row.attribute_spirit;
+                cachedPlayer.attributes.Luck = row.attribute_luck;
+                cachedPlayer.equipment = pcEquipment;
+                cachedPlayer.inventory = pcInventory;
+                cachedPlayer.role = row.role;
+                cachedPlayer.karma = row.karma;
+            }
 
-            return pc;
+            return cachedPlayer;
         })();
     }
 
-    transferItem(from:PlayerCharacter,to:PlayerCharacter,item:ItemBase,amount:number){
-        
+    transferItem(from:PlayerCharacter,to:PlayerCharacter,item:ItemBase,amount:number):Promise<void>{
+        const query = 'SELECT transfer_player_item($1,$2,$3,$4)';
+        const params = [from.uid,to.uid,item.id,amount];
+
+        return (async ()=>{
+            let step = 0;
+
+            try{
+                await this.db.getPool().query(query,params);
+
+                step = 1;
+                //TODO: optimize this by having the postgres function return these rows
+                await this.getPlayerCharacter(from.uid,true);
+                await this.getPlayerCharacter(to.uid,true);
+            }
+            catch(ex){
+                //Kind of hackish, I'll admit - "custom" exception from transfer_player_item function
+                if(step == 0 && ex.code == 'P0002'){
+                    throw 'You do not have enough of that item';
+                }
+
+                const did = Logger.error(ex);
+
+                throw 'An unexpected database error occurred '+did;
+            }
+        })();
+    }
+
+    grantItem(to:PlayerCharacter,item:ItemBase,amount:number):Promise<void>{
+        const query = 'select grant_player_item($1,$2,$3)';
+        const params = [to.uid,item.id,amount];
+
+        return (async ()=>{
+            try{
+                await this.db.getPool().query(query,params);
+
+                await this.getPlayerCharacter(to.uid,true);
+            }
+            catch(ex){
+                const did = Logger.error(ex);
+
+                throw 'An unexpected database error occurred '+did;
+            }
+        })();
     }
 
     createMonsterBattle(players:Array<PlayerCharacter>,opponent:CreatureAIControlled){
@@ -393,233 +453,6 @@ export default class Game{
         
         return party;
     }
-/*
-
-    _old_registerPlayerCharacter(playerBag:IPlayerRegisterBag){
-        return new Promise((resolve,reject)=>{
-            const cachedPlayer = this.cachedPlayers.get(playerBag.uid);
-            
-            if(cachedPlayer){
-                resolve(cachedPlayer);
-
-                return;
-            }
-
-            try{
-                const queryStr = `
-                    INSERT INTO player (
-                            uid,
-                            discriminator,
-                            username,
-                            class,
-                            attribute_strength,
-                            attribute_agility,
-                            attribute_vitality,
-                            attribute_spirit,
-                            attribute_luck,
-                            role
-                        )
-                        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
-                `;
-
-                const pcInventory = [];//TODO: implement starting inventory for classes
-
-                const pcEquipment = playerBag.class.startingEquipment.toDatabase();
-
-                const queryValues:Array<any> = [
-                    playerBag.uid,
-                    playerBag.discriminator,
-                    playerBag.username,
-                    playerBag.class.id,
-                    playerBag.class.startingAttributes.Strength,
-                    playerBag.class.startingAttributes.Agility,
-                    playerBag.class.startingAttributes.Vitality,
-                    playerBag.class.startingAttributes.Spirit,
-                    playerBag.class.startingAttributes.Luck,
-                    'player'
-                ];
-
-                const con = this.db.getPool();
-
-                con.query(queryStr, queryValues, insertResult.bind(this));
-
-                function insertResult(error, result) {
-                    if(error){
-                        //Unique constraint violation - uid exists already
-                        if(error.code == 23505){
-                            reject('Character has already been registered');
-                        }
-                        else{
-                            const did = Logger.error(error);
-
-                            reject('An unexpected database error occurred '+did);
-                        }
-
-                        return;
-                    }
-
-                    this.getPlayerCharacter(playerBag.uid)
-                    .then(function(pc){
-                        resolve(pc);
-                    })
-                    .catch(function(ex){
-                        reject(ex);//not this method's problem
-                    });
-                }
-            }
-            catch(ex){
-                const did = Logger.error(ex);
-
-                reject('An unexpected promise error occurred '+did);
-            }
-        });
-    }
-
-    _old_getPlayerCharacter(uid:string):Promise<PlayerCharacter>{
-        return new Promise((resolve,reject)=>{
-            try{
-                const cachedPC = this.cachedPlayers.get(uid);
-
-                if(cachedPC){
-                    resolve(cachedPC);
-
-                    return;
-                }
-
-                const con = this.db.getPool();
-
-                con.query('SELECT * FROM player WHERE uid=$1 LIMIT 1', [uid], (error, result)=>{
-                    if(error){
-                        const did = Logger.error({error:error,uid:uid});
-
-                        reject('An unexpected database error occurred '+did);
-
-                        return;
-                    }
-
-                    const row = result.rows[0];
-
-                    if(!row){
-                        resolve();
-
-                        return;
-                    }
-
-                    const pcEquipment:EquipmentBag = {};
-
-                    if(row.equipment){
-                        if(row.equipment.amulet) pcEquipment.amulet = this.items.get(row.equipment.amulet.id) as ItemEquippable;
-                        if(row.equipment.armor) pcEquipment.armor = this.items.get(row.equipment.armor.id) as ItemEquippable;
-                        if(row.equipment.hat) pcEquipment.hat = this.items.get(row.equipment.hat.id) as ItemEquippable;
-                        if(row.equipment.ring) pcEquipment.ring = this.items.get(row.equipment.ring.id) as ItemEquippable;
-                        if(row.equipment.bracer) pcEquipment.bracer = this.items.get(row.equipment.bracer.id) as ItemEquippable;
-                        if(row.equipment.weapon) pcEquipment.weapon = this.items.get(row.equipment.weapon.id) as Weapon;
-                        if(row.equipment.offhand) pcEquipment.offhand = this.items.get(row.equipment.offhand.id) as Weapon;
-                    }
-
-                    const pcInventory:PlayerInventory = new PlayerInventory();
-
-                    if(row.inventory){
-                        row.inventory.forEach((item:DBItemBag)=>{
-                            const itemBase = this.items.get(item.id);
-                            const inventoryItem = new InventoryItem(itemBase,item.amount);
-
-                            pcInventory.items.set(item.id,inventoryItem);
-                        });
-                    }
-                    
-                    const pc = new PlayerCharacter({
-                        id: row.id,
-                        uid: uid,
-                        discriminator: row.discriminator,
-                        description: row.description,
-                        title: row.username,
-                        xp: row.xp,
-                        wishes: row.wishes,
-                        class: CharacterClasses.get(row.class),
-                        attributes: new AttributeSet(
-                            row.attribute_strength,
-                            row.attribute_agility,
-                            row.attribute_vitality,
-                            row.attribute_spirit,
-                            row.attribute_luck
-                        ),
-                        equipment: new CreatureEquipment(pcEquipment),
-                        inventory: pcInventory,
-                        role: row.role,
-                        karma: row.karma
-                    });
-
-                    this.cachedPlayers.set(pc.uid,pc);
-
-                    resolve(pc);
-                });
-            }
-            catch(ex){
-                const did = Logger.error(ex);
-
-                reject('A database error occurred '+did);
-            }
-        });
-    }
-
-    async transferItem(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,itemBase:ItemBase,amount:number){
-        try{
-            const pcFromItem = pcFrom.inventory.items.get(itemBase.id);
-
-            if(!pcFromItem){
-                throw 'You do not have '+itemBase.title;
-            }
-
-            if(pcFromItem.amount < amount){
-                throw 'You have less than '+amount+' '+itemBase.title;
-            }
-
-            const pcFromInvClone = pcFrom.inventory.clone();
-            const pcToInvClone = pcTo.inventory.clone();
-
-            pcFromInvClone.removeItem(itemBase,amount);
-            pcToInvClone.addItem(itemBase,amount);
-
-            const query = `
-                UPDATE player as p set
-                    inventory = pc.inventory
-                FROM (values
-                    ($1, CAST($2 as jsonb)),
-                    ($3, CAST($4 as jsonb))  
-                ) as pc(uid, inventory) 
-                WHERE pc.uid = pc.uid
-                RETURNING p.uid,p.inventory;
-            `;
-
-            const queryParams = [
-                pcFrom.uid,
-                pcFromInvClone.toDatabase(),
-                pcTo.uid,
-                pcToInvClone.toDatabase()
-            ];
-
-            const result = await this.db.getPool().query(query,queryParams);
-
-            console.log(JSON.stringify(result));
-
-            if(result.error){
-                const did = Logger.error(result.error);
-
-                throw 'An unexpected error occurred '+did;
-            }
-
-            //Update their inventories since the database call succeeded
-            pcFrom.inventory = pcFromInvClone;
-            pcTo.inventory = pcToInvClone;
-        }
-        catch(ex){
-            const did = Logger.error(ex);
-
-            throw 'An unexpected error occurred '+did;
-        }
-    }*/
-
 /*
     transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
 

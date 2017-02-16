@@ -22,3 +22,4 @@ export { default as Party } from "./commands/party/PartyCommand";
 export { default as Inventory } from "./commands/Inventory";
 export { default as Help } from "./commands/Help";
 export { default as Give } from "./commands/Give";
+export { default as GrantItem } from "./commands/Grant";

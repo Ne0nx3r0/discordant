@@ -33,6 +33,7 @@ const testerPermissions = [
 const adminPermissions = [
     PermissionId.Eval,
     PermissionId.SetRole,
+    PermissionId.Grant,
 ].concat(testerPermissions).sort();
 
 class PermissionRole{
