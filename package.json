@@ -4,7 +4,7 @@
   "description": "Pet project",
   "main": "Index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node src/Index.js",
     "test": "jasmine"
   },
   "author": "Ne0nx3r0",
