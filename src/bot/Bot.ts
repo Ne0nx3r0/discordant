@@ -31,8 +31,6 @@ export {
 const SpawnArgs = require('spawn-args');
 const Discord = require('discord.js');
 
-const COMMAND_PREFIX:string = 'd';
-
 interface setPlayingGameFunc{
     (message:string);
 }
@@ -64,6 +62,15 @@ export interface CommandBag{
     bot:BotHandlers;
 }
 
+export interface BotBag{
+    game: Game;
+    permissions: PermissionsService;
+    authToken:string,
+    ownerUIDs: Array<string>;
+    mainGuildId: string;
+    commandPrefix: string;
+}
+
 export default class DiscordBot{
     client:DiscordClient;
     game: Game;
@@ -71,12 +78,14 @@ export default class DiscordBot{
     ownerUIDs:Array<string>;
     mainGuildId:string;
     commands: Map<String,Command>;
+    commandPrefix: string;
     
-    constructor(game:Game,permissions:PermissionsService,authToken:string,ownerUIDs:Array<string>,mainGuildId:string){
-        this.game = game;
-        this.permissions = permissions;
-        this.ownerUIDs = ownerUIDs;
-        this.mainGuildId = mainGuildId;
+    constructor(bag:BotBag){
+        this.game = bag.game;
+        this.permissions = bag.permissions;
+        this.ownerUIDs = bag.ownerUIDs;
+        this.mainGuildId = bag.mainGuildId;
+        this.commandPrefix = bag.commandPrefix;
 
         this.client = new Discord.Client();
 
@@ -94,7 +103,7 @@ export default class DiscordBot{
 
         this.client.on('ready',this.handleReady.bind(this));
 
-        this.client.login(authToken);
+        this.client.login(bag.authToken);
     }
 
     handleReady(){
@@ -146,11 +155,11 @@ export default class DiscordBot{
                 return;
             }
 
-            if(!message.content.startsWith(COMMAND_PREFIX)){
+            if(!message.content.startsWith(this.commandPrefix)){
                 return;
             }
 
-            const messageRaw = message.content.substr(COMMAND_PREFIX.length);
+            const messageRaw = message.content.substr(this.commandPrefix.length);
 
             const params = SpawnArgs(messageRaw,{ removequotes: 'always' });
 
