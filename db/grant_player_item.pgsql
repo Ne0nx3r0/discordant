@@ -8,5 +8,3 @@ BEGIN
   END IF; 
 END
 $$;
-
-SELECT grant_player_item(185030740516405248,7,5);

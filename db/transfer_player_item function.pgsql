@@ -1,6 +1,4 @@
-DROP FUNCTION transfer_player_item(bigint,bigint,integer,integer);
-
-CREATE FUNCTION transfer_player_item(fromPlayerUID bigint,toPlayerUID bigint,transferItemId int,transferAmount int) 
+CREATE OR REPLACE FUNCTION transfer_player_item(fromPlayerUID bigint,toPlayerUID bigint,transferItemId int,transferAmount int) 
 RETURNS void LANGUAGE plpgsql AS
 $$
 
@@ -25,5 +23,3 @@ BEGIN
 END
 
 $$;
-
-SELECT transfer_player_item(185030740516405248,42,7,5);
