@@ -239,19 +239,15 @@ export default class Game{
         const params = [from.uid,to.uid,item.id,amount];
 
         return (async ()=>{
-            let step = 0;
-
             try{
                 await this.db.getPool().query(query,params);
-
-                step = 1;
-                //TODO: optimize this by having the postgres function return these rows
-                await this.getPlayerCharacter(from.uid,true);
-                await this.getPlayerCharacter(to.uid,true);
+                
+                from.inventory.removeItem(item,amount);
+                to.inventory.addItem(item,amount);
             }
             catch(ex){
-                //Kind of hackish, I'll admit - "custom" exception from transfer_player_item function
-                if(step == 0 && ex.code == 'P0002'){
+                //Kind of hackish - "custom" exception from transfer_player_item function
+                if(ex.code == 'P0002'){
                     throw 'You do not have enough of that item';
                 }
 
@@ -270,7 +266,7 @@ export default class Game{
             try{
                 await this.db.getPool().query(query,params);
 
-                await this.getPlayerCharacter(to.uid,true);
+                to.inventory.addItem(item,amount);
             }
             catch(ex){
                 const did = Logger.error(ex);
