@@ -14,6 +14,6 @@ export default class Echo extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        message.channel.sendMessage(message.content.replace('decho ',''));
+        message.channel.sendMessage(params.join(' '));
     }
 }
