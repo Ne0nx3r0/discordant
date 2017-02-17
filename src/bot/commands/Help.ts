@@ -11,15 +11,55 @@ export default class ChannelId extends Command{
             'help [command]',
             PermissionId.Help
         );
+
+        this.addAlias('?');
     }
 
      run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        let commandsStr = '';
+        if(params.length > 0){
+            const commandStr = params[0];
+            const command = bag.bot.commands.get(commandStr.toUpperCase());
 
-        bag.bot.commands.forEach(function(command){
-            commandsStr += '\n**'+command.name + '** - ' +command.description;
+            if(!command){
+                message.channel.sendMessage('Unknown command: '+commandStr);
+            
+                return;
+            }
+
+            const commandAliasesStr = command.aliases.length==0?'':'(aliases: '+command.aliases.join(', ')+' )';
+
+            message.channel.sendMessage('',getEmbed(`
+${bag.bot.commandPrefix.toLowerCase()}**${command.name}** ${commandAliasesStr}
+
+${command.description}
+
+${command.getUsage()}
+            `));
+
+            return; 
+        }
+
+        const commandsArr = [];
+
+        bag.bot.commands.forEach(function(command,commandStr){
+            //ignore aliases
+            if(command.aliases.indexOf(commandStr.toLowerCase() as string) == -1){
+                commandsArr.push(command.name);
+            }
         });
 
-        message.channel.sendMessage('Here are the commands you have access to, '+bag.pc.title+':\n'+commandsStr);
+        commandsArr.sort();
+
+        message.channel.sendMessage('',getEmbed('Here are the commands you have access to, '+bag.pc.title+':\n\n'+commandsArr.join(', ')
+        +'\n\n`'+bag.bot.commandPrefix.toLocaleLowerCase()+'help [command]` for more info'));
+    }
+}
+
+function getEmbed(msg:string,color?:number){
+    return {
+        embed: {
+            color: color || 0x6797E5, 
+            description: msg,           
+        }
     }
 }

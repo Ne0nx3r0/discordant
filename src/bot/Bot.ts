@@ -53,6 +53,7 @@ export interface BotHandlers{
     createPrivateChannel:privateChannelFunc;
     grantAccessToPrivateChannel: grantPrivateChannelFunc;
     revokeAccessToPrivateChannel: revokePrivateChannelFunc;
+    commandPrefix: string;
 }
 
 export interface CommandBag{
@@ -186,6 +187,7 @@ export default class DiscordBot{
                     createPrivateChannel: this.createPrivateChannel,
                     grantAccessToPrivateChannel: this.grantAccessToPrivateChannel,
                     revokeAccessToPrivateChannel: this.revokeAccessToPrivateChannel,
+                    commandPrefix: this.commandPrefix,
                 },
                 game: this.game,
                 message: message,
