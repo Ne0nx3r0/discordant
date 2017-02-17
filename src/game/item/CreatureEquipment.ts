@@ -12,6 +12,18 @@ export interface EquipmentBag{
     weapon?: Weapon;
 }
 
+const validSlots = [    
+    'amulet' ,
+    'armor' ,
+    'bracer' ,
+    'hat' ,
+    'offhand' ,
+    'ring' ,
+    'weapon'
+];
+
+export {validSlots as VALID_SLOTS};
+
 export type EquipmentSlot = 
     'amulet' |
     'armor' |

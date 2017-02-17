@@ -23,4 +23,5 @@ export { default as Inventory } from "./commands/Inventory";
 export { default as Help } from "./commands/Help";
 export { default as Give } from "./commands/Give";
 export { default as GrantItem } from "./commands/Grant";
-export { default as Eqiup } from "./commands/Equip";
+export { default as Equip } from "./commands/Equip";
+export { default as Unequip } from "./commands/Unequip";

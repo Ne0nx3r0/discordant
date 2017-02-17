@@ -306,6 +306,33 @@ export default class Game{
         })();
     }
 
+    unequipItem(pc:PlayerCharacter,slot:EquipmentSlot):Promise<void>{
+        return (async ()=>{
+            try{
+                const result = await this.db.getPool().query('select unequip_player_item($1,$2)',[pc.uid,slot]);
+                
+                const unEquippedItemId:number = result.rows[0].unequip_player_item;
+
+                if(unEquippedItemId != -1){
+                    const itemUnequipped = this.items.get(unEquippedItemId);
+
+                    pc.equipment._unequipItem(slot);   
+                    pc.inventory._addItem(itemUnequipped,1);
+                }
+            }
+            catch(ex){
+                //Kind of hackish - "custom" exception from equip_player_item function
+                if(ex.code == 'P0002'){
+                    throw 'You do not have anything equipped in that slot';
+                }
+
+                const did = Logger.error(ex);
+
+                throw 'An unexpected database error occurred '+did;
+            }
+        })();
+    }
+
     createMonsterBattle(players:Array<PlayerCharacter>,opponent:CreatureAIControlled){
         return new Promise((resolve,reject)=>{
             //Verify no player is currently in a battle

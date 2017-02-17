@@ -7,6 +7,7 @@ enum PermissionId{
     Give,
     Grant,
     Equip,
+    Unequip,
     Use,
 
     Party,
