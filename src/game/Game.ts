@@ -242,8 +242,8 @@ export default class Game{
             try{
                 await this.db.getPool().query(query,params);
                 
-                from.inventory.removeItem(item,amount);
-                to.inventory.addItem(item,amount);
+                from.inventory._removeItem(item,amount);
+                to.inventory._addItem(item,amount);
             }
             catch(ex){
                 //Kind of hackish - "custom" exception from transfer_player_item function
@@ -266,7 +266,7 @@ export default class Game{
             try{
                 await this.db.getPool().query(query,params);
 
-                to.inventory.addItem(item,amount);
+                to.inventory._addItem(item,amount);
             }
             catch(ex){
                 const did = Logger.error(ex);
@@ -276,16 +276,29 @@ export default class Game{
         })();
     }
 
-    equipItem(pc:PlayerCharacter,item:ItemEquippable,slot:EquipmentSlot):Promise<ItemEquippable>{
+    equipItem(pc:PlayerCharacter,item:ItemEquippable,slot:EquipmentSlot):Promise<void>{
         return (async ()=>{
             try{
-                //await this.db.getPool().query(query,params);
+                const result = await this.db.getPool().query('select equip_player_item($1,$2,$3)',[pc.uid,item.id,slot]);
 
-//                to.inventory.addItem(item,amount);
+                const unEquippedItemId:number = result.rows[0].equip_player_item;
 
-                return null;
+                if(unEquippedItemId != -1){
+                    const itemUnequipped = this.items.get(unEquippedItemId);
+                    
+                    pc.inventory._addItem(itemUnequipped,1);
+                }
+
+                pc.inventory._removeItem(item,1);
+
+                pc._equipItem(item,slot);
             }
             catch(ex){
+                //Kind of hackish - "custom" exception from equip_player_item function
+                if(ex.code == 'P0002'){
+                    throw 'You do not have any of that item';
+                }
+
                 const did = Logger.error(ex);
 
                 throw 'An unexpected database error occurred '+did;

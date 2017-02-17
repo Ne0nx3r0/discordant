@@ -15,7 +15,7 @@ export default class PlayerInventory{
     }
 
     //TODO: Remember to update this to account for metadata when metadata is implemented
-    addItem(base:ItemBase,amount:number){
+    _addItem(base:ItemBase,amount:number){
         const existingItem:InventoryItem = this.items.get(base.id);
 
         if(existingItem){
@@ -26,7 +26,7 @@ export default class PlayerInventory{
         }
     }
 
-    removeItem(base:ItemBase,amount:number){
+    _removeItem(base:ItemBase,amount:number){
         const existingItem:InventoryItem = this.items.get(base.id);
 
         //Really these two checks should have already been run
@@ -38,10 +38,13 @@ export default class PlayerInventory{
             throw 'Only '+existingItem.amount+' of '+base.id+' ('+base.title+') in inventory, less than '+amount;
         }
         else if(amount == existingItem.amount){
+            console.log('deleting '+base.title);
             this.items.delete(base.id);
         }
         else{
             existingItem.amount = existingItem.amount - amount;
+            
+            console.log('changing '+existingItem.amount+' to '+(existingItem.amount - amount));
         }
     }
 

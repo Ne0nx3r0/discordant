@@ -87,12 +87,20 @@ export default class Creature{
         if(this.HPCurrent>this.stats.HPTotal) this.HPCurrent = this.stats.HPTotal;
     }
 
-    equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{
-        return this.equipment.equip(item,slot);
+    _equipItem(item:ItemEquippable,slot:EquipmentSlot):ItemEquippable{
+        const unEquipped = this.equipment._equipItem(item,slot);
+
+        this.updateStats();
+
+        return unEquipped;
     }
 
-    unEquipItem(slot:EquipmentSlot):ItemEquippable{
-        return this.equipment.unequip(slot);
+    _unEquipItem(slot:EquipmentSlot):ItemEquippable{
+        const unEquipped = this.equipment._unequipItem(slot);
+
+        this.updateStats();
+
+        return unEquipped;
     }
 
     //May return nothing if no valid attacks or if no attacks that should be used right now

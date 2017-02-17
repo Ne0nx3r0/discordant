@@ -59,19 +59,21 @@ export default class Grant extends Command{
 
         let equipSlot = offhand ? 'offhand' : itemEquippableToEquip.slotType;
 
+        const itemToUnEquip = bag.pc.equipment._items[equipSlot];
+
         asyncCommand();
 
         async function asyncCommand(){
             try{
-                const itemUnequipped:ItemEquippable = await bag.game.equipItem(bag.pc,itemEquippableToEquip,equipSlot);
+                await bag.game.equipItem(bag.pc,itemEquippableToEquip,equipSlot);
 
                 let deEquippedStr = '';
 
-                if(itemUnequipped){
-                    deEquippedStr = `, unequipped ${itemUnequipped.title}`;
+                if(itemToUnEquip){
+                    deEquippedStr = `, unequipped ${itemToUnEquip.title}`;
                 }
 
-                message.channel.sendMessage(`${bag.pc.title} equipped ${itemBaseToEquip.title}${deEquippedStr} (not really database not setup yet for this)`);
+                message.channel.sendMessage(`${bag.pc.title} equipped ${itemBaseToEquip.title}${deEquippedStr}`);
             }
             catch(ex){
                 message.channel.sendMessage(ex+', '+bag.pc.title);
