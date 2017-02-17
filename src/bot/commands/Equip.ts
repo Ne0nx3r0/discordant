@@ -68,7 +68,7 @@ export default class Grant extends Command{
                 let deEquippedStr = '';
 
                 if(itemUnequipped){
-                    
+                    deEquippedStr = `, unequipped ${itemUnequipped.title}`;
                 }
 
                 message.channel.sendMessage(`${bag.pc.title} equipped ${itemBaseToEquip.title}${deEquippedStr} (not really database not setup yet for this)`);
