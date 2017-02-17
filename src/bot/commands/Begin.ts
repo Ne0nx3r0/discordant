@@ -18,14 +18,14 @@ export default class Begin extends Command {
         this.allowAnonymous = true;
     }
 
-    getAvailableClasses() {
+    getAvailableClasses(prefix:string) {
         let classesStr = 'Available classes: ';
 
         const classes = CharacterClasses.forEach(function(c: CharacterClass, key){
             classesStr += c.title + ', ';
         });
 
-        return classesStr.slice(0, -2) + '\n(`dclass` for more info)';
+        return classesStr.slice(0, -2)+'\n(`'+prefix+'class` for more info)';
     }
 
     run(params: Array<string>, message:DiscordMessage, bag:CommandBag) {
@@ -37,7 +37,7 @@ export default class Begin extends Command {
 
         if (params.length < 1) {
             message.channel.sendMessage('You must choose a class, '+message.author.username
-            +'\n\n' + this.getAvailableClasses());
+            +'\n\n' + this.getAvailableClasses(bag.bot.commandPrefix));
 
             return;
         }
@@ -51,7 +51,7 @@ export default class Begin extends Command {
 
         if (!wantedClass) {
             message.channel.sendMessage(params[0] + ' is not a valid class, '+message.author.username
-            +'\n\n' + this.getAvailableClasses());
+            +'\n\n' + this.getAvailableClasses(bag.bot.commandPrefix));
 
             return;
         }

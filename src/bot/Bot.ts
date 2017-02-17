@@ -61,6 +61,7 @@ export interface CommandBag{
     pc?:PlayerCharacter;
     message:DiscordMessage;
     bot:BotHandlers;
+    permissions:PermissionsService;
 }
 
 export interface BotBag{
@@ -187,10 +188,11 @@ export default class DiscordBot{
                     createPrivateChannel: this.createPrivateChannel,
                     grantAccessToPrivateChannel: this.grantAccessToPrivateChannel,
                     revokeAccessToPrivateChannel: this.revokeAccessToPrivateChannel,
-                    commandPrefix: this.commandPrefix,
+                    commandPrefix: this.commandPrefix.toLowerCase(),
                 },
                 game: this.game,
                 message: message,
+                permissions: this.permissions
             };
 
             this.game.getPlayerCharacter(message.author.id)
@@ -200,7 +202,7 @@ export default class DiscordBot{
                         command.run(params,message as DiscordMessage,bag);
                     }
                     else{
-                        message.channel.sendMessage('You must first register with `dbegin`, '+message.author.username);
+                        message.channel.sendMessage('You must first register with `'+this.commandPrefix.toLocaleLowerCase()+'begin`, '+message.author.username);
                     }
 
                     return;

@@ -12,6 +12,7 @@ export default class ChannelId extends Command{
             PermissionId.Help
         );
 
+        this.allowAnonymous = true;
         this.addAlias('?');
     }
 
@@ -40,17 +41,20 @@ ${command.getUsage()}
         }
 
         const commandsArr = [];
-
+        const pcRole = bag.permissions.role(bag.pc?bag.pc.role:'nobody');
         bag.bot.commands.forEach(function(command,commandStr){
             //ignore aliases
             if(command.aliases.indexOf(commandStr.toLowerCase() as string) == -1){
-                commandsArr.push(command.name);
+                //Only show commands the player has permission to use
+                if(pcRole.has(command.permission) || command.allowAnonymous){
+                    commandsArr.push(command.name);
+                }
             }
         });
 
         commandsArr.sort();
 
-        message.channel.sendMessage('',getEmbed('Here are the commands you have access to, '+bag.pc.title+':\n\n'+commandsArr.join(', ')
+        message.channel.sendMessage('',getEmbed('Here are the commands you have access to, '+bag.message.author.username+':\n\n'+commandsArr.join(', ')
         +'\n\n`'+bag.bot.commandPrefix.toLocaleLowerCase()+'help [command]` for more info'));
     }
 }
