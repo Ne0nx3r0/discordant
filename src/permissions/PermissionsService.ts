@@ -21,6 +21,7 @@ const playerPermissions = [
     PermissionId.Help,
     PermissionId.Give,
     PermissionId.Equip,
+    PermissionId.Use,
 ].sort();
 
 const testerPermissions = [
