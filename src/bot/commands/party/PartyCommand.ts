@@ -22,6 +22,8 @@ export default class PartyCommand extends Command{
             PermissionId.Party
         );
 
+        this.addAlias('p');
+
         this.subCommands = new Map();
 
         this.subCommands.set('new',new PartyNew());
@@ -40,7 +42,7 @@ export default class PartyCommand extends Command{
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
         let subCommand = params.length == 0 ? 'help' : params[0];
 
-        if(subCommand == 'rocking'){
+        if(subCommand == 'rock'){
             message.channel.sendMessage(':tada: SORRY. FOR. PARTY. ROCKING. :tada:');
 
             return;

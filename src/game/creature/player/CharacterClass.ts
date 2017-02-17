@@ -13,6 +13,6 @@ export default class CharacterClass {
         this.title = title;
         this.description = description;
         this.startingAttributes = startingAttributes;
-        this.startingEquipment = startingEquipment;
+        this.startingEquipment = startingEquipment || new CreatureEquipment({});
     }
 }

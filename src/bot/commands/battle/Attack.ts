@@ -7,7 +7,7 @@ import CoopMonsterBattle from '../../../game/battle/CoopMonsterBattle';
 import { DiscordMessage, CommandBag } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
 
-export default class ChannelId extends Command{
+export default class Attack extends Command{
     constructor(){
         super(
             'attack',
@@ -15,6 +15,8 @@ export default class ChannelId extends Command{
             'attack [attackname]',
             PermissionId.BattleAttack
         );
+
+        this.addAlias('a');
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){

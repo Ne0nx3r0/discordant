@@ -85,7 +85,7 @@ export default class DiscordBot{
         this.permissions = bag.permissions;
         this.ownerUIDs = bag.ownerUIDs;
         this.mainGuildId = bag.mainGuildId;
-        this.commandPrefix = bag.commandPrefix;
+        this.commandPrefix = bag.commandPrefix.toUpperCase();
 
         this.client = new Discord.Client();
 
@@ -95,6 +95,10 @@ export default class DiscordBot{
             const command:Command = new Commands[commandName];
 
             this.commands.set(command.name.toUpperCase(),command);
+
+            command.aliases.forEach((aliasStr)=>{
+                this.commands.set(aliasStr.toUpperCase(),command);
+            });
         });
 
         this.setPlayingGame = this.setPlayingGame.bind(this);
@@ -155,7 +159,7 @@ export default class DiscordBot{
                 return;
             }
 
-            if(!message.content.startsWith(this.commandPrefix)){
+            if(!message.content.startsWith(this.commandPrefix.toUpperCase())){
                 return;
             }
 
