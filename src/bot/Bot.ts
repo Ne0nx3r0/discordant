@@ -159,7 +159,7 @@ export default class DiscordBot{
                 return;
             }
 
-            if(!message.content.startsWith(this.commandPrefix.toUpperCase())){
+            if(message.content.substr(0,this.commandPrefix.length).toUpperCase() != this.commandPrefix){
                 return;
             }
 
