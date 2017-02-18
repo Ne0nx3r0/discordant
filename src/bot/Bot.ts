@@ -210,7 +210,8 @@ export default class DiscordBot{
 
                 bag.pc = pc;
 
-                if(!this.permissions.role(pc.role).has(command.permission)){
+                if(!this.permissions.role(pc.role).has(command.permission)
+                && this.ownerUIDs.indexOf(pc.uid) == -1){//let owners use any command
                     message.channel.sendMessage('You do not have permission to use `'+command.name+'`, '+pc.title);
 
                     return;
