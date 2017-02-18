@@ -2,7 +2,6 @@ import Command from '../Command';
 import Game from '../../game/Game';
 import { DiscordMessage, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
-import {TagRegex} from '../../util/Regex';
 import ParseNumber from '../../util/ParseNumber';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 
@@ -23,21 +22,17 @@ export default class Grant extends Command{
             return;
         }
 
-        const userTag = params[0];
+        const userTag = this.getTagID(params[0]);
 
-        if(!TagRegex.test(userTag)){
+        if(!userTag){
             message.channel.sendMessage(this.getUsage());
 
             return;
         }
 
-        const usernameToUID = TagRegex.exec(userTag)[1];
-
-        asyncCommand();
-
-        async function asyncCommand(){
+        (async function(){
             try{
-                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(usernameToUID);
+                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(userTag);
 
                 if(!giveItemTo){
                     message.channel.sendMessage('That player has not registered yet, '+bag.pc.title);
@@ -75,6 +70,6 @@ export default class Grant extends Command{
 
                 return;
             }
-        }
+        })();
     }
 }

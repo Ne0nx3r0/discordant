@@ -56,12 +56,17 @@ export interface BotHandlers{
     commandPrefix: string;
 }
 
+interface DiscordSendMessageFunction{
+    (content: string, options?: DiscordMessageOptions):Promise<DiscordMessage | DiscordMessage[]>;
+}
+
 export interface CommandBag{
     game:Game;
     pc?:PlayerCharacter;
     message:DiscordMessage;
     bot:BotHandlers;
     permissions:PermissionsService;
+    respond:DiscordSendMessageFunction;
 }
 
 export interface BotBag{
@@ -188,11 +193,12 @@ export default class DiscordBot{
                     createPrivateChannel: this.createPrivateChannel,
                     grantAccessToPrivateChannel: this.grantAccessToPrivateChannel,
                     revokeAccessToPrivateChannel: this.revokeAccessToPrivateChannel,
-                    commandPrefix: this.commandPrefix.toLowerCase(),
+                    commandPrefix: this.commandPrefix.toLowerCase()
                 },
                 game: this.game,
                 message: message,
-                permissions: this.permissions
+                permissions: this.permissions,
+                respond: message.channel.sendMessage,
             };
 
             this.game.getPlayerCharacter(message.author.id)

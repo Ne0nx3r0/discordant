@@ -3,7 +3,6 @@ import Game from '../../game/Game';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import { DiscordMessage, DiscordMessageOptions, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
-import {TagRegex} from '../../util/Regex';
 
 export default class ChannelId extends Command{
     constructor(){
@@ -25,17 +24,13 @@ export default class ChannelId extends Command{
 
             return;
         }
-        else{
-            const tag = params[0];
-            
-            if(TagRegex.test(tag)){
-                statsUid = TagRegex.exec(tag)[1];
-            }
-            else{
-                message.channel.sendMessage(this.getUsage());
 
-                return;
-            }
+        const tag = this.getTagID(params[0]);
+        
+        if(!tag){
+            message.channel.sendMessage(this.getUsage());
+
+            return;
         }
 
         bag.game.getPlayerCharacter(statsUid)

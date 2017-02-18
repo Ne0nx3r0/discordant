@@ -8,12 +8,16 @@ export default class EvalCommand extends Command{
         super(
             'setrole',
             'Sets the role of a player',
-            'setrole \<@playerName> role',
+            'setrole \<@playerName> <role>',
             PermissionId.SetRole
         );
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        message.channel.sendMessage('setrole here bra');
+        if(params.length < 2){
+            bag.respond(this.getUsage());
+
+            return;
+        }
     }
 }

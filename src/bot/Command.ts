@@ -4,6 +4,8 @@ import { CommandBag } from './Bot';
 import ChannelId from './commands/battle/Block';
 import PermissionId from '../permissions/PermissionIds';
 
+const TagRegex = new RegExp(/<@([0-9]+)>/);
+
 export default class Command{
     name:String;
     description:String;
@@ -46,5 +48,13 @@ export default class Command{
                 description: msg,           
             }
         }
+    }
+
+    getTagID(userTag:string):string{
+        if(!TagRegex.test(userTag)){
+            return null;
+        }
+
+        return TagRegex.exec(userTag)[1];
     }
 }
