@@ -22,7 +22,7 @@ export default class BattleMessengerDiscord{
             let embedMsg = '';
 
             e.players.forEach(function(playerDamage){
-                embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.exhaustion>1);
+                embedMsg += '\n' + getDamagesLine(playerDamage.bpc.pc,playerDamage.damages,playerDamage.blocked,playerDamage.bpc.exhaustion>1);
             });
 
             this.channel.sendMessage(msg)
@@ -32,7 +32,7 @@ export default class BattleMessengerDiscord{
         });
 
         battle.on(CoopMonsterBattleEvent.PlayerDeath,(e:PlayerDeathEvent)=>{
-            this.channel.sendMessage(':skull_crossbones:   '+e.pc.title + ' died! (Lost '+e.lostWishes+' wishes)  :skull_crossbones:');
+            this.channel.sendMessage(':skull_crossbones:   '+e.bpc.pc.title + ' died! (Lost '+e.lostWishes+' wishes)  :skull_crossbones:');
         });
 
         battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
@@ -40,8 +40,10 @@ export default class BattleMessengerDiscord{
                 this.channel.sendMessage('```fix\n Battle Over \n```'
                 +'\n:tada: YOU WERE VICTORIOUS :tada: ');
 
-                e.survivingPCs.forEach((pc:PlayerCharacter)=>{
-                    this.channel.sendMessage(pc.title+' earned '+e.xpEarned+'xp');
+                e.pcs.forEach((bpc)=>{
+                    if(!bpc.defeated){ 
+                        this.channel.sendMessage(bpc.pc.title+' earned '+e.opponent.getExperienceEarned(bpc.pc)+'xp');
+                    }
                 });
             }
             else{
@@ -51,16 +53,16 @@ export default class BattleMessengerDiscord{
         });
 
         battle.on(CoopMonsterBattleEvent.PlayerBlock,(e:PlayerBlockedEvent)=>{
-            this.channel.sendMessage(':shield: '+e.pc.title + ' blocks! :shield:');
+            this.channel.sendMessage(':shield: '+e.bpc.pc.title + ' blocks! :shield:');
         });
 
         battle.on(CoopMonsterBattleEvent.PlayerAttack,(e:PlayerAttackEvent)=>{
             let msg = e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false);
 
-            const exhaustion = e.battle.getPlayerExhaustion(e.attackingPlayer);
+            const exhaustion = e.attacker.exhaustion;
 
             if(exhaustion>1){
-                msg+='\n'+e.attackingPlayer.title+' is exhausted for '
+                msg+='\n'+e.attacker.pc.title+' is exhausted for '
                 +(exhaustion-1)+' turn'+(exhaustion>2?'s':'');
             }
 

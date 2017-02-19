@@ -2,6 +2,7 @@ import Creature from './Creature';
 import { ICreatureBag } from './Creature'; 
 import WeaponAttack from '../item/WeaponAttack';
 import WeaponAttackStep from '../item/WeaponAttackStep';
+import PlayerCharacter from './player/PlayerCharacter';
 
 interface ICreatureAIBag extends ICreatureBag{
     xpDropped:number;
@@ -53,5 +54,9 @@ export default class CreatureAIControlled extends Creature{
                 return attack;
             }
         }
+    }
+
+    getExperienceEarned(pc:PlayerCharacter){
+        return this.xpDropped;//TODO: implement player-based experience drops
     }
 }

@@ -23,6 +23,12 @@ export default class Grant extends Command{
 
             return;
         }
+        
+        if(bag.pc.battle){
+            bag.respond(`You cannot change weapons during a battle, ${bag.pc.title}`);
+
+            return;
+        }
 
         const offhand = params[params.length-1] == 'offhand';
 

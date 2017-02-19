@@ -18,6 +18,12 @@ export default class Unequip extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
+        if(bag.pc.battle){
+            bag.respond(`You cannot change weapons during a battle, ${bag.pc.title}`);
+
+            return;
+        }
+
         (async()=>{
             try{
                 if(params.length < 1){

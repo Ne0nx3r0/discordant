@@ -350,18 +350,13 @@ export default class Game{
 
             battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
                 if(e.victory){
-                    e.survivingPCs.forEach((pc:PlayerCharacter)=>{
-                        this.addXP(pc,e.xpEarned)
-                        .catch((error)=>{
-                            Logger.error({error:error,uid:pc.uid});
-                        });
-                    });
-
-                    e.defeatedPCs.forEach((pc:PlayerCharacter)=>{
-                        this.addXP(pc,e.xpEarned)
-                        .catch((error)=>{
-                            Logger.error({error:error,uid:pc.uid});
-                        });
+                    e.pcs.forEach((bpc)=>{
+                        if(!bpc.defeated){
+                            this.addXP(bpc.pc,e.opponent.getExperienceEarned(bpc.pc))
+                            .catch((error)=>{
+                                Logger.error({error:error,uid:bpc.pc.uid});
+                            });
+                        }
                     });
                 }
 

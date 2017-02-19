@@ -10,6 +10,7 @@ import IDamageSet from '../../../game/damage/IDamageSet';
 import Creature from '../../../game/creature/Creature';
 import { DiscordMessage, CommandBag } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
+import { IBattlePlayer } from '../../../game/battle/IPlayerBattle';
 
 export default class Battle extends Command{
     constructor(){
@@ -49,7 +50,7 @@ export default class Battle extends Command{
                 let msg = '```md\n< '+e.message+' >\n```';
                 let embedMsg = '';
                 e.players.forEach(function(playerDamage){
-                    embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,e.battle.getPlayerExhaustion(playerDamage.pc)>1);
+                    embedMsg += '\n' + getDamagesLine(playerDamage.bpc.pc,playerDamage.damages,playerDamage.blocked,playerDamage.bpc.exhaustion>1);
                 });
 
                 message.channel.sendMessage(msg)
@@ -59,7 +60,7 @@ export default class Battle extends Command{
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerDeath,function(e:PlayerDeathEvent){
-                message.channel.sendMessage(':skull_crossbones:   '+e.pc.title + ' died! (Lost '+e.lostWishes+' wishes)  :skull_crossbones:');
+                message.channel.sendMessage(':skull_crossbones:   '+e.bpc.pc.title + ' died! (Lost '+e.lostWishes+' wishes)  :skull_crossbones:');
             });
 
             battle.on(CoopMonsterBattleEvent.BattleEnd,function(e:BattleEndEvent){
@@ -67,8 +68,12 @@ export default class Battle extends Command{
                     message.channel.sendMessage('```fix\n Battle Over \n```'
                     +'\n:tada: YOU WERE VICTORIOUS :tada: ');
 
-                    e.survivingPCs.forEach((pc:PlayerCharacter)=>{
-                        message.channel.sendMessage(pc.title+' earned '+e.xpEarned+'xp');
+                    e.pcs.forEach((bpc:IBattlePlayer)=>{
+                        if(!bpc.defeated){
+                            const xpEarned = e.opponent.getExperienceEarned(bpc.pc);
+
+                            message.channel.sendMessage(bpc.pc.title+' earned '+xpEarned+'xp');
+                        }
                     });
                 }
                 else{
@@ -78,16 +83,16 @@ export default class Battle extends Command{
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerBlock,function(e:PlayerBlockedEvent){
-                message.channel.sendMessage(':shield: '+e.pc.title + ' blocks! :shield:');
+                message.channel.sendMessage(':shield: '+e.bpc.pc.title + ' blocks! :shield:');
             });
 
             battle.on(CoopMonsterBattleEvent.PlayerAttack,function(e:PlayerAttackEvent){
                 let msg = e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false);
 
-                const exhaustion = e.battle.getPlayerExhaustion(e.attackingPlayer);
+                const exhaustion = e.attacker.exhaustion;
 
                 if(exhaustion>1){
-                    msg+='\n'+e.attackingPlayer.title+' is exhausted for '
+                    msg+='\n'+e.attacker.pc.title+' is exhausted for '
                     +(exhaustion-1)+' turn'+(exhaustion>2?'s':'');
                 }
 
