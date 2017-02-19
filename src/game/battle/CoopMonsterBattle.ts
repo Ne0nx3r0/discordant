@@ -92,19 +92,19 @@ export default class CoopMonsterBattle implements IPlayerBattle{
 
         this.id = id;
 
-        const battle = this;
-
         this.pcs = new Map();
         
         pcs.forEach((pc)=>{
             this.pcs.set(pc.uid,{
                 pc:pc,
-                battle: battle,
+                battle: this,
                 blocking: false,
                 defeated: false,
                 exhaustion: 1,//pc can't attack the mob until the mob attacks the pc
                 queuedAttacks: [],
             });
+
+            pc.battle = this;
         });
 
         this.opponent = opponent;
@@ -151,7 +151,7 @@ export default class CoopMonsterBattle implements IPlayerBattle{
             players: [],
             message:attackStep.attackMessage
                 .replace('{attacker}',this.opponent.title)
-                .replace('{defender}',this.pcs.size==1?this.pcs[0].title:'the group')
+                .replace('{defender}','the party')
         };
 
         this.pcs.forEach((bpc)=>{

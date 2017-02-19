@@ -16,7 +16,7 @@ type PlayerStatus = 'inCity' | 'inPVPBattle' | 'inCOOPBattle' | 'invitedToParty'
 export {PlayerStatus};
 
 interface BattleData{
-    battle:CoopMonsterBattle;
+    battle:IPlayerBattle;
     defeated:boolean;
     attackExhaustion:number,
     queuedAttacks:Array<AttackStep>,
