@@ -2,7 +2,6 @@ import Command from '../Command';
 import Game from '../../game/Game';
 import { DiscordMessage, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
-import {TagRegex} from '../../util/Regex';
 import ParseNumber from '../../util/ParseNumber';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
 import Weapon from '../../game/item/Weapon';

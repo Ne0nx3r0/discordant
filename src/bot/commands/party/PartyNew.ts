@@ -20,8 +20,10 @@ export default class PartyNew extends Command{
             return;
         }
 
-        if(bag.pc.isInParty){
-            
+        if(bag.pc.status != 'inCity'){
+            bag.respond(`You cannot create a party now, ${bag.pc.title}`);
+
+            return;
         }
 
         const errHandler = this.handleError(bag);

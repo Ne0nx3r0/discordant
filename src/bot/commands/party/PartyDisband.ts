@@ -14,19 +14,19 @@ export default class PartyDisband extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isInParty){
+        if(!bag.pc.party){
             message.channel.sendMessage('You are not currently in a party, '+bag.pc.title);
 
             return;
         }
 
-        if(bag.pc.partyData.party.isInBattle){
+        if(bag.pc.party.isInBattle){
             message.channel.sendMessage('You must finish the current battle, '+bag.pc.title);
 
             return;
         }
 
-        const party = bag.pc.partyData.party;
+        const party = bag.pc.party;
 
         if(party.leader != bag.pc){
             message.channel.sendMessage('Only the party leader can disband the party');

@@ -9,15 +9,11 @@ import AttackStep from '../../item/WeaponAttackStep';
 import PlayerInventory from '../../item/PlayerInventory';
 import PlayerParty from '../../party/PlayerParty';
 import InventoryItem from '../../item/InventoryItem';
+import { IPlayerBattle } from '../../battle/IPlayerBattle';
 
-enum PlayerPartyStatus{
-    NoParty,
-    InvitedToParty,
-    InParty,
-    LeadingParty
-}
+type PlayerStatus = 'inCity' | 'inPVPBattle' | 'inCOOPBattle' | 'invitedToParty' | 'inParty' | 'leadingParty';
 
-export {PlayerPartyStatus};
+export {PlayerStatus};
 
 interface BattleData{
     battle:CoopMonsterBattle;
@@ -28,7 +24,6 @@ interface BattleData{
 }
 
 interface PartyData{
-    status:PlayerPartyStatus;
     inviteExpires?:number;
     party?:PlayerParty;
 }
@@ -52,9 +47,9 @@ interface PCConfig{
 export default class PlayerCharacter extends Creature{
     uid:string;
     discriminator:number;
-    battleData:BattleData;
-    partyData:PartyData;
-    PlayerPartyStatus:PlayerPartyStatus;
+    battle:IPlayerBattle;
+    party:PlayerParty;
+    status:PlayerStatus;
     class:CharacterClass;
     xp:number;
     wishes:number;
@@ -80,10 +75,9 @@ export default class PlayerCharacter extends Creature{
         this.role = o.role;
         this.karma = o.karma;
 
-        this.battleData = null;
-        this.partyData = {
-            status: PlayerPartyStatus.NoParty
-        };
+        this.status = 'inCity';
+        this.party = null;
+        this.battle = null;
     }
 
     calculateDeathWishesLost():number{
@@ -92,27 +86,5 @@ export default class PlayerCharacter extends Creature{
 
     calculateDeathXPLost():number{
         return this.xp * 0.01;
-    }
-
-    get party():PlayerParty{
-        return this.partyData.party;
-    }
-
-    //Has party data but expires is set marking it as an invite
-    get isConsideringPartyInvite():boolean{
-        return this.partyData.status == PlayerPartyStatus.InvitedToParty;
-    }
-
-    get isInParty():boolean{
-        return this.partyData.status == PlayerPartyStatus.InParty 
-        || this.partyData.status == PlayerPartyStatus.LeadingParty;
-    }
-
-    get isLeadingParty():boolean{
-        return this.partyData.status == PlayerPartyStatus.LeadingParty;
-    }
-
-    get isInBattle():boolean{
-        return this.partyData.party && this.partyData.party.isInBattle;
     }
 }

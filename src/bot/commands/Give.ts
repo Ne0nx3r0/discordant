@@ -22,7 +22,7 @@ export default class GiveItem extends Command{
             return;
         }
 
-        const userTag = this.getTagID(params[0]);
+        const userTag = this.getTagUID(params[0]);
 
         if(!userTag){
             message.channel.sendMessage(this.getUsage());
@@ -32,7 +32,7 @@ export default class GiveItem extends Command{
 
         (async function(){
             try{
-                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(usernameToUID);
+                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(userTag);
 
                 if(!giveItemTo){
                     message.channel.sendMessage('That player has not registered yet, '+bag.pc.title);

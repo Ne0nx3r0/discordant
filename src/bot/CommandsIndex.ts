@@ -25,3 +25,4 @@ export { default as Give } from "./commands/Give";
 export { default as GrantItem } from "./commands/Grant";
 export { default as Equip } from "./commands/Equip";
 export { default as Unequip } from "./commands/Unequip";
+export { default as SetRole } from "./commands/SetRole";

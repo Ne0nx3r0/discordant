@@ -34,8 +34,6 @@ const testerPermissions = [
 ].concat(playerPermissions).sort();
 
 const adminPermissions = [
-    PermissionId.Eval,
-    PermissionId.SetRole,
     PermissionId.Grant,
 ].concat(testerPermissions).sort();
 
@@ -60,15 +58,24 @@ export default class PermissionsService{
         this._roles.set('player',new PermissionRole(playerPermissions));
         this._roles.set('tester',new PermissionRole(testerPermissions));        
         this._roles.set('admin',new PermissionRole(adminPermissions));
-        this._roles.set('unknown',new PermissionRole([]));
-    }   
+    }
 
-    role(name:string):PermissionRole{
+    isRole(name:string){
+        return this._roles.has(name);
+    }
+
+    getRoleNames(){
+        const roles = [];
+
+        this._roles.forEach(function(role,name){
+            roles.push(name);
+        });
+
+        return roles;
+    }
+
+    getRole(name:string):PermissionRole{
         const role = this._roles.get(name);
-
-        if(!role){
-            return this._roles.get('unknown');
-        }
 
         return role;
     }

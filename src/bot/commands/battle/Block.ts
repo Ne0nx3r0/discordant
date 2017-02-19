@@ -20,7 +20,9 @@ export default class Block extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isInBattle){
+        const battle = bag.pc.battle;
+
+        if(!battle){
             message.channel.sendMessage('You are not currently in a battle, '+bag.pc.title);
 
             return;
@@ -34,7 +36,7 @@ export default class Block extends Command{
 
         const wantedAttackStr = params.join(' ').toUpperCase();
 
-        bag.pc.battleData.battle.playerActionBlock(bag.pc)
+        bag.pc.battle.playerActionBlock(bag.pc)
         .catch(this.handleError(bag));
     }
 }

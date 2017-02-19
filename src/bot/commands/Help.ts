@@ -41,7 +41,9 @@ ${command.getUsage()}
         }
 
         const commandsArr = [];
-        const pcRole = bag.permissions.role(bag.pc?bag.pc.role:'nobody');
+
+        const pcRole = bag.permissions.getRole(bag.pc?bag.pc.role:'unknown');
+
         bag.bot.commands.forEach(function(command,commandStr){
             //ignore aliases
             if(command.aliases.indexOf(commandStr.toLowerCase() as string) == -1){

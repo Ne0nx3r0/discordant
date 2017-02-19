@@ -22,7 +22,7 @@ export default class BattleMessengerDiscord{
             let embedMsg = '';
 
             e.players.forEach(function(playerDamage){
-                embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.pc.battleData.attackExhaustion>1);
+                embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.exhaustion>1);
             });
 
             this.channel.sendMessage(msg)
@@ -57,7 +57,7 @@ export default class BattleMessengerDiscord{
         battle.on(CoopMonsterBattleEvent.PlayerAttack,(e:PlayerAttackEvent)=>{
             let msg = e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false);
 
-            const exhaustion = e.attackingPlayer.battleData.attackExhaustion;
+            const exhaustion = e.battle.getPlayerExhaustion(e.attackingPlayer);
 
             if(exhaustion>1){
                 msg+='\n'+e.attackingPlayer.title+' is exhausted for '

@@ -339,7 +339,7 @@ export default class Game{
             for(var i=0;i<players.length;i++){
                 const player:PlayerCharacter = players[i];
 
-                if(player.isInBattle){
+                if(player.battle){
                     reject(player.title + ' is already in a battle');
 
                     return;
@@ -492,7 +492,7 @@ export default class Game{
     }
 
     createPlayerParty(name:string,leader:PlayerCharacter,channel:DiscordTextChannel):PlayerParty{
-        if(leader.isInParty){
+        if(leader.party){
             throw 'You are already in a party';
         }
 
@@ -505,6 +505,21 @@ export default class Game{
         this.playerParties.set(party.id,party);
         
         return party;
+    }
+
+    setPlayerRole(pc:PlayerCharacter,role:string):Promise<void>{
+        return (async()=>{
+            try{
+                await this.db.getPool().query('UPDATE player SET role=$1 WHERE uid=$2',[role,pc.uid]);
+
+                pc.role = role;
+            }
+            catch(ex){
+                const did = Logger.error(ex);
+
+                throw 'A database exception occurred '+did;
+            }
+        })();
     }
 /*
     transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{

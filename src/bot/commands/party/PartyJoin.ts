@@ -18,13 +18,13 @@ export default class PartyJoin extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isConsideringPartyInvite){
+        if(bag.pc.status != 'invitedToParty'){
             message.channel.sendMessage('You do not have a pending invite, '+bag.pc.title);
 
             return;
         }     
 
-        if(!bag.pc.partyData.party.isInTown){
+        if(!bag.pc.party.isInTown){
             message.channel.sendMessage('That party has already left town, '+bag.pc.title);
 
             return;
@@ -34,7 +34,7 @@ export default class PartyJoin extends Command{
 
         (async function(){
             try{
-                const party:PlayerParty = bag.pc.partyData.party;
+                const party:PlayerParty = bag.pc.party;
 
                 party.playerActionJoin(bag.pc);
 

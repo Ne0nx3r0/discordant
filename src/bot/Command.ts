@@ -50,7 +50,7 @@ export default class Command{
         }
     }
 
-    getTagID(userTag:string):string{
+    getTagUID(userTag:string):string{
         if(!TagRegex.test(userTag)){
             return null;
         }

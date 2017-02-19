@@ -22,7 +22,7 @@ export default class Grant extends Command{
             return;
         }
 
-        const userTag = this.getTagID(params[0]);
+        const userTag = this.getTagUID(params[0]);
 
         if(!userTag){
             message.channel.sendMessage(this.getUsage());

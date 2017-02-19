@@ -198,7 +198,7 @@ export default class DiscordBot{
                 game: this.game,
                 message: message,
                 permissions: this.permissions,
-                respond: message.channel.sendMessage,
+                respond: message.channel.sendMessage.bind(message.channel),
             };
 
             this.game.getPlayerCharacter(message.author.id)
@@ -216,7 +216,7 @@ export default class DiscordBot{
 
                 bag.pc = pc;
 
-                if(!this.permissions.role(pc.role).has(command.permission)
+                if(!this.permissions.getRole(pc.role).has(command.permission)
                 && this.ownerUIDs.indexOf(pc.uid) == -1){//let owners use any command
                     message.channel.sendMessage('You do not have permission to use `'+command.name+'`, '+pc.title);
 

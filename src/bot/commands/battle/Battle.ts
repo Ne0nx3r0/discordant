@@ -32,7 +32,7 @@ export default class Battle extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(bag.pc.isInBattle){
+        if(bag.pc.battle){
             message.channel.sendMessage('You are in a battle already, defend yourself!');
 
             return;
@@ -49,7 +49,7 @@ export default class Battle extends Command{
                 let msg = '```md\n< '+e.message+' >\n```';
                 let embedMsg = '';
                 e.players.forEach(function(playerDamage){
-                    embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,playerDamage.pc.battleData.attackExhaustion>1);
+                    embedMsg += '\n' + getDamagesLine(playerDamage.pc,playerDamage.damages,playerDamage.blocked,e.battle.getPlayerExhaustion(playerDamage.pc)>1);
                 });
 
                 message.channel.sendMessage(msg)
@@ -84,7 +84,7 @@ export default class Battle extends Command{
             battle.on(CoopMonsterBattleEvent.PlayerAttack,function(e:PlayerAttackEvent){
                 let msg = e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false);
 
-                const exhaustion = e.attackingPlayer.battleData.attackExhaustion;
+                const exhaustion = e.battle.getPlayerExhaustion(e.attackingPlayer);
 
                 if(exhaustion>1){
                     msg+='\n'+e.attackingPlayer.title+' is exhausted for '

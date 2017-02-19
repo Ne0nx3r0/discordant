@@ -6,6 +6,7 @@ import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
 import AttackStep from '../item/WeaponAttackStep';
 import EventDispatcher from '../../util/EventDispatcher';
+import { IPlayerBattle } from './IPlayerBattle';
 
 const winston = require('winston');
 
@@ -20,6 +21,7 @@ interface PlayerDamaged{
     pc:PlayerCharacter,
     damages:IDamageSet,
     blocked:boolean,
+    exhaustion:number,
 }
 
 export enum CoopMonsterBattleEvent{
@@ -32,16 +34,19 @@ export enum CoopMonsterBattleEvent{
 }
 
 export interface OpponentDefeatedEvent{
+    battle:IPlayerBattle;
     opponent:CreatureAIControlled;
     killer:PlayerCharacter;
 }
 
 export interface PlayersAttackedEvent{
+    battle:IPlayerBattle;
     players:Array<PlayerDamaged>;
     message:string;
 }
 
 export interface PlayerAttackEvent{
+    battle:IPlayerBattle;
     attackingPlayer:PlayerCharacter,
     damages:IDamageSet,
     opponent:CreatureAIControlled,
@@ -49,15 +54,18 @@ export interface PlayerAttackEvent{
 }
 
 export interface PlayerBlockedEvent{
+    battle:IPlayerBattle;
     pc:PlayerCharacter;
 }
 
 export interface PlayerDeathEvent{
+    battle:IPlayerBattle;
     pc:PlayerCharacter;
     lostWishes:number;
 }
 
 export interface BattleEndEvent{
+    battle:IPlayerBattle;
     defeatedPCs: Array<PlayerCharacter>;
     survivingPCs: Array<PlayerCharacter>;
     victory: boolean;

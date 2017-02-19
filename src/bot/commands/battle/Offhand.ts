@@ -20,9 +20,11 @@ export default class Offhand extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isInBattle){
+        const battle = bag.pc.battle;
+
+        if(!battle){
             message.channel.sendMessage('You are not currently in a battle, '+bag.pc.title);
-            
+
             return;
         }
         
@@ -54,7 +56,7 @@ export default class Offhand extends Command{
             message.channel.sendMessage(wantedAttackStr+' is not a valid attack, '+bag.pc.title+'. '+pcWeaponOffhand.title+' has: '+validAttacks.substr(2));
         }
         else{
-            bag.pc.battleData.battle.playerActionAttack(bag.pc,attack)
+            bag.pc.battle.playerActionAttack(bag.pc,attack)
             .catch(function(error){message.channel.sendMessage(error+', '+bag.pc.title);});
         }
     }

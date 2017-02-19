@@ -15,20 +15,14 @@ export default class PartyExplore extends Command{
         );
     }
 
-    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isInParty){
-            message.channel.sendMessage('You are not currently in a party, '+bag.pc.title);
-
-            return;
-        }
-        
-        if(!bag.pc.isLeadingParty){
+    run(params:Array<string>,message:DiscordMessage,bag:CommandBag){       
+        if(bag.pc.status != 'leadingParty'){
             message.channel.sendMessage('Only the party leader can direct the party to explore, '+bag.pc.title);
 
             return;
         }
 
-        const party = bag.pc.partyData.party;
+        const party = bag.pc.party;
 
         if(party.partyStatus != PartyStatus.InTown){
             message.channel.sendMessage('Your party is already out exploring, '+bag.pc.title);

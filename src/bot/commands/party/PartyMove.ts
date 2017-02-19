@@ -21,7 +21,7 @@ export default class PartyMove extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isLeadingParty){
+        if(bag.pc.status == 'leadingParty'){
             message.channel.sendMessage('Only the party leader can direct the party to explore, '+bag.pc.title);
 
             return;

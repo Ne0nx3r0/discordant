@@ -25,7 +25,7 @@ export default class ChannelId extends Command{
             return;
         }
 
-        const tag = this.getTagID(params[0]);
+        const tag = this.getTagUID(params[0]);
         
         if(!tag){
             message.channel.sendMessage(this.getUsage());
