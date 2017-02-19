@@ -17,13 +17,13 @@ export default class PartyInvite extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(!bag.pc.isLeadingParty){
+        if(bag.pc.status != 'leadingParty'){
             message.channel.sendMessage('You are not the party leader, '+bag.pc.title);
 
             return;
         }
 
-        if(!bag.pc.partyData.party.isInTown){
+        if(!bag.pc.party.isInTown){
             message.channel.sendMessage('Your party has already left town, '+bag.pc.title);
 
             return;
@@ -51,24 +51,24 @@ export default class PartyInvite extends Command{
                     return;
                 }
 
-                if(invitedPC.isInParty){
+                if(invitedPC.party){
                     message.channel.sendMessage(invitedPC.title+' is already in a party, '+bag.pc.title);
 
                     return;
                 }
                 
-                if(invitedPC.isConsideringPartyInvite){
+                if(invitedPC.status == 'invitedToParty'){
                     message.channel.sendMessage(invitedPC.title+' is considering another party invite, '+bag.pc.title);
 
                     return;
                 }
 
-                const party = bag.pc.partyData.party;
+                const party = bag.pc.party;
 
                 party.playerActionInvite(invitedPC);
 
                 message.channel.sendMessage('<@'+invitedPC.uid+'>, you have been invited to join party '+party.title
-                +'\n\nYou can use `dparty join` or `dparty decline` or let the invite expire in 1 minute');
+                +'\n\nYou can use `'+bag.bot.commandPrefix+'party join` or `'+bag.bot.commandPrefix+'party decline` or let the invite expire in 1 minute');
             }
             catch(ex){
                 errHandler(ex);

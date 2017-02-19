@@ -20,13 +20,18 @@ enum PartyStatus{
     Battling
 }
 
+interface PlayerCharacterInvited{
+    pc:PlayerCharacter;
+    expires:number;
+}
+
 export {PartyStatus};
 
 export default class PlayerParty{
     leader:PlayerCharacter;
     title: string;
     members:Map<string,PlayerCharacter>;
-    invited:Map<string,PlayerCharacter>;
+    invited:Map<string,PlayerCharacterInvited>;
     channel:DiscordTextChannel;
     partyStatus:PartyStatus;
     exploration:PartyExploringMap;
@@ -50,9 +55,7 @@ export default class PlayerParty{
         this.currentBattle = null;
         this.battleMessenger = null;
 
-        this.leader._partyData = {
-            party: this,
-        };
+        this.leader.party = this;
         this.leader.status = 'leadingParty';
         
         this._events = new EventDispatcher();
@@ -140,12 +143,12 @@ export default class PlayerParty{
     }
 
     playerActionInvite(pc:PlayerCharacter){
-        this.invited.set(pc.uid,pc);
+        this.invited.set(pc.uid,{
+            pc:pc,
+            expires: new Date().getTime()+INVITE_EXPIRES_MS,
+        });
 
-        pc._partyData = {
-            party: this,
-            inviteExpires: new Date().getTime()+INVITE_EXPIRES_MS,
-        };
+        pc.party = this;
         pc.status = 'invitedToParty';
 
         const eventData:PlayerInvitedEvent = {
@@ -155,18 +158,17 @@ export default class PlayerParty{
 
         this.dispatch(PlayerPartyEvent.PlayerInvited,eventData);
 
-        const party = this;
+        setTimeout(()=>{
+            //invite is still pending
+            if(this.invited.has(pc.uid)){
+                this.invited.delete(pc.uid);
 
-        setTimeout(function(){
-            //If this invite is still pending
-            if(pc.status == 'invitedToParty'
-            && pc._partyData.party.id == party.id
-            && 'inviteExpires' in pc._partyData){
-                pc._partyData = null;
-                pc.status = 'inCity';
+                //They didn't accept the invite
+                if(pc.status == 'invitedToParty' && pc.party.id == this.id){
+                    pc.party = null;
+                    pc.status = 'inCity';
+                }
             }
-
-            party.invited.delete(pc.uid);
         },INVITE_EXPIRES_MS);
     }
 
@@ -186,9 +188,7 @@ export default class PlayerParty{
 
         this.invited.delete(pc.uid);
 
-        pc._partyData = {
-            party: this,
-        };
+        pc.party = this;
         pc.status = 'inParty';
 
         const eventData:PlayerJoinedEvent = {
@@ -202,7 +202,7 @@ export default class PlayerParty{
     playerActionLeave(pc:PlayerCharacter){
         this.members.delete(pc.uid);
 
-        pc._partyData = null;
+        pc.party = null;
         pc.status = 'inCity';
 
         const eventData:PlayerLeftEvent = {
@@ -217,16 +217,16 @@ export default class PlayerParty{
         const members:Array<PlayerCharacter> = [];
 
         this.members.forEach(function(pc){
-            pc._partyData = null;
+            pc.party = null;
             pc.status = 'inCity';
         });
 
-        this.invited.forEach(function(pc){
-            pc._partyData = null;
-            pc.status = 'inCity';
+        this.invited.forEach(function(pci:PlayerCharacterInvited){
+            pci.pc.party = null;
+            pci.pc.status = 'inCity';
         });
 
-        this.leader._partyData = null;
+        this.leader.party = null;
         this.leader.status = 'inCity';
 
         const eventData:PartyDisbandedEvent = {
