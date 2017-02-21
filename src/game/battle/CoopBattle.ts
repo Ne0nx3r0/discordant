@@ -76,15 +76,6 @@ export default class CoopBattle extends PlayerBattle{
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
-        const eventData:IBattleAttackEvent = {
-            attacker: this.opponent,
-            battle:this,
-            attacked: [] as Array<IAttacked>,
-            message:attackStep.attackMessage
-                .replace('{defender}','the group')
-                .replace('{attacker}',this.opponent.title)
-        };
-
         const survivingPlayers:Array<IBattlePlayerCharacter> = [];
         
         this.bpcs.forEach(function(bpc){
@@ -93,7 +84,16 @@ export default class CoopBattle extends PlayerBattle{
             }
         });
 
-        const playerToAttack = survivingPlayers[Math.floor(Math.random() * survivingPlayers.length)]
+        const playerToAttack = survivingPlayers[Math.floor(Math.random() * survivingPlayers.length)];
+
+        const eventData:IBattleAttackEvent = {
+            attacker: this.opponent,
+            battle:this,
+            attacked: [] as Array<IAttacked>,
+            message:attackStep.attackMessage
+                .replace('{attacker}',this.opponent.title)
+                .replace('{defender}',playerToAttack.pc.title)
+        };
 
         //damages calculates resistances
         const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,playerToAttack.pc);

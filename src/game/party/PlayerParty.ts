@@ -133,6 +133,10 @@ export default class PlayerParty{
                 }
 
                 this.currentBattle = null;
+                this.members.forEach(function(member){
+                    member.status = 'inParty';
+                });
+                this.leader.status = 'leadingParty';
             });
         })
         .catch((err)=>{
