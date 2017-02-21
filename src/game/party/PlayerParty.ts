@@ -6,11 +6,11 @@ import PartyExploringMap from './PartyExploringMap';
 import ExplorableMap from '../map/ExplorableMap';
 import {PartyMoveDirection} from './PartyExploringMap';
 import PartyMove from '../../bot/commands/party/PartyMove';
-import CoopMonsterBattle from '../battle/CoopMonsterBattle';
+import CoopBattle from '../battle/CoopBattle';
 import Game from '../Game';
 import Goblin from '../creature/monsters/Goblin';
-import { CoopMonsterBattleEvent, BattleEndEvent } from '../battle/CoopMonsterBattle';
 import BattleMessengerDiscord from '../battle/BattleMessengerDiscord';
+import { BattleEvent, ICoopBattleEndEvent } from '../battle/PlayerBattle';
 
 const INVITE_EXPIRES_MS = 60000;
 
@@ -35,8 +35,7 @@ export default class PlayerParty{
     channel:DiscordTextChannel;
     partyStatus:PartyStatus;
     exploration:PartyExploringMap;
-    currentBattle:CoopMonsterBattle;
-    battleMessenger:BattleMessengerDiscord;
+    currentBattle:CoopBattle;
     game:Game;
 
     _events: EventDispatcher;
@@ -53,7 +52,6 @@ export default class PlayerParty{
         this.partyStatus = PartyStatus.InTown;
         this.game = game;
         this.currentBattle = null;
-        this.battleMessenger = null;
 
         this.leader.party = this;
         this.leader.status = 'leadingParty';
@@ -108,12 +106,13 @@ export default class PlayerParty{
         this.channel.sendMessage('The party is attacked!');
 
         this.game.createMonsterBattle(partyMembers,new Goblin())
-        .then((battle:CoopMonsterBattle)=>{
+        .then((battle:CoopBattle)=>{
             this.currentBattle = battle; 
-            this.battleMessenger = new BattleMessengerDiscord(battle,this.channel);
             this.partyStatus = PartyStatus.Battling;
 
-            battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+            BattleMessengerDiscord(battle,this.channel);
+
+            battle.on(BattleEvent.CoopBattleEnd,(e:ICoopBattleEndEvent)=>{
                 if(e.victory){
                     this.partyStatus = PartyStatus.Exploring;
                 
@@ -134,7 +133,6 @@ export default class PlayerParty{
                 }
 
                 this.currentBattle = null;
-                this.battleMessenger = null;
             });
         })
         .catch((err)=>{

@@ -22,7 +22,7 @@ interface PlayerDamaged{
     blocked:boolean,
 }
 
-export enum CoopMonsterBattleEvent{
+export enum CoopBattleEvent{
     PlayerAttack,
     PlayerBlock,
     PlayersAttacked,
@@ -31,7 +31,7 @@ export enum CoopMonsterBattleEvent{
     OpponentDefeated,
 }
 
-export default class CoopMonsterBattle extends PlayerBattle{
+export default class CoopBattle extends PlayerBattle{
     opponent:CreatureAIControlled;
     _opponentCurrentAttack:WeaponAttack;
     _opponentCurrentAttackStep:number;

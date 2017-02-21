@@ -7,8 +7,7 @@ import CreatureEquipment from './item/CreatureEquipment';
 import Creature from './creature/Creature';
 import CreatureAIControlled from './creature/CreatureAIControlled';
 import AttributeSet from './creature/AttributeSet';
-import CoopMonsterBattle from './battle/CoopMonsterBattle';
-import { CoopMonsterBattleEvent, BattleEndEvent } from './battle/CoopMonsterBattle';
+import CoopBattle from './battle/CoopBattle';
 import { EquipmentBag, EquipmentSlot } from './item/CreatureEquipment';
 import PlayerInventory from './item/PlayerInventory';
 import {DBItemBag} from './item/PlayerInventory';
@@ -20,9 +19,9 @@ import {DiscordTextChannel} from '../bot/Bot';
 import { PlayerPartyEvent, PartyDisbandedEvent } from './party/PlayerParty';
 import InventoryItem from './item/InventoryItem';
 import ItemBase from './item/ItemBase';
-import { IPlayerBattle } from './battle/IPlayerBattle';
 import PvPBattle from './battle/PvPBattle';
-import { PvPBattleEvent } from './battle/PvPBattle';
+import PlayerBattle from './battle/PlayerBattle';
+import { BattleEvent, ICoopBattleEndEvent, IPvPBattleEndEvent } from './battle/PlayerBattle';
 
 const PVP_INVITE_EXPIRES_MS = 60000;
 
@@ -55,7 +54,7 @@ export default class Game{
     db:DatabaseService;
     cachedPlayers:Map<string,PlayerCharacter>;
 
-    activeBattles:Map<number,IPlayerBattle>;
+    activeBattles:Map<number,PlayerBattle>;
     battleCardinality:number;
 
     playerParties:Map<string,PlayerParty>;
@@ -359,11 +358,11 @@ export default class Game{
                 }
             }
 
-            const battle:CoopMonsterBattle = new CoopMonsterBattle(this.battleCardinality++,players,opponent);
+            const battle:CoopBattle = new CoopBattle(this.battleCardinality++,players,opponent);
 
-            battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+            battle.on(BattleEvent.CoopBattleEnd,(e:ICoopBattleEndEvent)=>{
                 if(e.victory){
-                    e.pcs.forEach((bpc)=>{
+                    e.players.forEach((bpc)=>{
                         if(!bpc.defeated){
                             this.addXP(bpc.pc,e.opponent.getExperienceEarned(bpc.pc))
                             .catch((error)=>{
@@ -575,7 +574,7 @@ export default class Game{
 
         this.activeBattles.set(battle.id,battle);
 
-        battle.on(PvPBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+        battle.on(BattleEvent.PvPBattleEnd,(e:IPvPBattleEndEvent)=>{
             this.activeBattles.delete(battle.id);
         });
 

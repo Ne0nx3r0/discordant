@@ -3,7 +3,7 @@ import Game from '../../../game/Game';
 import CharacterClass from '../../../game/creature/player/CharacterClass';
 import CharacterClasses from '../../../game/creature/player/CharacterClasses';
 import PlayerCharacter from '../../../game/creature/player/PlayerCharacter';
-import CoopMonsterBattle from '../../../game/battle/CoopMonsterBattle';
+import CoopBattle from '../../../game/battle/CoopBattle';
 import { DiscordMessage, CommandBag } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
 

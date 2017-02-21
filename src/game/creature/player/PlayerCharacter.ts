@@ -4,19 +4,19 @@ import CharacterClass from './CharacterClass';
 import AttributeSet from '../AttributeSet';
 import Weapon from '../../item/Weapon';
 import CreatureEquipment from '../../item/CreatureEquipment';
-import CoopMonsterBattle from '../../battle/CoopMonsterBattle';
+import CoopBattle from '../../battle/CoopBattle';
 import AttackStep from '../../item/WeaponAttackStep';
 import PlayerInventory from '../../item/PlayerInventory';
 import PlayerParty from '../../party/PlayerParty';
 import InventoryItem from '../../item/InventoryItem';
-import { IPlayerBattle } from '../../battle/IPlayerBattle';
+import PlayerBattle from '../../battle/PlayerBattle';
 
 type PlayerStatus = 'inCity' | 'invitedToPVPBattle' | 'inPVPBattle' | 'inCOOPBattle' | 'invitedToParty' | 'inParty' | 'leadingParty';
 
 export {PlayerStatus};
 
 interface BattleData{
-    battle:IPlayerBattle;
+    battle:PlayerBattle;
     defeated:boolean;
     attackExhaustion:number,
     queuedAttacks:Array<AttackStep>,
@@ -47,7 +47,7 @@ interface PCConfig{
 export default class PlayerCharacter extends Creature{
     uid:string;
     discriminator:number;
-    battle:IPlayerBattle;
+    battle:PlayerBattle;
     party:PlayerParty;
     status:PlayerStatus;
     class:CharacterClass;

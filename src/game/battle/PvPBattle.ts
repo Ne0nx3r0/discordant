@@ -1,5 +1,5 @@
 import PlayerCharacter from '../creature/player/PlayerCharacter';
-import { IBattleAttackEvent, IBattlePlayer, IPlayerBattle, ATTACK_TICK_MS, IBattleAttacked, IBattleRoundBeginEvent, BattleEvent } from './IPlayerBattle';
+import { IBattleAttackEvent, ATTACK_TICK_MS, IBattleRoundBeginEvent, BattleEvent, IBattlePlayerCharacter, IPvPBattleEndEvent } from './PlayerBattle';
 import WeaponAttack from '../item/WeaponAttack';
 import EventDispatcher from '../../util/EventDispatcher';
 import WeaponAttackStep from '../item/WeaponAttackStep';
@@ -8,32 +8,8 @@ import {damagesTotal} from '../damage/IDamageSet';
 import PlayerBattle from './PlayerBattle';
 
 export default class PvPBattle extends PlayerBattle{
-    id:number;
-    bpcs:Array<IBattlePlayer>;
-    _events:EventDispatcher;
-    _battleEnded:boolean;
-    
     constructor(id:number,pc1:PlayerCharacter,pc2:PlayerCharacter){
-        this.id = id;
-        this._battleEnded = false;
-
-        this.bpcs = [{
-            battle:this,
-            pc:pc1,
-            blocking:false,
-            defeated:false,
-            exhaustion:1,
-            queuedAttacks:[],
-        },{
-            battle:this,
-            pc:pc2,
-            blocking:false,
-            defeated:false,
-            exhaustion:1,
-            queuedAttacks:[],
-        }];
-
-        this._events = new EventDispatcher();
+        super(id,[pc1,pc2]);
 
         setTimeout(this.tick.bind(this),ATTACK_TICK_MS);
     }
@@ -44,11 +20,11 @@ export default class PvPBattle extends PlayerBattle{
         }
 
 //Dispatch round begin
-        const eventData:PvPBattleRoundBeginEvent = {
+        const eventData:IBattleRoundBeginEvent = {
             battle:this
         };
 
-        this.dispatch(IBattleRoundBeginEvent,eventData);
+        this.dispatch(BattleEvent.RoundBegin,eventData);
 
 //sort attackers and send any queued attacks
         const orderedAttacks = whoGoesFirst(this.bpcs[0],this.bpcs[1]);
@@ -58,12 +34,12 @@ export default class PvPBattle extends PlayerBattle{
         if(bpc1.queuedAttacks){
             const attackStep = bpc1.queuedAttacks.shift();
 
-            this._sendAttackStep(bpc1,attackStep,bpc2);
+            this._sendAttackStep(bpc1,attackStep);
         }
          if(bpc2.queuedAttacks){
             const attackStep = bpc2.queuedAttacks.shift();
 
-            this._sendAttackStep(bpc2,attackStep,bpc1);
+            this._sendAttackStep(bpc2,attackStep);
         }
 
         this.bpcs.forEach(function(bpc){
@@ -80,7 +56,15 @@ export default class PvPBattle extends PlayerBattle{
         }
     }
 
-    _sendAttackStep(attacker:IBattlePlayer,step:WeaponAttackStep){
+    _sendAttackStep(attacker:IBattlePlayerCharacter,step:WeaponAttackStep){
+        let defender:IBattlePlayerCharacter;
+
+        this.bpcs.forEach(function(bpc:IBattlePlayerCharacter){
+            if(bpc.pc.uid != attacker.pc.uid){
+                defender = bpc;
+            }
+        });
+
         const damages:IDamageSet = step.getDamages(attacker.pc,defender.pc);
 
         attacker.exhaustion += step.exhaustion;
@@ -88,10 +72,9 @@ export default class PvPBattle extends PlayerBattle{
         defender.pc.HPCurrent -= Math.round(damagesTotal(damages));
 
         const bpc1EventData:IBattleAttackEvent = {
+            attacker:attacker.pc,
             battle:this,
-            message: step.attackMessage
-                .replace('{attacker}',attacker.pc.title)
-                .replace('{defender}',defender.pc.title),
+            attackStep:step,
             attacked: [{
                 creature: defender.pc,
                 damages: damages,
@@ -100,23 +83,23 @@ export default class PvPBattle extends PlayerBattle{
             }],
         };
 
-        this.dispatch(PvPBattleEvent.PlayerAttack,bpc1EventData);
+        this.dispatch(BattleEvent.Attack,bpc1EventData);
 
         if(defender.pc.HPCurrent<1){
             this.endBattle(attacker,defender);
         }
     }
 
-    endBattle(winner:IBattlePlayer,loser:IBattlePlayer){
+    endBattle(winner:IBattlePlayerCharacter,loser:IBattlePlayerCharacter){
         this._battleEnded = true;
 
-        const eventData:PvPBattleEndEvent = {
+        const eventData:IPvPBattleEndEvent = {
             battle: this,
             winner: winner,
             loser: loser,
         };
 
-        this.dispatch(PvPBattleEvent.BattleEnd,eventData);
+        this.dispatch(BattleEvent.PvPBattleEnd,eventData);
 
         //release players from the battle lock
         winner.pc.battle = null;
@@ -127,22 +110,8 @@ export default class PvPBattle extends PlayerBattle{
     }
 }
 
-export interface PvPBattleRoundBeginEvent{
-    battle:IPlayerBattle;
-}
-
-export interface PvPBattleEndEvent{
-    battle:IPlayerBattle;
-    winner:IBattlePlayer;
-    loser:IBattlePlayer;
-}
-
-export interface PvPBattlePlayerBlockEvent{
-    battle:IPlayerBattle;
-}
-
 //Whoever is more exhausted or a random agility-based chance
-function whoGoesFirst(bpc1:IBattlePlayer,bpc2:IBattlePlayer):Array<IBattlePlayer>{
+function whoGoesFirst(bpc1:IBattlePlayerCharacter,bpc2:IBattlePlayerCharacter):Array<IBattlePlayerCharacter>{
     const firstPlayer = [bpc1,bpc2];
     const secondPlayer = [bpc2,bpc1];
 
