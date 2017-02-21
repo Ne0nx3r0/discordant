@@ -148,7 +148,7 @@ export interface IBattleRoundBeginEvent{
 export interface IBattleAttackEvent{
     attacker: Creature;
     battle: PlayerBattle;
-    attackStep: WeaponAttackStep;
+    message: string;
     attacked: Array<IAttacked>;
 }
 

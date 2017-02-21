@@ -37,20 +37,16 @@ function sendRoundBegan(channel:DiscordTextChannel){
 }
 
 function sendAttacked(channel:DiscordTextChannel,attack:IBattleAttackEvent){
-    let embed = '';
-
+    let embed = attack.message;
 
     attack.attacked.forEach(function(attacked){
-        embed += attack.attackStep.attackMessage
-            .replace('{defender}',attacked.creature.title)
-            .replace('{attacker}',attack.attacker.title)+'\n';
 
-        embed += getDamagesLine(
+        embed += '\n'+getDamagesLine(
             attacked.creature,
             attacked.damages,
             attacked.blocked,
             attacked.exhaustion
-        )+'\n';
+        );
     });
 
     channel.sendMessage('',getEmbed(embed,EMBED_COLORS.attack));
@@ -116,14 +112,14 @@ function getDamagesLine(pc:Creature,damages:IDamageSet,blocked:boolean,exhausted
     let exhaustedStr = '';
 
     if(blocked){
-        blockedStr = '**BLOCKED** ';
+        blockedStr = ' BLOCKED';
     }
 
     if(exhausted>0){
-        exhaustedStr = '**EXHAUSTED ('+exhausted+')**';
+        exhaustedStr = ' EXHAUSTED ('+exhausted+')';
     }
 
-    var line = '**'+pc.title+'** '+exhaustedStr+' ('+pc.HPCurrent+'/'+pc.stats.HPTotal+') '+blockedStr+'took damage ';
+    var line = '**'+pc.title+'**'+exhaustedStr+' ('+pc.HPCurrent+'/'+pc.stats.HPTotal+')'+blockedStr+' took damage ';
     
     Object.keys(damages).forEach(function(damageStr:string){
         line += damages[damageStr] + ' ' + getDamageTypeEmoji(damageStr) + '   ';

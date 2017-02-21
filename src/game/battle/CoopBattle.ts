@@ -80,41 +80,47 @@ export default class CoopBattle extends PlayerBattle{
             attacker: this.opponent,
             battle:this,
             attacked: [] as Array<IAttacked>,
-            attackStep:attackStep
+            message:attackStep.attackMessage
+                .replace('{defender}','the group')
+                .replace('{attacker}',this.opponent.title)
         };
 
-        this.bpcs.forEach((bpc)=>{
-            if(bpc.defeated) return;
-
-            //damages calculates resistances
-            const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,bpc.pc);
-
-            if(bpc.blocking){
-                Object.keys(pcDamages).forEach(function(type){
-                    pcDamages[type] = Math.round(pcDamages[type] * (1-bpc.pc.damageBlocked));
-                });
-
-                const eventData:IBattleBlockEvent = {
-                    battle:this,
-                    blocker:bpc
-                };
+        const survivingPlayers:Array<IBattlePlayerCharacter> = [];
+        
+        this.bpcs.forEach(function(bpc){
+            if(!bpc.defeated){
+                survivingPlayers.push(bpc);
             }
+        });
 
-            bpc.pc.HPCurrent -= Math.round(damagesTotal(pcDamages));
+        const playerToAttack = survivingPlayers[Math.floor(Math.random() * survivingPlayers.length)]
 
-            eventData.attacked.push({
-                creature:bpc.pc,
-                damages:pcDamages,
-                blocked:bpc.blocking,
-                exhaustion:bpc.exhaustion,
+        //damages calculates resistances
+        const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,playerToAttack.pc);
+
+        if(playerToAttack.blocking){
+            Object.keys(pcDamages).forEach(function(type){
+                pcDamages[type] = Math.round(pcDamages[type] * (1-playerToAttack.pc.damageBlocked));
             });
 
-            bpc.blocking = false;
+            const eventData:IBattleBlockEvent = {
+                battle:this,
+                blocker:playerToAttack
+            };
+        }
+
+        playerToAttack.pc.HPCurrent -= Math.round(damagesTotal(pcDamages));
+
+        eventData.attacked.push({
+            creature:playerToAttack.pc,
+            damages:pcDamages,
+            blocked:playerToAttack.blocking,
+            exhaustion:playerToAttack.exhaustion,
         });
 
         this.dispatch(BattleEvent.Attack,eventData);
 
-        //check if anybody died
+//check if anybody died
         this.bpcs.forEach((bpc:IBattlePlayerCharacter)=>{
             if(bpc.defeated) return;
 
@@ -130,6 +136,7 @@ export default class CoopBattle extends PlayerBattle{
             }
         });
 
+//Check if all players were defeated while updating their statuses
         let allPlayersDefeated = true;
 
         this.bpcs.forEach((bpc:IBattlePlayerCharacter)=>{
@@ -146,6 +153,8 @@ export default class CoopBattle extends PlayerBattle{
             if(bpc.exhaustion>0){
                 bpc.exhaustion--;
             }
+
+            bpc.blocking = false;
         });
 
         if(allPlayersDefeated){
@@ -163,7 +172,9 @@ export default class CoopBattle extends PlayerBattle{
         const eventData:IBattleAttackEvent = {
             attacker: bpc.pc,
             battle: this,
-            attackStep: step,
+            message:step.attackMessage
+                .replace('{defender}',this.opponent.title)
+                .replace('{attacker}',bpc.pc.title),
             attacked: [{
                 creature: this.opponent,
                 damages: damages,

@@ -74,7 +74,9 @@ export default class PvPBattle extends PlayerBattle{
         const bpc1EventData:IBattleAttackEvent = {
             attacker:attacker.pc,
             battle:this,
-            attackStep:step,
+            message:step.attackMessage
+                .replace('{attacker}',attacker.pc.title)
+                .replace('{defender}',defender.pc.title),
             attacked: [{
                 creature: defender.pc,
                 damages: damages,
