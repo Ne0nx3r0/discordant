@@ -6,11 +6,9 @@ import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
 import AttackStep from '../item/WeaponAttackStep';
 import EventDispatcher from '../../util/EventDispatcher';
-import { IPlayerBattle, IBattlePlayer } from './IPlayerBattle';
+import { ATTACK_TICK_MS, IPlayerBattle, IBattlePlayer } from './IPlayerBattle';
 
 const winston = require('winston');
-
-const ATTACK_TICK_MS = 10000;
 
 const dummyAttack = new WeaponAttackStep({
     attackMessage: '{attacker} doesn\'t know what to do!',
@@ -70,19 +68,13 @@ export interface BattleEndEvent{
     victory: boolean;
 }
 
-
-
 export default class CoopMonsterBattle implements IPlayerBattle{
     id:number;
     pcs:Map<string,IBattlePlayer>;
     opponent:CreatureAIControlled;
-    
-    _handlers:Array<Array<Function>>;
     _battleEnded:boolean;
-
     _currentAttack:WeaponAttack;
     _currentAttackStep:number;
-
     _events:EventDispatcher;
 
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
@@ -108,8 +100,6 @@ export default class CoopMonsterBattle implements IPlayerBattle{
         });
 
         this.opponent = opponent;
-
-        this._handlers = [];
 
         this._attackTick = this._attackTick.bind(this);
 
@@ -325,7 +315,6 @@ export default class CoopMonsterBattle implements IPlayerBattle{
         if(victory){
             xpEarned = this.opponent.xpDropped;
         }
-
 
         const bpcs = [];
 

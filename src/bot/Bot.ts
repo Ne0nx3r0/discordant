@@ -1,11 +1,13 @@
 /// <reference path='../../node_modules/discord.js/typings/index.d.ts' />
 
 import Game from '../game/Game';
+import {PvPInvite} from '../game/Game';
 import Command from './Command';
 import * as Commands from "./CommandsIndex";
 import PlayerCharacter from '../game/creature/player/PlayerCharacter';
 import PermissionsService from '../permissions/PermissionsService';
 import Logger from '../util/Logger';
+
 import {
     Client as DiscordClient, 
     Message as DiscordMessage, 
@@ -47,10 +49,15 @@ interface revokePrivateChannelFunc{
     (pc:PlayerCharacter,channel:DiscordTextChannel):Promise<void>;
 }
 
+interface pvpChannelFunc{
+    (guild:DiscordGuild,invite:PvPInvite):Promise<DiscordTextChannel>;
+}
+
 export interface BotHandlers{
     commands:Map<String,Command>;
     setPlayingGame:setPlayingGameFunc;
     createPrivateChannel:privateChannelFunc;
+    createPvPChannel:pvpChannelFunc;
     grantAccessToPrivateChannel: grantPrivateChannelFunc;
     revokeAccessToPrivateChannel: revokePrivateChannelFunc;
     commandPrefix: string;
@@ -86,6 +93,7 @@ export default class DiscordBot{
     mainGuildId:string;
     commands: Map<String,Command>;
     commandPrefix: string;
+    _botHandlers:BotHandlers;
     
     constructor(bag:BotBag){
         this.game = bag.game;
@@ -126,6 +134,16 @@ export default class DiscordBot{
         notificationChannel.sendMessage('I\'m online!');
 
         let deleteChannelDelay = 0;
+
+        this._botHandlers = {            
+            commands: this.commands,
+            setPlayingGame: this.setPlayingGame.bind(this),
+            createPrivateChannel: this.createPrivateChannel.bind(this),
+            createPvPChannel: this.createPvPChannel.bind(this),
+            grantAccessToPrivateChannel: this.grantAccessToPrivateChannel.bind(this),
+            revokeAccessToPrivateChannel: this.revokeAccessToPrivateChannel.bind(this),
+            commandPrefix: this.commandPrefix.toLowerCase()
+        }
 
         try{
             //Clean up any party channels
@@ -187,14 +205,7 @@ export default class DiscordBot{
             params.shift();
 
             const bag:CommandBag = {
-                bot:{            
-                    commands: this.commands,
-                    setPlayingGame: this.setPlayingGame,
-                    createPrivateChannel: this.createPrivateChannel,
-                    grantAccessToPrivateChannel: this.grantAccessToPrivateChannel,
-                    revokeAccessToPrivateChannel: this.revokeAccessToPrivateChannel,
-                    commandPrefix: this.commandPrefix.toLowerCase()
-                },
+                bot: this._botHandlers,
                 game: this.game,
                 message: message,
                 permissions: this.permissions,
@@ -260,6 +271,35 @@ export default class DiscordBot{
 
             channel.overwritePermissions(pc.uid,{
                 READ_MESSAGES: true,
+                SEND_MESSAGES: true
+            });
+
+            return channel;
+        }
+        catch(ex){
+            const did = Logger.error(ex);
+
+            throw 'An unexpected error occurred ('+did+')';
+        }
+    }
+    
+    async createPvPChannel(guild:DiscordGuild,pc1:PlayerCharacter,pc2:PlayerCharacter):Promise<DiscordTextChannel>{
+        try{
+            const channelname = ('pvp-'+pc1.title+'-vs-'+pc2.title)
+                .replace(/[^A-Za-z0-9-]+/g,'')
+                .substr(0,20);
+
+            const overwrites = [
+                {id: guild.id, type: 'role', deny: 1024, allow: 0x00000440} as DiscordPermissionOverwrites
+            ];
+
+            const channel:DiscordTextChannel = await guild.createChannel(channelname,'text',overwrites) as DiscordTextChannel;
+
+            await channel.overwritePermissions(pc1.uid,{
+                SEND_MESSAGES: true
+            });
+
+            await channel.overwritePermissions(pc2.uid,{
                 SEND_MESSAGES: true
             });
 

@@ -20,6 +20,11 @@ import {DiscordTextChannel} from '../bot/Bot';
 import { PlayerPartyEvent, PartyDisbandedEvent } from './party/PlayerParty';
 import InventoryItem from './item/InventoryItem';
 import ItemBase from './item/ItemBase';
+import { IPlayerBattle } from './battle/IPlayerBattle';
+import PvPBattle from './battle/PvPBattle';
+import { PvPBattleEvent } from './battle/PvPBattle';
+
+const PVP_INVITE_EXPIRES_MS = 60000;
 
 interface IPlayerRegisterBag{
     uid:string,//has to be because bigint
@@ -40,21 +45,29 @@ interface DBInventoryItem{
     amount:number;
 }
 
+export interface PvPInvite{
+    sender: PlayerCharacter;
+    receiver: PlayerCharacter;
+}
+
 export default class Game{
     items:AllItems;
     db:DatabaseService;
     cachedPlayers:Map<string,PlayerCharacter>;
 
-    activeBattles:Map<number,CoopMonsterBattle>;
+    activeBattles:Map<number,IPlayerBattle>;
     battleCardinality:number;
 
     playerParties:Map<string,PlayerParty>;
+
+    pvpInvites:Map<string,PvPInvite>;
 
     constructor(db:DatabaseService){
         this.db = db;
         this.cachedPlayers = new Map();
         this.playerParties = new Map();
         this.activeBattles = new Map();
+        this.pvpInvites = new Map();
 
         this.battleCardinality = 1;
 
@@ -516,6 +529,59 @@ export default class Game{
             }
         })();
     }
+
+    createPvPInvite(sender:PlayerCharacter,receiver:PlayerCharacter):PvPInvite{
+        if(this.pvpInvites.has(sender.uid)){
+            throw 'You already have a pending challenge';
+        }
+
+        if(this.pvpInvites.has(receiver.uid)){
+            throw `${receiver.title} already has a pending challenge`;
+        }
+
+        if(sender.status != 'inCity'){
+            throw 'You cannot send a challenge right now';
+        }
+
+        if(receiver.status != 'inCity'){
+            throw `${receiver.title} cannot receive a challenge right now`;
+        }
+
+        const challenge = {
+            sender: sender,
+            receiver: receiver
+        };
+
+        this.pvpInvites.set(sender.uid,challenge);
+        this.pvpInvites.set(receiver.uid,challenge);
+
+        setTimeout(()=>{
+            this.pvpInvites.delete(sender.uid);
+            this.pvpInvites.delete(receiver.uid);
+        },PVP_INVITE_EXPIRES_MS);
+
+        return challenge;
+    }
+
+    getPvPInvite(senderOrReceiver:PlayerCharacter){
+        return this.pvpInvites.get(senderOrReceiver.uid);
+    }
+
+    createPvPBattle(invite:PvPInvite):PvPBattle{
+        const battle = new PvPBattle(this.battleCardinality++,invite.sender,invite.receiver);
+
+        this.pvpInvites.delete(invite.sender.uid);
+        this.pvpInvites.delete(invite.receiver.uid);
+
+        this.activeBattles.set(battle.id,battle);
+
+        battle.on(PvPBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+            this.activeBattles.delete(battle.id);
+        });
+
+        return battle;
+    }
+
 /*
     transferWishes(pcFrom:PlayerCharacter,pcTo:PlayerCharacter,amount:number):Promise{
 
@@ -525,5 +591,6 @@ export default class Game{
     removeItem()
     transferItem()
 
-    addExperience()*/
+    addExperience()
+*/
 }

@@ -9,6 +9,7 @@ enum PermissionId{
     Equip,
     Unequip,
     Use,
+    Challenge,
 
     Party,
     PartyNew,

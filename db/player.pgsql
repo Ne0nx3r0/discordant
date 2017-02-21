@@ -15,7 +15,6 @@ CREATE TABLE public.player
     attribute_strength smallint NOT NULL DEFAULT 0,
     attribute_agility smallint NOT NULL DEFAULT 0,
     attribute_vitality smallint NOT NULL DEFAULT 0,
-    attribute_endurance smallint NOT NULL DEFAULT 0,
     attribute_spirit smallint NOT NULL DEFAULT 0,
     attribute_luck smallint NOT NULL DEFAULT 0,
     karma integer NOT NULL DEFAULT 1,

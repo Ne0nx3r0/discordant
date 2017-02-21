@@ -6,11 +6,9 @@ import { CoopMonsterBattleEvent, PlayersAttackedEvent, PlayerDeathEvent, BattleE
 import PlayerCharacter from '../creature/player/PlayerCharacter';
 
 export default class BattleMessengerDiscord{
-    battle:CoopMonsterBattle;
     channel:DiscordTextChannel;
 
     constructor(battle:CoopMonsterBattle,channel:DiscordTextChannel){
-        this.battle = battle;
         this.channel = channel;
         
         function errFunc(err){
