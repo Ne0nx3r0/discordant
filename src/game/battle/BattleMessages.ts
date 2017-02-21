@@ -1,15 +1,15 @@
-import {IPlayerBattle} from './IPlayerBattle';
+import { IPlayerBattle, IBattlePlayer, IPvPBattleEndEvent } from './IPlayerBattle';
 import {DiscordTextChannel} from '../../bot/Bot';
 import Creature from '../creature/Creature';
 import IDamageSet from '../damage/IDamageSet';
 import {IBattleAttackEvent,IBattleAttacked} from './IPlayerBattle';
 
 export default {
-    sendRoundBegin:function(channel:DiscordTextChannel){
+    sendRoundBegan:function(channel:DiscordTextChannel){
         channel.sendMessage('```css\n--- NEW ROUND ---\n```');
     },
 
-    sendAttack:function(channel:DiscordTextChannel,attack:IBattleAttackEvent){
+    sendAttacked:function(channel:DiscordTextChannel,attack:IBattleAttackEvent){
         let embed = '';
 
         embed += attack.message+'\n';
@@ -24,6 +24,22 @@ export default {
         });
 
         channel.sendMessage('',getEmbed(embed,EMBED_COLORS.attack));
+    },
+
+    sendBlocked:function(channel:DiscordTextChannel,blockerTitle:string){
+        channel.sendMessage(`:shield: ${blockerTitle} blocks! :shield:`);
+    },
+
+    sendPassedOut:function(channel:DiscordTextChannel,creatureTitle:string,lostWishes?:number){
+        const wishesLost = lostWishes?` (Lost ${lostWishes} wishes)`:'';
+
+        channel.sendMessage(`:skull_crossbones: ${creatureTitle} passed out!${wishesLost} :skull_crossbones:`);
+    },
+
+    sendPvPBattleEnded:function(channel:DiscordTextChannel,e:IPvPBattleEndEvent){
+        channel.sendMessage('```diff\nBattle Over\n```');
+
+        channel.sendMessage('',getEmbed(`:tada: ${e.winner.pc.title} has defeated ${e.loser.pc.title} :tada:`));
     }
 }
 

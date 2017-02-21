@@ -1,19 +1,13 @@
 import PlayerCharacter from '../creature/player/PlayerCharacter';
-import { IBattleAttackEvent, IBattlePlayer, IPlayerBattle, ATTACK_TICK_MS, IBattleAttacked } from './IPlayerBattle';
+import { IBattleAttackEvent, IBattlePlayer, IPlayerBattle, ATTACK_TICK_MS, IBattleAttacked, IBattleRoundBeginEvent, BattleEvent } from './IPlayerBattle';
 import WeaponAttack from '../item/WeaponAttack';
 import EventDispatcher from '../../util/EventDispatcher';
 import WeaponAttackStep from '../item/WeaponAttackStep';
 import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
+import PlayerBattle from './PlayerBattle';
 
-export enum PvPBattleEvent{
-    RoundBegin,
-    PlayerAttack,
-    PlayerBlock,
-    BattleEnd,
-}
-
-export default class PvPBattle implements IPlayerBattle{
+export default class PvPBattle extends PlayerBattle{
     id:number;
     bpcs:Array<IBattlePlayer>;
     _events:EventDispatcher;
@@ -54,7 +48,7 @@ export default class PvPBattle implements IPlayerBattle{
             battle:this
         };
 
-        this.dispatch(PvPBattleEvent.RoundBegin,eventData);
+        this.dispatch(IBattleRoundBeginEvent,eventData);
 
 //sort attackers and send any queued attacks
         const orderedAttacks = whoGoesFirst(this.bpcs[0],this.bpcs[1]);
@@ -86,7 +80,7 @@ export default class PvPBattle implements IPlayerBattle{
         }
     }
 
-    _sendAttackStep(attacker:IBattlePlayer,step:WeaponAttackStep,defender:IBattlePlayer){
+    _sendAttackStep(attacker:IBattlePlayer,step:WeaponAttackStep){
         const damages:IDamageSet = step.getDamages(attacker.pc,defender.pc);
 
         attacker.exhaustion += step.exhaustion;
@@ -131,44 +125,6 @@ export default class PvPBattle implements IPlayerBattle{
         loser.pc.battle = null;
         loser.pc.status = 'inCity';
     }
-
-    playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack):Promise<void>{
-        return (async()=>{
-            try{
-
-            }
-            catch(ex){
-
-            }
-        })();
-    };
-
-    playerActionBlock(pc:PlayerCharacter):Promise<void>{
-        return (async()=>{
-            try{
-
-            }
-            catch(ex){
-                
-            }
-        })();
-    };
-
-    getPlayerExhaustion(pc:PlayerCharacter):number{
-        for(var i=0;i<this.bpcs.length;i++){
-            if(this.bpcs[i].pc = pc){
-                return this.bpcs[i].exhaustion;
-            }
-        }
-
-        //Caller's problem, they should have checked first
-        throw `${pc.title} is not in this battle!`;
-    };
-
-    //Event methods
-    on(event:PvPBattleEvent,handler:Function){ this._events.on(event,handler); }
-    off(event:PvPBattleEvent,handler:Function){ this._events.off(event,handler); }
-    dispatch<T>(event:PvPBattleEvent,eventData:T){ this._events.dispatch(event,eventData); }
 }
 
 export interface PvPBattleRoundBeginEvent{
@@ -179,10 +135,6 @@ export interface PvPBattleEndEvent{
     battle:IPlayerBattle;
     winner:IBattlePlayer;
     loser:IBattlePlayer;
-}
-
-export interface PvPBattlePlayerAttackEvent{
-    battle:IPlayerBattle;
 }
 
 export interface PvPBattlePlayerBlockEvent{

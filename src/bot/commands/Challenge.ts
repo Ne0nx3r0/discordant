@@ -4,6 +4,9 @@ import { DiscordMessage, CommandBag, BotBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
 import { PvPInvite } from '../../game/Game';
 import PvPBattleMessengerDiscord from '../../game/battle/PvPBattleMessengerDiscord';
+import { PvPBattleEvent, PvPBattleRoundBeginEvent, PvPBattleEndEvent } from '../../game/battle/PvPBattle';
+import { IBattleAttackEvent, IBattleBlockEvent } from '../../game/battle/IPlayerBattle';
+import BattleMessages from '../../game/battle/BattleMessages';
 
 export default class Challenge extends Command{
     constructor(){
@@ -44,7 +47,21 @@ export default class Challenge extends Command{
 
                     const channel = await bag.bot.createPvPChannel(message.guild,invite);
 
-                    PvPBattleMessengerDiscord(battle,channel);
+                    battle.on(PvPBattleEvent.RoundBegin,function(e:PvPBattleRoundBeginEvent){
+                        BattleMessages.sendRoundBegan(channel);
+                    });
+
+                    battle.on(PvPBattleEvent.PlayerAttack,function(e:IBattleAttackEvent){
+                        BattleMessages.sendAttacked(channel,e);
+                    });
+
+                    battle.on(PvPBattleEvent.PlayerBlock,function(e:IBattleBlockEvent){
+                        BattleMessages.sendBlocked(channel,e.blocker.pc.title);
+                    });
+
+                    battle.on(PvPBattleEvent.BattleEnd,function(e:PvPBattleEndEvent){
+                        BattleMessages.sendPvPBattleEnded(channel,e);
+                    });
 
                     bag.respond(`The duel between <@${invite.sender.title}> and <@${invite.receiver.title}> begins in 30 seconds in <#${channel.id}>`);
                 }

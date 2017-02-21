@@ -6,7 +6,8 @@ import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
 import AttackStep from '../item/WeaponAttackStep';
 import EventDispatcher from '../../util/EventDispatcher';
-import { ATTACK_TICK_MS, IPlayerBattle, IBattlePlayer } from './IPlayerBattle';
+import PlayerBattle from './PlayerBattle';
+import { IBattlePlayerCharacter, ICoopBattleEndEvent, ATTACK_TICK_MS, BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, IBattleBlockEvent, IAttacked } from './PlayerBattle';
 
 const winston = require('winston');
 
@@ -16,7 +17,7 @@ const dummyAttack = new WeaponAttackStep({
 });
 
 interface PlayerDamaged{
-    bpc:IBattlePlayer,
+    bpc:IBattlePlayerCharacter,
     damages:IDamageSet,
     blocked:boolean,
 }
@@ -30,74 +31,13 @@ export enum CoopMonsterBattleEvent{
     OpponentDefeated,
 }
 
-export interface OpponentDefeatedEvent{
-    battle:IPlayerBattle;
+export default class CoopMonsterBattle extends PlayerBattle{
     opponent:CreatureAIControlled;
-    killer:IBattlePlayer;
-}
-
-export interface PlayersAttackedEvent{
-    battle:IPlayerBattle;
-    players:Array<PlayerDamaged>;
-    message:string;
-}
-
-export interface PlayerAttackEvent{
-    battle:IPlayerBattle;
-    attacker:IBattlePlayer,
-    damages:IDamageSet,
-    opponent:CreatureAIControlled,
-    message:string,
-}
-
-export interface PlayerBlockedEvent{
-    battle:IPlayerBattle;
-    bpc:IBattlePlayer;
-}
-
-export interface PlayerDeathEvent{
-    battle:IPlayerBattle;
-    bpc:IBattlePlayer;
-    lostWishes:number;
-}
-
-export interface BattleEndEvent{
-    battle:IPlayerBattle;
-    pcs: Array<IBattlePlayer>;
-    opponent: CreatureAIControlled;
-    victory: boolean;
-}
-
-export default class CoopMonsterBattle implements IPlayerBattle{
-    id:number;
-    pcs:Map<string,IBattlePlayer>;
-    opponent:CreatureAIControlled;
-    _battleEnded:boolean;
-    _currentAttack:WeaponAttack;
-    _currentAttackStep:number;
-    _events:EventDispatcher;
+    _opponentCurrentAttack:WeaponAttack;
+    _opponentCurrentAttackStep:number;
 
     constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
-        this._events = new EventDispatcher();
-
-        this._battleEnded = false;
-
-        this.id = id;
-
-        this.pcs = new Map();
-        
-        pcs.forEach((pc)=>{
-            this.pcs.set(pc.uid,{
-                pc:pc,
-                battle: this,
-                blocking: false,
-                defeated: false,
-                exhaustion: 1,//pc can't attack the mob until the mob attacks the pc
-                queuedAttacks: [],
-            });
-
-            pc.battle = this;
-        });
+        super(id,pcs);
 
         this.opponent = opponent;
 
@@ -111,18 +51,18 @@ export default class CoopMonsterBattle implements IPlayerBattle{
             return;
         }
 
-        if(!this._currentAttack){
-            this._currentAttack = this.opponent.getRandomAttack();
-            this._currentAttackStep = 0;
+        if(!this._opponentCurrentAttack){
+            this._opponentCurrentAttack = this.opponent.getRandomAttack();
+            this._opponentCurrentAttackStep = 0;
         }
 
         let attackStep;
 
-        if(this._currentAttack){    
-            attackStep = this._currentAttack.steps[this._currentAttackStep++];
+        if(this._opponentCurrentAttack){    
+            attackStep = this._opponentCurrentAttack.steps[this._opponentCurrentAttackStep++];
     
-            if(this._currentAttack.steps.length >= this._currentAttackStep){
-                this._currentAttack = null;
+            if(this._opponentCurrentAttack.steps.length >= this._opponentCurrentAttackStep){
+                this._opponentCurrentAttack = null;
             }   
         }
         //Didn't find an elgible attack
@@ -136,15 +76,14 @@ export default class CoopMonsterBattle implements IPlayerBattle{
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
-        const eventData:PlayersAttackedEvent = {
+        const eventData:IBattleAttackEvent = {
+            attacker: this.opponent,
             battle:this,
-            players: [],
-            message:attackStep.attackMessage
-                .replace('{attacker}',this.opponent.title)
-                .replace('{defender}','the party')
+            attacked: [] as Array<IAttacked>,
+            attackStep:attackStep
         };
 
-        this.pcs.forEach((bpc)=>{
+        this.bpcs.forEach((bpc)=>{
             if(bpc.defeated) return;
 
             //damages calculates resistances
@@ -155,45 +94,45 @@ export default class CoopMonsterBattle implements IPlayerBattle{
                     pcDamages[type] = Math.round(pcDamages[type] * (1-bpc.pc.damageBlocked));
                 });
 
-                const eventData:PlayerBlockedEvent = {
+                const eventData:IBattleBlockEvent = {
                     battle:this,
-                    bpc:bpc
+                    blocker:bpc
                 };
             }
 
             bpc.pc.HPCurrent -= Math.round(damagesTotal(pcDamages));
 
-            eventData.players.push({
-                bpc:bpc,
+            eventData.attacked.push({
+                creature:bpc.pc,
                 damages:pcDamages,
                 blocked:bpc.blocking,
+                exhaustion:bpc.exhaustion,
             });
 
             bpc.blocking = false;
         });
 
-        this.dispatch(CoopMonsterBattleEvent.PlayersAttacked,eventData);
+        this.dispatch(BattleEvent.Attack,eventData);
 
         //check if anybody died
-        this.pcs.forEach((bpc:IBattlePlayer)=>{
+        this.bpcs.forEach((bpc:IBattlePlayerCharacter)=>{
             if(bpc.defeated) return;
 
             if(bpc.pc.HPCurrent < 1){
-                const eventData:PlayerDeathEvent = {
+                const eventData:IBattlePlayerDefeatedEvent = {
                     battle: this,
-                    bpc: bpc,
-                    lostWishes: bpc.pc.calculateDeathWishesLost(),
+                    player: bpc,
                 };
 
                 bpc.defeated = true;
                 
-                this.dispatch(CoopMonsterBattleEvent.PlayerDeath,eventData);
+                this.dispatch(BattleEvent.PlayerDefeated,eventData);
             }
         });
 
         let allPlayersDefeated = true;
 
-        this.pcs.forEach((bpc:IBattlePlayer)=>{
+        this.bpcs.forEach((bpc:IBattlePlayerCharacter)=>{
             if(this._battleEnded || bpc.defeated) return;
 
             allPlayersDefeated = false;
@@ -214,99 +153,33 @@ export default class CoopMonsterBattle implements IPlayerBattle{
         }
     }
 
-    playerActionBlock(pc:PlayerCharacter){
-        return (async()=>{
-            const bpc = this.pcs.get(pc.uid);
-
-            if(!bpc){
-                throw 'You are not in in this battle';
-            }
-
-            if(bpc.blocking){
-                throw 'You are already blocking';
-            }
-
-            if(bpc.defeated){
-                throw 'You have already been defeated';
-            }
-
-            if(bpc.exhaustion > 0){
-                throw 'You are too exhausted to block';
-            }
-
-            bpc.exhaustion++;
-            bpc.blocking = true;
-
-            const eventData:PlayerBlockedEvent = {
-                battle:this,
-                bpc: bpc
-            };
-
-            this.dispatch(CoopMonsterBattleEvent.PlayerBlock,eventData);
-        })();
-    }
-
-    playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack){
-        return (async()=>{
-            const bpc = this.pcs.get(pc.uid);
-
-            if(!bpc){
-                throw 'You are not in this battle';
-            }
-            
-            if(bpc.defeated){
-                throw 'You have already been defeated';
-            }
-
-            if(bpc.blocking){
-                throw 'You are currently blocking';
-            }
-
-            if(bpc.exhaustion > 0){
-                throw 'You are too exhausted to attack!';
-            }
-
-            this._sendAttackStep(bpc,attack.steps[0]);
-
-            if(!this._battleEnded && attack.steps.length>1){
-                bpc.queuedAttacks = attack.steps.slice(1);
-            }
-        })();
-    }
-
-    _sendAttackStep(bpc:IBattlePlayer,step:AttackStep){
+    _sendAttackStep(bpc:IBattlePlayerCharacter,step:AttackStep){
         const damages:IDamageSet = step.getDamages(bpc.pc,this.opponent);
 
         bpc.exhaustion += step.exhaustion;
 
         this.opponent.HPCurrent -= Math.round(damagesTotal(damages));
 
-        const eventData:PlayerAttackEvent = {
+        const eventData:IBattleAttackEvent = {
+            attacker: bpc.pc,
             battle: this,
-            attacker: bpc,
-            damages: damages,
-            opponent: this.opponent,
-            message: step.attackMessage
-                .replace('{attacker}',bpc.pc.title)
-                .replace('{defender}',this.opponent.title)
+            attackStep: step,
+            attacked: [{
+                creature: this.opponent,
+                damages: damages,
+                blocked: false,
+                exhaustion: 0,
+            }],
         };
 
-        this.dispatch(CoopMonsterBattleEvent.PlayerAttack,eventData);
+        this.dispatch(BattleEvent.Attack,eventData);
 
         if(this.opponent.HPCurrent<1){
-            const eventData:OpponentDefeatedEvent = {
-                battle:this,
-                killer:bpc,
-                opponent:this.opponent
-            };
-
-            this.dispatch(CoopMonsterBattleEvent.OpponentDefeated,eventData);
-
-            this.endBattle(true);
+            this.endBattle(true,bpc);
         }
     }
 
-    endBattle(victory:boolean){
+    endBattle(victory:boolean,killer?:IBattlePlayerCharacter){
         this._battleEnded = true;
 
         let xpEarned = 0;
@@ -318,30 +191,31 @@ export default class CoopMonsterBattle implements IPlayerBattle{
 
         const bpcs = [];
 
-        this.pcs.forEach(function(bpc){
+        this.bpcs.forEach(function(bpc){
             bpcs.push({
                 bpc: bpc,
                 xpEarned: xpEarned,
             });
         });
 
-        const eventData:BattleEndEvent = {
+        const eventData:ICoopBattleEndEvent = {
             battle:this,
-            pcs: bpcs,
+            players: bpcs,
             opponent: this.opponent,
-            victory: victory
+            victory: victory,
+            killer: killer,
         };
 
-        this.dispatch(CoopMonsterBattleEvent.BattleEnd,eventData);
+        this.dispatch(BattleEvent.CoopBattleEnd,eventData);
 
         //release players from the battle lock
-        this.pcs.forEach((pc)=>{
+        this.bpcs.forEach((pc)=>{
             pc.battle = null;
         });
     }
 
     getPlayerExhaustion(pc:PlayerCharacter):number{
-        const bpc = this.pcs.get(pc.uid);
+        const bpc = this.bpcs.get(pc.uid);
 
         //Caller's problem, they should have checked first
         if(!bpc){
@@ -350,9 +224,4 @@ export default class CoopMonsterBattle implements IPlayerBattle{
 
         return bpc.exhaustion;
     }
-
-    //Event methods
-    on(event:CoopMonsterBattleEvent,handler:Function){ this._events.on(event,handler); }
-    off(event:CoopMonsterBattleEvent,handler:Function){ this._events.off(event,handler); }
-    dispatch<T>(event:CoopMonsterBattleEvent,eventData:T){ this._events.dispatch(event,eventData); }
 }

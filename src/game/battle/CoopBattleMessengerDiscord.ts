@@ -1,116 +1,60 @@
 import {DiscordTextChannel} from '../../bot/Bot';
 import Creature from '../creature/Creature';
 import IDamageSet from '../damage/IDamageSet';
-import CoopMonsterBattle from './CoopMonsterBattle';
-import { CoopMonsterBattleEvent, PlayersAttackedEvent, PlayerDeathEvent, BattleEndEvent, PlayerBlockedEvent, PlayerAttackEvent } from './CoopMonsterBattle';
+import CoopMonsterBattle from './CoopBattle';
+import { CoopMonsterBattleEvent, PlayersAttackedEvent, PlayerDeathEvent, BattleEndEvent, PlayerBlockedEvent, PlayerAttackEvent } from './CoopBattle';
 import PlayerCharacter from '../creature/player/PlayerCharacter';
+import BattleMessages from './BattleMessages';
 
-export default class BattleMessengerDiscord{
-    channel:DiscordTextChannel;
+export default function BattleMessengerDiscord(battle:CoopMonsterBattle,channel:DiscordTextChannel){
+    function errFunc(err){
+        channel.sendMessage(err);
+    }      
 
-    constructor(battle:CoopMonsterBattle,channel:DiscordTextChannel){
-        this.channel = channel;
-        
-        function errFunc(err){
-            this.channel.sendMessage(err);
-        }      
+    battle.on(CoopMonsterBattleEvent.PlayersAttacked,(e:PlayersAttackedEvent)=>{
+        let msg = '```md\n< '+e.message+' >\n```';
+        let embedMsg = '';
 
-        battle.on(CoopMonsterBattleEvent.PlayersAttacked,(e:PlayersAttackedEvent)=>{
-            let msg = '```md\n< '+e.message+' >\n```';
-            let embedMsg = '';
-
-            e.players.forEach(function(playerDamage){
-                embedMsg += '\n' + getDamagesLine(playerDamage.bpc.pc,playerDamage.damages,playerDamage.blocked,playerDamage.bpc.exhaustion>1);
-            });
-
-            this.channel.sendMessage(msg)
-            .catch(errFunc);
-
-            this.channel.sendMessage('',getEmbed(embedMsg)).catch(errFunc);
+        e.players.forEach(function(playerDamage){
+            embedMsg += '\n' + getDamagesLine(playerDamage.bpc.pc,playerDamage.damages,playerDamage.blocked,playerDamage.bpc.exhaustion>1);
         });
 
-        battle.on(CoopMonsterBattleEvent.PlayerDeath,(e:PlayerDeathEvent)=>{
-            this.channel.sendMessage(':skull_crossbones:   '+e.bpc.pc.title + ' died! (Lost '+e.lostWishes+' wishes)  :skull_crossbones:');
-        });
+        channel.sendMessage(msg)
+        .catch(errFunc);
 
-        battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
-            if(e.victory){
-                this.channel.sendMessage('```fix\n Battle Over \n```'
-                +'\n:tada: YOU WERE VICTORIOUS :tada: ');
-
-                e.pcs.forEach((bpc)=>{
-                    if(!bpc.defeated){ 
-                        this.channel.sendMessage(bpc.pc.title+' earned '+e.opponent.getExperienceEarned(bpc.pc)+'xp');
-                    }
-                });
-            }
-            else{
-                this.channel.sendMessage('```fix\n Battle Over \n```'
-                +'\n:dizzy_face: YOU WERE DEFEATED :dizzy_face: ');
-            }
-        });
-
-        battle.on(CoopMonsterBattleEvent.PlayerBlock,(e:PlayerBlockedEvent)=>{
-            this.channel.sendMessage(':shield: '+e.bpc.pc.title + ' blocks! :shield:');
-        });
-
-        battle.on(CoopMonsterBattleEvent.PlayerAttack,(e:PlayerAttackEvent)=>{
-            let msg = e.message+'\n'+getDamagesLine(e.opponent,e.damages,false,false);
-
-            const exhaustion = e.attacker.exhaustion;
-
-            if(exhaustion>1){
-                msg+='\n'+e.attacker.pc.title+' is exhausted for '
-                +(exhaustion-1)+' turn'+(exhaustion>2?'s':'');
-            }
-
-            this.channel.sendMessage('',getEmbed(msg,0xFFA500));
-        });
-    }
-}
-
-function getDamagesLine(pc:Creature,damages:IDamageSet,blocked:boolean,exhausted:boolean){
-    let blockedStr = '';
-    let exhaustedStr = '';
-
-    if(blocked){
-        blockedStr = '**BLOCKED** ';
-    }
-
-    if(exhausted){
-        exhaustedStr = '**EXHAUSTED**';
-    }
-
-    var line = '**'+pc.title+'** '+exhaustedStr+' ('+pc.HPCurrent+'/'+pc.stats.HPTotal+') '+blockedStr+'took damage ';
-    
-    Object.keys(damages).forEach(function(damageStr:string){
-        line += damages[damageStr] + ' ' + getDamageTypeEmoji(damageStr) + '   ';
+        channel.sendMessage('',getEmbed(embedMsg)).catch(errFunc);
     });
 
-    return line.slice(0,-3);
-}
+    battle.on(CoopMonsterBattleEvent.PlayerDeath,(e:PlayerDeathEvent)=>{
+        BattleMessages.sendPassedOut(channel,e.bpc.pc.title,e.lostWishes);
+    });
 
-function getDamageTypeEmoji(type:string){
-    switch(type){
-        case 'Physical': return ':crossed_swords:';
-        case 'Fire': return ':fire:';
-        case 'Cold': return ':snowflake:';
-        case 'Thunder': return ':cloud_lightning:';
-        case 'Chaos': return ':sparkles:';
-    }
+    battle.on(CoopMonsterBattleEvent.BattleEnd,(e:BattleEndEvent)=>{
+        if(e.victory){
+            channel.sendMessage('```fix\n Battle Over \n```'
+            +'\n:tada: YOU WERE VICTORIOUS :tada: ');
 
-    return ':question:';
-}
-
-function getColorLine(msg:string){
-    return '```fix\n'+msg+'\n```';
-}
-
-function getEmbed(msg:string,color?:number){
-    return {
-        embed: {
-            color: color || 0xFF6347, 
-            description: msg,           
+            e.pcs.forEach((bpc)=>{
+                if(!bpc.defeated){ 
+                    channel.sendMessage(bpc.pc.title+' earned '+e.opponent.getExperienceEarned(bpc.pc)+'xp');
+                }
+            });
         }
-    }
+        else{
+            channel.sendMessage('```fix\n Battle Over \n```'
+            +'\n:dizzy_face: YOU WERE DEFEATED :dizzy_face: ');
+        }
+    });
+
+    battle.on(CoopMonsterBattleEvent.PlayerBlock,(e:PlayerBlockedEvent)=>{
+        BattleMessages.sendBlocks(channel,e.bpc.pc.title);
+    });
+
+    battle.on(CoopMonsterBattleEvent.PlayerAttack,(e:PlayerAttackEvent)=>{
+        BattleMessages.sendAttack(channel,{
+            battle:e.battle,
+            message:e.message
+            attacked: e.
+        });
+    });
 }
