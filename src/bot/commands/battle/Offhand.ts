@@ -20,16 +20,16 @@ export default class Offhand extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        const battle = bag.pc.battle;
-
-        if(!battle){
+        if(bag.pc.status != 'inBattle'){
             message.channel.sendMessage('You are not currently in a battle, '+bag.pc.title);
 
             return;
         }
-        
-        if(bag.pc.party.channel.id != message.channel.id){
-            message.channel.sendMessage('Your battle is in <#'+bag.pc.party.channel.id+'>, '+bag.pc.title);
+
+        const battle = bag.pc.battle;
+
+        if(battle.channel.id != message.channel.id){
+            message.channel.sendMessage('Your battle is in <#'+battle.channel.id+'>, '+bag.pc.title);
 
             return;
         }

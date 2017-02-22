@@ -1,7 +1,7 @@
 /// <reference path='../../node_modules/discord.js/typings/index.d.ts' />
 
 import Game from '../game/Game';
-import {PvPInvite} from '../game/Game';
+import { PvPInvite } from '../game/Game';
 import Command from './Command';
 import * as Commands from "./CommandsIndex";
 import PlayerCharacter from '../game/creature/player/PlayerCharacter';
@@ -149,7 +149,7 @@ export default class DiscordBot{
             //Clean up any party channels
             this.client.channels.array()
             .forEach(function(channel:DiscordTextChannel,index:number){
-                if(channel.name && channel.name.startsWith('party-')){
+                if(channel.name && (channel.name.startsWith('pvp-') || channel.name.startsWith('party-'))){
                     deleteChannelDelay = deleteChannelDelay + 2000;
 
                     setTimeout(function(){
@@ -283,23 +283,28 @@ export default class DiscordBot{
         }
     }
     
-    async createPvPChannel(guild:DiscordGuild,pc1:PlayerCharacter,pc2:PlayerCharacter):Promise<DiscordTextChannel>{
+    async createPvPChannel(guild:DiscordGuild,invite:PvPInvite):Promise<DiscordTextChannel>{
         try{
-            const channelname = ('pvp-'+pc1.title+'-vs-'+pc2.title)
+            const channelname = ('pvp-'+invite.sender.title.substr(0,invite.sender.title.length/2)+invite.receiver.title.substr(invite.receiver.title.length/2))
                 .replace(/[^A-Za-z0-9-]+/g,'')
                 .substr(0,20);
 
-            const overwrites = [
-                {id: guild.id, type: 'role', deny: 1024, allow: 0x00000440} as DiscordPermissionOverwrites
+            const overwrites = [     
+                {
+                    id: guild.id, 
+                    type: 'role', 
+                    deny: 0x00000800/*send_msg*/ + 0x00001000/*send_tts*/, 
+                    allow: 0x00000400/*read_msgs*/ + 0x00000040/*reactions*/
+                } as DiscordPermissionOverwrites
             ];
 
             const channel:DiscordTextChannel = await guild.createChannel(channelname,'text',overwrites) as DiscordTextChannel;
 
-            await channel.overwritePermissions(pc1.uid,{
+            await channel.overwritePermissions(invite.sender.uid,{
                 SEND_MESSAGES: true
             });
 
-            await channel.overwritePermissions(pc2.uid,{
+            await channel.overwritePermissions(invite.receiver.uid,{
                 SEND_MESSAGES: true
             });
 

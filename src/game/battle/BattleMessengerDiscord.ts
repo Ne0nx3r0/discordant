@@ -29,6 +29,8 @@ export default function BattleMessengerDiscord(battle:PlayerBattle,channel:Disco
 
     battle.on(BattleEvent.PvPBattleEnd,function(e:IPvPBattleEndEvent){
         sendPvPBattleEnded(channel,e);
+
+
     });
 }
 

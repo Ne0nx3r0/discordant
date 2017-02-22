@@ -11,7 +11,7 @@ import PlayerParty from '../../party/PlayerParty';
 import InventoryItem from '../../item/InventoryItem';
 import PlayerBattle from '../../battle/PlayerBattle';
 
-type PlayerStatus = 'inCity' | 'invitedToPVPBattle' | 'inPVPBattle' | 'inCOOPBattle' | 'invitedToParty' | 'inParty' | 'leadingParty';
+type PlayerStatus = 'inCity' | 'invitedToPVPBattle' | 'inBattle' | 'invitedToParty' | 'inParty' | 'leadingParty';
 
 export {PlayerStatus};
 

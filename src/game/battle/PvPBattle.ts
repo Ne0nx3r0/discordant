@@ -6,10 +6,17 @@ import WeaponAttackStep from '../item/WeaponAttackStep';
 import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
 import PlayerBattle from './PlayerBattle';
+import {DiscordTextChannel} from '../../bot/Bot';
 
 export default class PvPBattle extends PlayerBattle{
-    constructor(id:number,pc1:PlayerCharacter,pc2:PlayerCharacter){
-        super(id,[pc1,pc2]);
+    bpc1:IBattlePlayerCharacter;
+    bpc2:IBattlePlayerCharacter;
+
+    constructor(id:number,channel:DiscordTextChannel,pc1:PlayerCharacter,pc2:PlayerCharacter){
+        super(id,channel,[pc1,pc2]);
+
+        this.bpc1 = this.bpcs.get(pc1.uid);
+        this.bpc2 = this.bpcs.get(pc2.uid);
 
         setTimeout(this.tick.bind(this),ATTACK_TICK_MS);
     }
@@ -27,16 +34,16 @@ export default class PvPBattle extends PlayerBattle{
         this.dispatch(BattleEvent.RoundBegin,eventData);
 
 //sort attackers and send any queued attacks
-        const orderedAttacks = whoGoesFirst(this.bpcs[0],this.bpcs[1]);
+        const orderedAttacks = [this.bpc1,this.bpc2].sort(whoGoesFirst);
         const bpc1 = orderedAttacks[0];
         const bpc2 = orderedAttacks[1];
 
-        if(bpc1.queuedAttacks){
+        if(bpc1.queuedAttacks.length>0){
             const attackStep = bpc1.queuedAttacks.shift();
 
             this._sendAttackStep(bpc1,attackStep);
         }
-         if(bpc2.queuedAttacks){
+         if(bpc2.queuedAttacks.length>0){
             const attackStep = bpc2.queuedAttacks.shift();
 
             this._sendAttackStep(bpc2,attackStep);
@@ -109,20 +116,18 @@ export default class PvPBattle extends PlayerBattle{
         
         loser.pc.battle = null;
         loser.pc.status = 'inCity';
+
+        setTimeout(()=>{
+            this.channel.delete();
+        },5000);
     }
 }
 
-//Whoever is more exhausted or a random agility-based chance
-function whoGoesFirst(bpc1:IBattlePlayerCharacter,bpc2:IBattlePlayerCharacter):Array<IBattlePlayerCharacter>{
-    const firstPlayer = [bpc1,bpc2];
-    const secondPlayer = [bpc2,bpc1];
-
-    if(bpc1.exhaustion == bpc2.exhaustion){
-        if(bpc1.pc.stats.Agility * Math.random() > bpc2.pc.stats.Agility * Math.random()){
-            return firstPlayer;
-        }
-        return secondPlayer;
+//Lowest exhaustion or random agility-based goes first
+function whoGoesFirst(a:IBattlePlayerCharacter,b:IBattlePlayerCharacter){
+    if(a.exhaustion == b.exhaustion){
+        return b.pc.stats.Agility * Math.random() - a.pc.stats.Agility * Math.random();
     }
 
-    return bpc1.exhaustion > bpc2.exhaustion ? secondPlayer : firstPlayer;
+    return a.exhaustion - b.exhaustion;
 }

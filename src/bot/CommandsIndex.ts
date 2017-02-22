@@ -1,3 +1,4 @@
+import Challenge from './commands/Challenge';
 export { default as Begin } from "./commands/Begin";
 export { default as Classes } from "./commands/Classes";
 
@@ -26,3 +27,6 @@ export { default as GrantItem } from "./commands/Grant";
 export { default as Equip } from "./commands/Equip";
 export { default as Unequip } from "./commands/Unequip";
 export { default as SetRole } from "./commands/SetRole";
+
+
+export { default as Challenge } from "./commands/Challenge";

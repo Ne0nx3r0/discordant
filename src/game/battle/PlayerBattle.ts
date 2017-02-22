@@ -5,6 +5,7 @@ import Creature from '../creature/Creature';
 import IDamageSet from '../damage/IDamageSet';
 import CreatureAIControlled from '../creature/CreatureAIControlled';
 import EventDispatcher from '../../util/EventDispatcher';
+import {DiscordTextChannel} from '../../bot/Bot';
 
 export const ATTACK_TICK_MS = 10000;
 
@@ -13,11 +14,13 @@ export default class PlayerBattle{
     bpcs:Map<string,IBattlePlayerCharacter>;
     _battleEnded:boolean;
     _events:EventDispatcher;
+    channel:DiscordTextChannel;
 
-    constructor(id:number,pcs:Array<PlayerCharacter>){
+    constructor(id:number,channel:DiscordTextChannel,pcs:Array<PlayerCharacter>){
         this.id = id;
         this._battleEnded = false;
         this._events = new EventDispatcher();
+        this.channel = channel;
 
         this.bpcs = new Map();
         
@@ -32,6 +35,7 @@ export default class PlayerBattle{
             });
 
             pc.battle = this;
+            pc.status = 'inBattle';
         });
     }
 

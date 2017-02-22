@@ -8,6 +8,8 @@ import AttackStep from '../item/WeaponAttackStep';
 import EventDispatcher from '../../util/EventDispatcher';
 import PlayerBattle from './PlayerBattle';
 import { IBattlePlayerCharacter, ICoopBattleEndEvent, ATTACK_TICK_MS, BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, IBattleBlockEvent, IAttacked } from './PlayerBattle';
+import {DiscordTextChannel} from '../../bot/Bot';
+import BattleMessengerDiscord from './BattleMessengerDiscord';
 
 const winston = require('winston');
 
@@ -36,12 +38,14 @@ export default class CoopBattle extends PlayerBattle{
     _opponentCurrentAttack:WeaponAttack;
     _opponentCurrentAttackStep:number;
 
-    constructor(id:number,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
-        super(id,pcs);
+    constructor(id:number,channel:DiscordTextChannel,pcs:Array<PlayerCharacter>,opponent:CreatureAIControlled){
+        super(id,channel,pcs);
 
         this.opponent = opponent;
 
         this._attackTick = this._attackTick.bind(this);
+
+        BattleMessengerDiscord(this,channel);
 
         setTimeout(this._attackTick,ATTACK_TICK_MS/2);
     }

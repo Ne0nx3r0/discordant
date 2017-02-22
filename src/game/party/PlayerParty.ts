@@ -105,12 +105,10 @@ export default class PlayerParty{
 
         this.channel.sendMessage('The party is attacked!');
 
-        this.game.createMonsterBattle(partyMembers,new Goblin())
+        this.game.createMonsterBattle(partyMembers,this.channel,new Goblin())
         .then((battle:CoopBattle)=>{
             this.currentBattle = battle; 
             this.partyStatus = PartyStatus.Battling;
-
-            BattleMessengerDiscord(battle,this.channel);
 
             battle.on(BattleEvent.CoopBattleEnd,(e:ICoopBattleEndEvent)=>{
                 if(e.victory){

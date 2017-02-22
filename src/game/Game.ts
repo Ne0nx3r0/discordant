@@ -345,7 +345,7 @@ export default class Game{
         })();
     }
 
-    createMonsterBattle(players:Array<PlayerCharacter>,opponent:CreatureAIControlled){
+    createMonsterBattle(players:Array<PlayerCharacter>,channel:DiscordTextChannel,opponent:CreatureAIControlled){
         return new Promise((resolve,reject)=>{
             //Verify no player is currently in a battle
             for(var i=0;i<players.length;i++){
@@ -358,7 +358,7 @@ export default class Game{
                 }
             }
 
-            const battle:CoopBattle = new CoopBattle(this.battleCardinality++,players,opponent);
+            const battle:CoopBattle = new CoopBattle(this.battleCardinality++,channel,players,opponent);
 
             battle.on(BattleEvent.CoopBattleEnd,(e:ICoopBattleEndEvent)=>{
                 if(e.victory){
@@ -566,8 +566,8 @@ export default class Game{
         return this.pvpInvites.get(senderOrReceiver.uid);
     }
 
-    createPvPBattle(invite:PvPInvite):PvPBattle{
-        const battle = new PvPBattle(this.battleCardinality++,invite.sender,invite.receiver);
+    createPvPBattle(invite:PvPInvite,channel:DiscordTextChannel):PvPBattle{
+        const battle = new PvPBattle(this.battleCardinality++,channel,invite.sender,invite.receiver);
 
         this.pvpInvites.delete(invite.sender.uid);
         this.pvpInvites.delete(invite.receiver.uid);

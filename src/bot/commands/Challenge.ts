@@ -13,6 +13,8 @@ export default class Challenge extends Command{
             'dchallenge <\@player | accept>',
             PermissionId.Challenge
         );
+
+        this.addAlias('c');
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
@@ -28,7 +30,7 @@ export default class Challenge extends Command{
             return;
         }
 
-        if(params[0] == 'accept'){
+        if(params[0] == 'accept' || params[0] == 'a'){
             const invite = bag.game.getPvPInvite(bag.pc);
 
             if(!invite){
@@ -40,13 +42,13 @@ export default class Challenge extends Command{
             //It's time to D-D-D-D-D-D-D-D-duuuuel
             (async()=>{
                 try{
-                    const battle = bag.game.createPvPBattle(invite);
-
                     const channel = await bag.bot.createPvPChannel(message.guild,invite);
+
+                    const battle = bag.game.createPvPBattle(invite,channel);
 
                     BattleMessengerDiscord(battle,channel);
 
-                    bag.respond(`The duel between <@${invite.sender.title}> and <@${invite.receiver.title}> begins in 30 seconds in <#${channel.id}>`);
+                    bag.respond(`The duel between <@${invite.sender.uid}> and <@${invite.receiver.uid}> begins in 30 seconds in <#${channel.id}>`);
                 }
                 catch(ex){
                     bag.respond(ex+', '+bag.pc.title);
@@ -78,7 +80,7 @@ export default class Challenge extends Command{
 
                 bag.game.createPvPInvite(bag.pc,challengedPC);
 
-                bag.respond(`<@${bag.pc.uid} challenged <@${challengedPC.uid}> to a duel! (expires in 60 seconds)`);
+                bag.respond(`<@${bag.pc.uid}> challenged <@${challengedPC.uid}> to a duel! (expires in 60 seconds)`);
             }
             catch(ex){
                 bag.respond(ex+', '+bag.pc.title);
