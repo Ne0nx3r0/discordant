@@ -4,6 +4,7 @@ import { DiscordMessage, CommandBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
 import ParseNumber from '../../util/ParseNumber';
 import PlayerCharacter from '../../game/creature/player/PlayerCharacter';
+import ItemUsable from '../../game/item/ItemUsable';
 
 export default class Use extends Command{
     constructor(){
@@ -38,7 +39,33 @@ export default class Use extends Command{
             return;
         }
 
-        //pass to game async function which should throw error if unable to use item
-        //if item was used convert to ItemUsable then do the onUse effect for bag.pc
+        if(!(item instanceof ItemUsable)){
+            bag.respond(`${item.title} is not a usable item, ${bag.pc.title}`);
+
+            return;
+        }
+
+        const itemUsable = item as ItemUsable;
+
+        (async()=>{
+            try{
+                itemUsable.canUse(bag.pc);//allowed to throw error
+
+                if(bag.pc.battle){
+                    if(bag.pc.battle.getPlayerExhaustion(bag.pc) > 0){
+                        throw 'You are exhausted!';
+                    }
+                }
+
+                await bag.game.takeItem(bag.pc,item,1);//allowed to throw error
+
+                const result = itemUsable.onUse(bag.pc);//allowed to throw error
+
+                bag.respond(result+', '+bag.pc.title);
+            }
+            catch(ex){
+                bag.respond(ex+', '+bag.pc.title);
+            }
+        })();
     }
 }

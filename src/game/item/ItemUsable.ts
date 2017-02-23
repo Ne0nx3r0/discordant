@@ -3,15 +3,23 @@ import {ItemBaseBag} from './ItemBase';
 import PlayerCharacter from '../creature/player/PlayerCharacter';
 
 interface ItemUseFunction{
-    (user:PlayerCharacter):boolean;
+    (user:PlayerCharacter):string;//return message to send user, may throw error if it wants
+}
+
+interface ItemCanUseFunction{
+    (user:PlayerCharacter);//throws an error with the reason if not usable right now
 }
 
 interface ItemUsableBag extends ItemBaseBag{
+    battleExhaustion: number;
+    canUse: ItemCanUseFunction;
     onUse: ItemUseFunction;
 }
 
 export default class ItemUsable extends ItemBase{
-    _useFunc: ItemUseFunction;
+    canUse: ItemCanUseFunction;
+    onUse: ItemUseFunction;
+    battleExhaustion: number;
 
     constructor(bag:ItemUsableBag){
         super({
@@ -22,10 +30,8 @@ export default class ItemUsable extends ItemBase{
             hiddenDescriptionLoreNeeded:bag.hiddenDescriptionLoreNeeded
         });
 
-        this._useFunc = bag.onUse;
-    }
-
-    onUse(user:PlayerCharacter):boolean{
-        return this._useFunc(user);
+        this.canUse = bag.canUse;
+        this.onUse = bag.onUse;
+        this.battleExhaustion = bag.battleExhaustion;
     }
 }

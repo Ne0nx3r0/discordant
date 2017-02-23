@@ -288,6 +288,29 @@ export default class Game{
         })();
     }
 
+    takeItem(from:PlayerCharacter,item:ItemBase,amount:number):Promise<void>{
+        const query = 'select take_player_item($1,$2,$3)';
+        const params = [from.uid,item.id,amount];
+
+        return (async ()=>{
+            try{
+                await this.db.getPool().query(query,params);
+
+                from.inventory._removeItem(item,amount);
+            }
+            catch(ex){                
+                //Kind of hackish - "custom" exception from transfer_player_item function
+                if(ex.code == 'P0002'){
+                    throw 'You do not have enough of that item';
+                }
+                
+                const did = Logger.error(ex);
+
+                throw 'An unexpected database error occurred '+did;
+            }
+        })();
+    }
+
     equipItem(pc:PlayerCharacter,item:ItemEquippable,slot:EquipmentSlot):Promise<void>{
         return (async ()=>{
             try{
