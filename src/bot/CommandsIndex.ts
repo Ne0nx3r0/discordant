@@ -26,5 +26,6 @@ export { default as Equip } from "./commands/Equip";
 export { default as Unequip } from "./commands/Unequip";
 export { default as SetRole } from "./commands/SetRole";
 export { default as Use } from "./commands/Use";
+export { default as Item } from "./commands/Item";
 
 export { default as Challenge } from "./commands/Challenge";

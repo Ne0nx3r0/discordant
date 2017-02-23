@@ -9,7 +9,7 @@ import ItemId from '../ItemId';
 export default new Weapon({
     id: ItemId.TabletOfHealing,
     title: 'Tablet of Healing',
-    description: 'A basic weapon whose history and use dates back to prehistoric times',
+    description: 'A stone tablet engraved with strange characters which read aloud can heal the reader.',
     damageBlocked: 0.05,
     useRequirements:{
         Spirit: 16

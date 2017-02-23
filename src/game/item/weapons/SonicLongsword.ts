@@ -9,7 +9,7 @@ import ItemId from '../ItemId';
 export default new Weapon({
     id: ItemId.SonicLongsword,
     title: 'Sonic Longsword',
-    description: 'A blade whose hilt generates an electric charge which is inflited on enemies',
+    description: 'A blade whose hilt generates an electric charge which is inflicted on enemies',
     damageBlocked: 0.05,
     useRequirements:{
         Agility: 20
