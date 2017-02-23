@@ -6,10 +6,10 @@ import PermissionId from '../../permissions/PermissionIds';
 export default class Echo extends Command{
     constructor(){
         super(
-            'echo',
-            'echos the message sent to it',
-            'echo <message>',
-            PermissionId.Echo
+            'item',
+            'Learn about an item',
+            'item [item name]',
+            PermissionId.Item
         );
     }
 

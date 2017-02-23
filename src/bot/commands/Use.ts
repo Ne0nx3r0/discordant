@@ -52,9 +52,11 @@ export default class Use extends Command{
                 itemUsable.canUse(bag.pc);//allowed to throw error
 
                 if(bag.pc.battle){
-                    if(bag.pc.battle.getPlayerExhaustion(bag.pc) > 0){
-                        throw 'You are exhausted!';
+                    if(bag.pc.battle.canUseItem(bag.pc,itemUsable)){
+                        throw 'You are too exhausted to use items!';
                     }
+
+                    bag.pc.battle.useItem(bag.pc,itemUsable);
                 }
 
                 await bag.game.takeItem(bag.pc,item,1);//allowed to throw error

@@ -24,6 +24,7 @@ const playerPermissions = [
     PermissionId.Unequip,
     PermissionId.Use,
     PermissionId.Challenge,
+    PermissionId.Item,
 ].sort();
 
 const testerPermissions = [

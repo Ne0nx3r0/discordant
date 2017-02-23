@@ -6,6 +6,7 @@ import IDamageSet from '../damage/IDamageSet';
 import CreatureAIControlled from '../creature/CreatureAIControlled';
 import EventDispatcher from '../../util/EventDispatcher';
 import {DiscordTextChannel} from '../../bot/Bot';
+import ItemUsable from '../item/ItemUsable';
 
 export const ATTACK_TICK_MS = 10000;
 
@@ -112,6 +113,27 @@ export default class PlayerBattle{
 
         //Caller's problem, they shouldn't have sent an invalid player
         throw `${pc.title} is not in this battle!`;
+    }
+
+    canUseItem(pc:PlayerCharacter,item:ItemUsable):boolean{
+        const bpc = this.bpcs.get(pc.uid);
+
+        if(bpc){
+            return bpc.exhaustion < 1;
+        }
+
+        return false;
+    }
+
+    useItem(pc:PlayerCharacter,item:ItemUsable){
+        const bpc = this.bpcs.get(pc.uid);
+
+        if(bpc){
+            bpc.exhaustion += item.battleExhaustion;
+        }
+        else{
+            throw 'You are not in this battle';
+        }
     }
 
     //Event methods
