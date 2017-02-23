@@ -236,11 +236,15 @@ export default class DiscordBot{
                     return;
                 }
 
-                if(pc.lastCommand+COMMAND_COOLDOWN_MS<Date.now()){
+                const nowMS = Date.now();
+
+                if(pc.lastCommand+COMMAND_COOLDOWN_MS>nowMS){
                     message.channel.sendMessage('You are sending commands too fast, '+pc.title);
 
                     return;
                 }
+
+                pc.lastCommand = nowMS;
 
                 command.run(params,message as DiscordMessage,bag);
             })
