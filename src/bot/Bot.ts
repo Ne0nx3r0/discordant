@@ -85,6 +85,8 @@ export interface BotBag{
     commandPrefix: string;
 }
 
+const COMMAND_COOLDOWN_MS = 500;
+
 export default class DiscordBot{
     client:DiscordClient;
     game: Game;
@@ -227,9 +229,15 @@ export default class DiscordBot{
 
                 bag.pc = pc;
 
-                if(!this.permissions.getRole(pc.role).has(command.permission)
+                if(!pc.role.has(command.permission)
                 && this.ownerUIDs.indexOf(pc.uid) == -1){//let owners use any command
                     message.channel.sendMessage('You do not have permission to use `'+command.name+'`, '+pc.title);
+
+                    return;
+                }
+
+                if(pc.lastCommand+COMMAND_COOLDOWN_MS<Date.now()){
+                    message.channel.sendMessage('You are sending commands too fast, '+pc.title);
 
                     return;
                 }

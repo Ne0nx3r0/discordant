@@ -22,6 +22,7 @@ import ItemBase from './item/ItemBase';
 import PvPBattle from './battle/PvPBattle';
 import PlayerBattle from './battle/PlayerBattle';
 import { BattleEvent, ICoopBattleEndEvent, IPvPBattleEndEvent } from './battle/PlayerBattle';
+import PermissionsService from '../permissions/PermissionsService';
 
 const PVP_INVITE_EXPIRES_MS = 60000;
 
@@ -52,6 +53,7 @@ export interface PvPInvite{
 export default class Game{
     items:AllItems;
     db:DatabaseService;
+    permissions:PermissionsService;
     cachedPlayers:Map<string,PlayerCharacter>;
 
     activeBattles:Map<number,PlayerBattle>;
@@ -61,8 +63,9 @@ export default class Game{
 
     pvpInvites:Map<string,PvPInvite>;
 
-    constructor(db:DatabaseService){
+    constructor(db:DatabaseService,permissions:PermissionsService){
         this.db = db;
+        this.permissions = permissions;
         this.cachedPlayers = new Map();
         this.playerParties = new Map();
         this.activeBattles = new Map();
@@ -218,7 +221,7 @@ export default class Game{
                     ),
                     equipment: pcEquipment,
                     inventory: pcInventory,
-                    role: row.role,
+                    role: this.permissions.getRole(row.role),
                     karma: row.karma
                 });
 
@@ -542,7 +545,7 @@ export default class Game{
             try{
                 await this.db.getPool().query('UPDATE player SET role=$1 WHERE uid=$2',[role,pc.uid]);
 
-                pc.role = role;
+                pc.role = this.permissions.getRole(role);
             }
             catch(ex){
                 const did = Logger.error(ex);

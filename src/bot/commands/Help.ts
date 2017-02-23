@@ -42,13 +42,11 @@ ${command.getUsage()}
 
         const commandsArr = [];
 
-        const pcRole = bag.permissions.getRole(bag.pc?bag.pc.role:'unknown');
-
         bag.bot.commands.forEach(function(command,commandStr){
             //ignore aliases
             if(command.aliases.indexOf(commandStr.toLowerCase() as string) == -1){
                 //Only show commands the player has permission to use
-                if(pcRole.has(command.permission) || command.allowAnonymous){
+                if(bag.pc.role.has(command.permission) || command.allowAnonymous){
                     commandsArr.push(command.name);
                 }
             }

@@ -39,7 +39,7 @@ const adminPermissions = [
     PermissionId.Grant,
 ].concat(testerPermissions).sort();
 
-class PermissionRole{
+export class PermissionRole{
     permissions:Array<PermissionId>;
 
     constructor(permissions:Array<PermissionId>){

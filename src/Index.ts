@@ -11,7 +11,7 @@ class Discordant {
 
         const db:DatabaseService = new DatabaseService(Config.DatabaseConfig);
 
-        const game:Game = new Game(db);
+        const game:Game = new Game(db,permissions);
 
         const bot:Bot = new Bot({
             game: game,

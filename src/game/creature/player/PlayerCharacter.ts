@@ -10,6 +10,7 @@ import PlayerInventory from '../../item/PlayerInventory';
 import PlayerParty from '../../party/PlayerParty';
 import InventoryItem from '../../item/InventoryItem';
 import PlayerBattle from '../../battle/PlayerBattle';
+import {PermissionRole} from '../../../permissions/PermissionsService';
 
 type PlayerStatus = 'inCity' | 'invitedToPVPBattle' | 'inBattle' | 'invitedToParty' | 'inParty' | 'leadingParty';
 
@@ -40,7 +41,7 @@ interface PCConfig{
     inventory: PlayerInventory,
     xp:number;
     wishes:number;
-    role:string;
+    role:PermissionRole;
     karma:number;
 }
 
@@ -54,8 +55,9 @@ export default class PlayerCharacter extends Creature{
     xp:number;
     wishes:number;
     inventory:PlayerInventory;
-    role:string;
+    role:PermissionRole;
     karma:number;
+    lastCommand:number;
 
     constructor(o:PCConfig){
         super({
@@ -78,6 +80,7 @@ export default class PlayerCharacter extends Creature{
         this.status = 'inCity';
         this.party = null;
         this.battle = null;
+        this.lastCommand = Date.now();
     }
 
     calculateDeathWishesLost():number{
