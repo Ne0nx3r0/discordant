@@ -80,7 +80,7 @@ export default class PlayerCharacter extends Creature{
         this.status = 'inCity';
         this.party = null;
         this.battle = null;
-        this.lastCommand = Date.now();
+        this.lastCommand = 0;
     }
 
     calculateDeathWishesLost():number{

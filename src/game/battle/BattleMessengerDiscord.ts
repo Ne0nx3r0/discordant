@@ -117,7 +117,7 @@ function getDamagesLine(pc:Creature,damages:IDamageSet,blocked:boolean,exhausted
         blockedStr = ' BLOCKED';
     }
 
-    if(exhausted>0){
+    if(exhausted>1){
         exhaustedStr = ' EXHAUSTED ('+exhausted+')';
     }
 
