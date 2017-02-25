@@ -7,6 +7,7 @@ import IDamageSet from '../damage/IDamageSet';
 import {damagesTotal} from '../damage/IDamageSet';
 import PlayerBattle from './PlayerBattle';
 import {DiscordTextChannel} from '../../bot/Bot';
+import BattleTemporaryEffect from '../effects/BattleTemporaryEffect';
 
 export default class PvPBattle extends PlayerBattle{
     bpc1:IBattlePlayerCharacter;
@@ -15,8 +16,8 @@ export default class PvPBattle extends PlayerBattle{
     constructor(id:number,channel:DiscordTextChannel,pc1:PlayerCharacter,pc2:PlayerCharacter){
         super(id,channel,[pc1,pc2]);
 
-        this.bpc1 = this.bpcs.get(pc1.uid);
-        this.bpc2 = this.bpcs.get(pc2.uid);
+        this.bpc1 = this.bpcs.get(pc1);
+        this.bpc2 = this.bpcs.get(pc2);
 
         setTimeout(this.tick.bind(this),ATTACK_TICK_MS);
     }
@@ -38,16 +39,39 @@ export default class PvPBattle extends PlayerBattle{
         const bpc1 = orderedAttacks[0];
         const bpc2 = orderedAttacks[1];
 
+//Run any temporary effects onRoundBegin
+        orderedAttacks.forEach((bpc:IBattlePlayerCharacter)=>{
+            bpc.pc._tempEffects.forEach((roundsLeft:number,effect:BattleTemporaryEffect)=>{
+                if(!this._battleEnded && effect.onRoundBegin){
+                    effect.onRoundBegin({
+                        target: bpc.pc,
+                        sendBattleEmbed: this.sendEffectApplied,
+                    });
+
+                    if(bpc.pc.HPCurrent<1){
+                        this.endBattle(bpc==bpc1?bpc2:bpc1,bpc);
+                    }
+                }
+            });
+        });
+        
+        if(this._battleEnded) return;
+
         if(bpc1.queuedAttacks.length>0){
             const attackStep = bpc1.queuedAttacks.shift();
 
             this._sendAttackStep(bpc1,attackStep);
         }
-         if(bpc2.queuedAttacks.length>0){
+        
+        if(this._battleEnded) return;
+
+        if(bpc2.queuedAttacks.length>0){
             const attackStep = bpc2.queuedAttacks.shift();
 
             this._sendAttackStep(bpc2,attackStep);
         }
+        
+        if(this._battleEnded) return;
 
         this.bpcs.forEach(function(bpc){
             if(bpc.exhaustion>0){
@@ -58,6 +82,23 @@ export default class PvPBattle extends PlayerBattle{
             }
         });
 
+//Run any temporary effects onRoundEnd
+        orderedAttacks.forEach((bpc:IBattlePlayerCharacter)=>{
+            bpc.pc._tempEffects.forEach((roundsLeft:number,effect:BattleTemporaryEffect)=>{
+                if(!this._battleEnded && effect.onRoundEnd){
+                    effect.onRoundEnd({
+                        target: bpc.pc,
+                        sendBattleEmbed: this.sendEffectApplied,
+                    });
+
+                    if(bpc.pc.HPCurrent<1){
+                        this.endBattle(bpc==bpc1?bpc2:bpc1,bpc);
+                    }
+                }
+            });
+        });
+
+//schedule next tick if appropriate
         if(!this._battleEnded){
             setTimeout(this.tick.bind(this),ATTACK_TICK_MS);
         }
@@ -72,7 +113,47 @@ export default class PvPBattle extends PlayerBattle{
             }
         });
 
-        const damages:IDamageSet = step.getDamages(attacker.pc,defender.pc);
+        const damages:IDamageSet = step.getDamages({
+            attacker:attacker.pc,
+            defender:defender.pc,
+            battle:this,
+        });
+
+        let attackCancelled = false;
+
+        attacker.pc._tempEffects.forEach((rounds:number,effect:BattleTemporaryEffect)=>{
+            if(!effect.onAttack({
+                target:attacker.pc,
+                sendBattleEmbed:this.sendEffectApplied
+            },damages)){
+                attackCancelled = true;
+            };
+        });
+
+        if(attacker.pc.HPCurrent<1){
+            this.endBattle(defender,attacker);
+        }
+
+        if(attackCancelled){
+            return;
+        }
+
+        defender.pc._tempEffects.forEach((rounds:number,effect:BattleTemporaryEffect)=>{
+            if(!effect.onAttacked({
+                target:defender.pc,
+                sendBattleEmbed:this.sendEffectApplied
+            },damages)){
+                attackCancelled = true;
+            };
+        });
+
+        if(defender.pc.HPCurrent<1){
+            this.endBattle(attacker,defender);
+        }
+
+        if(attackCancelled){
+            return;
+        }
 
         attacker.exhaustion += step.exhaustion;
 

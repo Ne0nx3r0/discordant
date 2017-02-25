@@ -5,6 +5,7 @@ import IDamageSet from '../../damage/IDamageSet';
 import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
+import { DamageFuncBag } from '../WeaponAttackStep';
 
 export default new Weapon({
     id: ItemId.HuntingSword,
@@ -21,11 +22,11 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} slices {defender} with their hunting sword',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(12,attacker.stats.Strength);
+                    damageFunc: function(bag:DamageFuncBag){
+                        const physicalDamage = DamageScaling.ByAttribute(12,bag.attacker.stats.Strength);
 
                         return {
-                            Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
+                            Physical: physicalDamage * (1-bag.defender.stats.Resistances.Physical)
                         };
                     }
                 })
@@ -38,22 +39,22 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} jumps behind and slashes {defender} with their hunting sword',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(12,attacker.stats.Strength);
+                    damageFunc: function(bag:DamageFuncBag){
+                        const physicalDamage = DamageScaling.ByAttribute(12,bag.attacker.stats.Strength);
 
                         return {
-                            Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
+                            Physical: physicalDamage * (1-bag.defender.stats.Resistances.Physical)
                         };
                     }
                 }),
                 new WeaponAttackStep({
                     attackMessage: '{attacker} follows up with a stab to {defender}',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength);
+                    damageFunc: function(bag:DamageFuncBag){
+                        const physicalDamage = DamageScaling.ByAttribute(10,bag.attacker.stats.Strength);
 
                         return {
-                            Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
+                            Physical: physicalDamage * (1-bag.defender.stats.Resistances.Physical)
                         };
                     }
                 })

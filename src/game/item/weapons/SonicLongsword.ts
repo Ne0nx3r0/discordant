@@ -5,6 +5,7 @@ import IDamageSet from '../../damage/IDamageSet';
 import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
+import { DamageFuncBag } from '../WeaponAttackStep';
 
 export default new Weapon({
     id: ItemId.SonicLongsword,
@@ -21,11 +22,11 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} slashes {defender} with a sonic blade',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        const thunderDamage = DamageScaling.ByAttribute(50,attacker.stats.Agility);
+                    damageFunc: function(bag:DamageFuncBag){
+                        const thunderDamage = DamageScaling.ByAttribute(50,bag.attacker.stats.Agility);
 
                         return {
-                            Thunder: thunderDamage * (1-defender.stats.Resistances.Thunder)
+                            Thunder: thunderDamage * (1-bag.defender.stats.Resistances.Thunder)
                         };
                     }
                 })

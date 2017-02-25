@@ -9,7 +9,6 @@ import EventDispatcher from '../../util/EventDispatcher';
 import PlayerBattle from './PlayerBattle';
 import { IBattlePlayerCharacter, ICoopBattleEndEvent, ATTACK_TICK_MS, BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, IBattleBlockEvent, IAttacked } from './PlayerBattle';
 import {DiscordTextChannel} from '../../bot/Bot';
-import BattleMessengerDiscord from './BattleMessengerDiscord';
 
 const winston = require('winston');
 
@@ -44,8 +43,6 @@ export default class CoopBattle extends PlayerBattle{
         this.opponent = opponent;
 
         this._attackTick = this._attackTick.bind(this);
-
-        BattleMessengerDiscord(this,channel);
 
         setTimeout(this._attackTick,ATTACK_TICK_MS/2);
     }
@@ -100,7 +97,11 @@ export default class CoopBattle extends PlayerBattle{
         };
 
         //damages calculates resistances
-        const pcDamages:IDamageSet = attackStep.getDamages(this.opponent,playerToAttack.pc);
+        const pcDamages:IDamageSet = attackStep.getDamages({
+            attacker: this.opponent,
+            defender: playerToAttack.pc,
+            battle:this,
+        });
 
         if(playerToAttack.blocking){
             Object.keys(pcDamages).forEach(function(type){
@@ -167,7 +168,11 @@ export default class CoopBattle extends PlayerBattle{
     }
 
     _sendAttackStep(bpc:IBattlePlayerCharacter,step:AttackStep){
-        const damages:IDamageSet = step.getDamages(bpc.pc,this.opponent);
+        const damages:IDamageSet = step.getDamages({
+            attacker: bpc.pc,
+            defender: this.opponent,
+            battle: this,
+        });
 
         bpc.exhaustion += step.exhaustion;
 
@@ -230,7 +235,7 @@ export default class CoopBattle extends PlayerBattle{
     }
 
     getPlayerExhaustion(pc:PlayerCharacter):number{
-        const bpc = this.bpcs.get(pc.uid);
+        const bpc = this.bpcs.get(pc);
 
         //Caller's problem, they should have checked first
         if(!bpc){

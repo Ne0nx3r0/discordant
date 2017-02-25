@@ -7,12 +7,14 @@ import CreatureAIControlled from '../creature/CreatureAIControlled';
 import EventDispatcher from '../../util/EventDispatcher';
 import {DiscordTextChannel} from '../../bot/Bot';
 import ItemUsable from '../item/ItemUsable';
+import BattleTemporaryEffect from '../effects/BattleTemporaryEffect';
+import BattleMessengerDiscord from './BattleMessengerDiscord';
 
 export const ATTACK_TICK_MS = 10000;
 
 export default class PlayerBattle{
     id:number;
-    bpcs:Map<string,IBattlePlayerCharacter>;
+    bpcs:Map<Creature,IBattlePlayerCharacter>;
     _battleEnded:boolean;
     _events:EventDispatcher;
     channel:DiscordTextChannel;
@@ -23,10 +25,12 @@ export default class PlayerBattle{
         this._events = new EventDispatcher();
         this.channel = channel;
 
+        BattleMessengerDiscord(this,channel);
+
         this.bpcs = new Map();
         
         pcs.forEach((pc)=>{
-            this.bpcs.set(pc.uid,{
+            this.bpcs.set(pc,{
                 pc:pc,
                 battle: this,
                 blocking: false,
@@ -38,11 +42,13 @@ export default class PlayerBattle{
             pc.battle = this;
             pc.status = 'inBattle';
         });
+
+        this.sendEffectApplied = this.sendEffectApplied.bind(this);
     }
 
     playerActionAttack(pc:PlayerCharacter,attack:WeaponAttack){
         return (async()=>{
-            const bpc = this.bpcs.get(pc.uid);
+            const bpc = this.bpcs.get(pc);
 
             if(!bpc){
                 throw 'You are not in this battle';
@@ -74,7 +80,7 @@ export default class PlayerBattle{
 
     playerActionBlock(pc:PlayerCharacter){
         return (async()=>{
-            const bpc = this.bpcs.get(pc.uid);
+            const bpc = this.bpcs.get(pc);
 
             if(!bpc){
                 throw 'You are not in in this battle';
@@ -105,7 +111,7 @@ export default class PlayerBattle{
     }
 
     getPlayerExhaustion(pc:PlayerCharacter):number{
-        let bpc = this.bpcs.get(pc.uid);
+        let bpc = this.bpcs.get(pc);
 
         if(bpc){
             return bpc.exhaustion;
@@ -115,25 +121,62 @@ export default class PlayerBattle{
         throw `${pc.title} is not in this battle!`;
     }
 
-    canUseItem(pc:PlayerCharacter,item:ItemUsable):boolean{
-        const bpc = this.bpcs.get(pc.uid);
-
-        if(bpc){
-            return bpc.exhaustion < 1;
-        }
-
-        return false;
-    }
-
     useItem(pc:PlayerCharacter,item:ItemUsable){
-        const bpc = this.bpcs.get(pc.uid);
+        const bpc = this.bpcs.get(pc);
 
-        if(bpc){
-            bpc.exhaustion += item.battleExhaustion;
-        }
-        else{
+        if(!bpc){
             throw 'You are not in this battle';
         }
+
+        if(bpc.exhaustion > 0){
+            throw 'You are too exausted to use this item!';
+        }
+        
+        bpc.exhaustion += item.battleExhaustion;
+    }
+
+    sendEffectApplied(msg:string,color:number){
+        const eventData:IBattleEffectEvent = {
+            battle: this,
+            message: msg,
+            color: color,
+        };
+
+        this.dispatch(BattleEvent.EffectApplied,eventData);
+    }
+
+    addTemporaryEffect(target:Creature,effect:BattleTemporaryEffect,rounds:number){
+        const bpc = this.bpcs.get(target);
+
+        if(!bpc){
+            throw 'You are not in this battle';
+        }
+
+        bpc.pc._addTemporaryEffect(effect,rounds);
+
+        if(effect.onAdded){
+            effect.onAdded({
+                target:bpc.pc,
+                sendBattleEmbed:this.sendEffectApplied
+            });
+        }
+    }
+
+    removeTemporaryEffect(target:Creature,effect:BattleTemporaryEffect){
+        const bpc = this.bpcs.get(target);
+
+        if(!bpc){
+            throw 'You are not in this battle';
+        }
+
+        if(effect.onRemoved){
+            effect.onRemoved({
+                target:bpc.pc,
+                sendBattleEmbed:this.sendEffectApplied
+            });
+        }
+
+        bpc.pc._removeTemporaryEffect(effect);
     }
 
     //Event methods
@@ -149,6 +192,7 @@ export enum BattleEvent{
     PlayerDefeated,
     PvPBattleEnd,
     CoopBattleEnd,
+    EffectApplied,
 }
 
 export interface IBattlePlayerCharacter{
@@ -165,6 +209,12 @@ export interface IAttacked{
     damages: IDamageSet;
     blocked: boolean;
     exhaustion: number;
+}
+
+export interface IBattleEffectEvent{
+    battle: PlayerBattle;
+    message: string;
+    color: number;
 }
 
 export interface IBattleRoundBeginEvent{

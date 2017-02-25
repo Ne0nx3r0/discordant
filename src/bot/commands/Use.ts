@@ -52,10 +52,6 @@ export default class Use extends Command{
                 itemUsable.canUse(bag.pc);//allowed to throw error
 
                 if(bag.pc.battle){
-                    if(bag.pc.battle.canUseItem(bag.pc,itemUsable)){
-                        throw 'You are too exhausted to use items!';
-                    }
-
                     bag.pc.battle.useItem(bag.pc,itemUsable);
                 }
 

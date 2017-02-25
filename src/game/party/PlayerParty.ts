@@ -9,7 +9,6 @@ import PartyMove from '../../bot/commands/party/PartyMove';
 import CoopBattle from '../battle/CoopBattle';
 import Game from '../Game';
 import Goblin from '../creature/monsters/Goblin';
-import BattleMessengerDiscord from '../battle/BattleMessengerDiscord';
 import { BattleEvent, ICoopBattleEndEvent } from '../battle/PlayerBattle';
 
 const INVITE_EXPIRES_MS = 60000;

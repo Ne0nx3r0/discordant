@@ -5,6 +5,7 @@ import IDamageSet from '../../damage/IDamageSet';
 import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
+import { DamageFuncBag } from '../WeaponAttackStep';
 
 export default new Weapon({
     id: ItemId.TabletOfHealing,
@@ -21,8 +22,8 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} reads a legend outloud and heals 30HP',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        attacker.HPCurrent = Math.min(attacker.stats.HPTotal,attacker.HPCurrent+30);
+                    damageFunc: function(bag:DamageFuncBag){
+                        bag.attacker.HPCurrent = Math.min(bag.attacker.stats.HPTotal,bag.attacker.HPCurrent+30);
 
                         return {};
                     }
@@ -36,15 +37,15 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} begins reading a legend from their tablet',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
+                    damageFunc: function(bag:DamageFuncBag){
                         return {};
                     }
                 }),
                 new WeaponAttackStep({
                     attackMessage: '{attacker} finishes their legend and fully heals',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        attacker.HPCurrent = attacker.stats.HPTotal;
+                    damageFunc: function(bag:DamageFuncBag){
+                        bag.attacker.HPCurrent = bag.attacker.stats.HPTotal;
 
                         return {};
                     }

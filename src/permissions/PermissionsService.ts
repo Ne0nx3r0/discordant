@@ -25,12 +25,12 @@ const playerPermissions = [
     PermissionId.Use,
     PermissionId.Challenge,
     PermissionId.Item,
+    PermissionId.Echo,
+    PermissionId.Embed,
 ].sort();
 
 const testerPermissions = [
     PermissionId.ChannelId,
-    PermissionId.Echo,
-    PermissionId.Embed,
     PermissionId.Shutdown,
     PermissionId.SetPlayingGame,
 ].concat(playerPermissions).sort();

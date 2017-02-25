@@ -3,12 +3,16 @@ import Creature from '../creature/Creature';
 import IDamageSet from '../damage/IDamageSet';
 import CoopBattle from './CoopBattle';
 import PlayerCharacter from '../creature/player/PlayerCharacter';
-import { BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, ICoopBattleEndEvent, IBattleBlockEvent, IPvPBattleEndEvent, IBattleRoundBeginEvent } from './PlayerBattle';
+import { BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, ICoopBattleEndEvent, IBattleBlockEvent, IPvPBattleEndEvent, IBattleRoundBeginEvent, IBattleEffectEvent } from './PlayerBattle';
 import PlayerBattle from './PlayerBattle';
 
 export default function BattleMessengerDiscord(battle:PlayerBattle,channel:DiscordTextChannel){
     battle.on(BattleEvent.RoundBegin,function(e:IBattleRoundBeginEvent){
         sendRoundBegan(channel);
+    });
+
+    battle.on(BattleEvent.EffectApplied,(e:IBattleEffectEvent)=>{
+        sendEffectMsg(channel,e.message,e.color);
     });
 
     battle.on(BattleEvent.Attack,(e:IBattleAttackEvent)=>{
@@ -29,8 +33,6 @@ export default function BattleMessengerDiscord(battle:PlayerBattle,channel:Disco
 
     battle.on(BattleEvent.PvPBattleEnd,function(e:IPvPBattleEndEvent){
         sendPvPBattleEnded(channel,e);
-
-
     });
 }
 
@@ -56,6 +58,10 @@ function sendAttacked(channel:DiscordTextChannel,attack:IBattleAttackEvent){
 
 function sendBlocked(channel:DiscordTextChannel,blockerTitle:string){
     channel.sendMessage(`:shield: ${blockerTitle} blocks! :shield:`);
+}
+
+function sendEffectMsg(channel:DiscordTextChannel,msg:string,color:number){
+    channel.sendMessage('',getEmbed(msg,color));
 }
 
 function sendPassedOut(channel:DiscordTextChannel,creatureTitle:string,lostWishes?:number){

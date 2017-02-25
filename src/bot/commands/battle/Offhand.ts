@@ -16,7 +16,7 @@ export default class Offhand extends Command{
             PermissionId.BattleOffhand
         );
 
-        this.addAlias('o');
+        this.addAlias('off');
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){

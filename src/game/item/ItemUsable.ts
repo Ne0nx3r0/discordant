@@ -1,13 +1,13 @@
 import ItemBase from './ItemBase';
 import {ItemBaseBag} from './ItemBase';
-import PlayerCharacter from '../creature/player/PlayerCharacter';
+import Creature from '../creature/Creature';
 
 interface ItemUseFunction{
-    (user:PlayerCharacter):string;//return message to send user, may throw error if it wants
+    (user:Creature):string;//return message to send user, may throw error if it wants
 }
 
 interface ItemCanUseFunction{
-    (user:PlayerCharacter);//throws an error with the reason if not usable right now
+    (user:Creature);//throws an error with the reason if not usable right now
 }
 
 interface ItemUsableBag extends ItemBaseBag{

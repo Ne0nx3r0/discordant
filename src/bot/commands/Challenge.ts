@@ -3,7 +3,6 @@ import Game from '../../game/Game';
 import { DiscordMessage, CommandBag, BotBag } from '../Bot';
 import PermissionId from '../../permissions/PermissionIds';
 import { PvPInvite } from '../../game/Game';
-import BattleMessengerDiscord from '../../game/battle/BattleMessengerDiscord';
 
 export default class Challenge extends Command{
     constructor(){
@@ -45,8 +44,6 @@ export default class Challenge extends Command{
                     const channel = await bag.bot.createPvPChannel(message.guild,invite);
 
                     const battle = bag.game.createPvPBattle(invite,channel);
-
-                    BattleMessengerDiscord(battle,channel);
 
                     bag.respond(`The duel between <@${invite.sender.uid}> and <@${invite.receiver.uid}> begins in 30 seconds in <#${channel.id}>`);
                 }

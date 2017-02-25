@@ -7,6 +7,7 @@ import ItemEquippable from '../item/ItemEquippable';
 import CreatureId from './CreatureId';
 import IDamageSet from '../damage/IDamageSet';
 import WeaponAttack from '../item/WeaponAttack';
+import BattleTemporaryEffect from '../effects/BattleTemporaryEffect';
 
 export interface IStatSet{
     Strength:number,
@@ -35,6 +36,7 @@ export default class Creature{
     stats:IStatSet;
     HPCurrent:number;
     attacks:Array<WeaponAttack>;
+    _tempEffects:Map<BattleTemporaryEffect,number>;//rounds left
 
     constructor(bag:ICreatureBag){
         this.id = bag.id;
@@ -139,5 +141,13 @@ export default class Creature{
     //Returns what percent (0.0-0.95) of damage to block when blocking
     get damageBlocked():number{
         return Math.min(0.95,this.equipment.primaryweapon.damageBlocked + this.equipment.offhandweapon.damageBlocked);
+    }
+
+    _addTemporaryEffect(effect:BattleTemporaryEffect,rounds:number){
+
+    }
+
+    _removeTemporaryEffect(effect:BattleTemporaryEffect){
+
     }
 }

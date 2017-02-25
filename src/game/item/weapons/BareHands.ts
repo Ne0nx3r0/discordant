@@ -5,6 +5,7 @@ import IDamageSet from '../../damage/IDamageSet';
 import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
+import { DamageFuncBag } from '../WeaponAttackStep';
 
 export default new Weapon({
     id: ItemId.BareHands,
@@ -19,11 +20,11 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} swings a fist at {defender}',
                     exhaustion: 1,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(5,attacker.stats.Agility*2);
+                    damageFunc: function(bag:DamageFuncBag){
+                        const physicalDamage = DamageScaling.ByAttribute(5,bag.attacker.stats.Agility*2);
 
                         return {
-                            Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
+                            Physical: physicalDamage * (1-bag.defender.stats.Resistances.Physical)
                         };
                     }
                 })
@@ -36,11 +37,11 @@ export default new Weapon({
                 new WeaponAttackStep({
                     attackMessage: '{attacker} swings both fists at {defender}',
                     exhaustion: 2,
-                    damageFunc: function(attacker:Creature,defender:Creature,master?:Creature){
-                        const physicalDamage = DamageScaling.ByAttribute(10,attacker.stats.Strength*2);
+                    damageFunc: function(bag:DamageFuncBag){
+                        const physicalDamage = DamageScaling.ByAttribute(10,bag.attacker.stats.Strength*2);
 
                         return {
-                            Physical: physicalDamage * (1-defender.stats.Resistances.Physical)
+                            Physical: physicalDamage * (1-bag.defender.stats.Resistances.Physical)
                         };
                     }
                 })

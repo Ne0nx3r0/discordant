@@ -7,6 +7,7 @@ enum ItemId {
     TabletOfHealing,
     SonicLongsword,
     HealingVial,
+    TableOfPoison,
 }
 
 export default ItemId;
