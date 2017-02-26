@@ -7,9 +7,10 @@ import Creature from '../../creature/Creature';
 import DamageScaling from '../../damage/DamageScaling';
 import ItemId from '../ItemId';
 import EffectSpiritSnakePoison from '../../effects/types/EffectSpiritSnakePoison';
+
 export default new Weapon({
     id: ItemId.TableOfPoison,
-    title: 'Tablet of Healing',
+    title: 'Tablet of Poison',
     description: 'A stone tablet engraved with strange characters which read aloud can poison enemies',
     damageBlocked: 0.05,
     useRequirements:{

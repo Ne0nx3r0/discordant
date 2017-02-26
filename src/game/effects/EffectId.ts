@@ -1,5 +1,6 @@
 enum EffectId {
-    PoisonSpiritSnake
+    Test,
+    PoisonSpiritSnake,
 }
 
 export default EffectId;

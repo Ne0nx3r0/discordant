@@ -1,5 +1,5 @@
 import PlayerCharacter from '../creature/player/PlayerCharacter';
-import { IBattleAttackEvent, ATTACK_TICK_MS, IBattleRoundBeginEvent, BattleEvent, IBattlePlayerCharacter, IPvPBattleEndEvent } from './PlayerBattle';
+import { IBattleAttackEvent, ATTACK_TICK_MS, IBattleRoundBeginEvent, BattleEvent, IBattlePlayerCharacter, IPvPBattleEndEvent, IPvPBattleExpiredEvent } from './PlayerBattle';
 import WeaponAttack from '../item/WeaponAttack';
 import EventDispatcher from '../../util/EventDispatcher';
 import WeaponAttackStep from '../item/WeaponAttackStep';
@@ -8,6 +8,8 @@ import {damagesTotal} from '../damage/IDamageSet';
 import PlayerBattle from './PlayerBattle';
 import {DiscordTextChannel} from '../../bot/Bot';
 import BattleTemporaryEffect from '../effects/BattleTemporaryEffect';
+
+const INACTIVE_ROUNDS_BEFORE_CANCEL_BATTLE = 10;
 
 export default class PvPBattle extends PlayerBattle{
     bpc1:IBattlePlayerCharacter;
@@ -23,9 +25,22 @@ export default class PvPBattle extends PlayerBattle{
     }
 
     tick(){
+        if(this.lastActionRoundsAgo >= INACTIVE_ROUNDS_BEFORE_CANCEL_BATTLE){
+            this.expireBattle();
+
+            return;
+        }
+        
+        this.lastActionRoundsAgo++;
+
         if(this._battleEnded){
             return;
         }
+
+//sort attackers and send any queued attacks
+        const orderedAttacks = [this.bpc1,this.bpc2].sort(whoGoesFirst);
+        const bpc1 = orderedAttacks[0];
+        const bpc2 = orderedAttacks[1];
 
 //Dispatch round begin
         const eventData:IBattleRoundBeginEvent = {
@@ -33,11 +48,6 @@ export default class PvPBattle extends PlayerBattle{
         };
 
         this.dispatch(BattleEvent.RoundBegin,eventData);
-
-//sort attackers and send any queued attacks
-        const orderedAttacks = [this.bpc1,this.bpc2].sort(whoGoesFirst);
-        const bpc1 = orderedAttacks[0];
-        const bpc2 = orderedAttacks[1];
 
 //Run any temporary effects onRoundBegin
         orderedAttacks.forEach((bpc:IBattlePlayerCharacter)=>{
@@ -51,6 +61,20 @@ export default class PvPBattle extends PlayerBattle{
                     if(bpc.pc.HPCurrent<1){
                         this.endBattle(bpc==bpc1?bpc2:bpc1,bpc);
                     }
+                }
+
+                if(roundsLeft==1){
+                    bpc.pc._removeTemporaryEffect(effect);
+
+                    if(effect.onRemoved){
+                        effect.onRemoved({
+                            target: bpc.pc,
+                            sendBattleEmbed: this.sendEffectApplied,
+                        });
+                    }
+                }
+                else{
+                    bpc.pc._tempEffects.set(effect,roundsLeft-1);
                 }
             });
         });
@@ -82,22 +106,6 @@ export default class PvPBattle extends PlayerBattle{
             }
         });
 
-//Run any temporary effects onRoundEnd
-        orderedAttacks.forEach((bpc:IBattlePlayerCharacter)=>{
-            bpc.pc._tempEffects.forEach((roundsLeft:number,effect:BattleTemporaryEffect)=>{
-                if(!this._battleEnded && effect.onRoundEnd){
-                    effect.onRoundEnd({
-                        target: bpc.pc,
-                        sendBattleEmbed: this.sendEffectApplied,
-                    });
-
-                    if(bpc.pc.HPCurrent<1){
-                        this.endBattle(bpc==bpc1?bpc2:bpc1,bpc);
-                    }
-                }
-            });
-        });
-
 //schedule next tick if appropriate
         if(!this._battleEnded){
             setTimeout(this.tick.bind(this),ATTACK_TICK_MS);
@@ -122,7 +130,7 @@ export default class PvPBattle extends PlayerBattle{
         let attackCancelled = false;
 
         attacker.pc._tempEffects.forEach((rounds:number,effect:BattleTemporaryEffect)=>{
-            if(!effect.onAttack({
+            if(effect.onAttack && !effect.onAttack({
                 target:attacker.pc,
                 sendBattleEmbed:this.sendEffectApplied
             },damages)){
@@ -139,7 +147,7 @@ export default class PvPBattle extends PlayerBattle{
         }
 
         defender.pc._tempEffects.forEach((rounds:number,effect:BattleTemporaryEffect)=>{
-            if(!effect.onAttacked({
+            if(effect.onAttacked && !effect.onAttacked({
                 target:defender.pc,
                 sendBattleEmbed:this.sendEffectApplied
             },damages)){
@@ -181,8 +189,6 @@ export default class PvPBattle extends PlayerBattle{
     }
 
     endBattle(winner:IBattlePlayerCharacter,loser:IBattlePlayerCharacter){
-        this._battleEnded = true;
-
         const eventData:IPvPBattleEndEvent = {
             battle: this,
             winner: winner,
@@ -191,16 +197,32 @@ export default class PvPBattle extends PlayerBattle{
 
         this.dispatch(BattleEvent.PvPBattleEnd,eventData);
 
-        //release players from the battle lock
-        winner.pc.battle = null;
-        winner.pc.status = 'inCity';
-        
-        loser.pc.battle = null;
-        loser.pc.status = 'inCity';
+        this.cleanupBattle();
+    }
+
+    expireBattle(){
+        const eventData:IPvPBattleExpiredEvent = {
+            battle: this,
+        };
+
+        this.dispatch(BattleEvent.PvPBattleExpired,eventData);
+
+        this.cleanupBattle();
+    }
+
+    cleanupBattle(){
+        this._battleEnded = true;
+
+        this.bpcs.forEach(function(bpc){
+            bpc.pc.battle = null;
+            bpc.pc.status = 'inCity';
+            bpc.pc._clearTemporaryEffects();
+            bpc.pc.HPCurrent = bpc.pc.stats.HPTotal;
+        });
 
         setTimeout(()=>{
             this.channel.delete();
-        },5000);
+        },60000);
     }
 }
 

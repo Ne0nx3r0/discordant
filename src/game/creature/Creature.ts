@@ -45,6 +45,8 @@ export default class Creature{
         this.attributes = bag.attributes;
         this.equipment = bag.equipment;
 
+        this._tempEffects = new Map();
+        
         this.updateStats();
         this.HPCurrent = this.stats.HPTotal;
     }
@@ -70,8 +72,14 @@ export default class Creature{
             item.onAddBonuses(stats);
         });
 
+        this._tempEffects.forEach(function(roundsLeft:number,effect:BattleTemporaryEffect){
+            if(effect.onAddBonuses){
+                effect.onAddBonuses(stats);
+            }
+        });
+
         //These could be adjusted by bonuses
-        stats.HPTotal = stats.Vitality * 10,
+        stats.HPTotal += stats.Vitality * 10,
 
         stats.Resistances.Fire = Math.floor(stats.Agility/3)/100;
         stats.Resistances.Cold = Math.floor(stats.Strength/3)/100;
@@ -144,10 +152,23 @@ export default class Creature{
     }
 
     _addTemporaryEffect(effect:BattleTemporaryEffect,rounds:number){
+        this._tempEffects.set(effect,rounds);
 
+        if(effect.onAddBonuses){
+            this.updateStats();
+        }
     }
 
     _removeTemporaryEffect(effect:BattleTemporaryEffect){
+        this._tempEffects.delete(effect);
 
+        if(effect.onAddBonuses){
+            this.updateStats();
+        }
+    }
+
+    _clearTemporaryEffects(){
+        this._tempEffects.clear();
+        this.updateStats();
     }
 }

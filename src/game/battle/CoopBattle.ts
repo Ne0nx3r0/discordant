@@ -7,7 +7,7 @@ import {damagesTotal} from '../damage/IDamageSet';
 import AttackStep from '../item/WeaponAttackStep';
 import EventDispatcher from '../../util/EventDispatcher';
 import PlayerBattle from './PlayerBattle';
-import { IBattlePlayerCharacter, ICoopBattleEndEvent, ATTACK_TICK_MS, BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, IBattleBlockEvent, IAttacked } from './PlayerBattle';
+import { IBattlePlayerCharacter, ICoopBattleEndEvent, ATTACK_TICK_MS, BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, IBattleBlockEvent, IAttacked, IBattleRoundBeginEvent } from './PlayerBattle';
 import {DiscordTextChannel} from '../../bot/Bot';
 
 const winston = require('winston');
@@ -42,15 +42,70 @@ export default class CoopBattle extends PlayerBattle{
 
         this.opponent = opponent;
 
-        this._attackTick = this._attackTick.bind(this);
+        this._tick = this._tick.bind(this);
 
-        setTimeout(this._attackTick,ATTACK_TICK_MS/2);
+        setTimeout(this._tick,ATTACK_TICK_MS/2);
     }
 
-    _attackTick(){   
+    _tick(){   
         if(this._battleEnded){
             return;
         }
+
+//Dispatch round begin
+        const eventData:IBattleRoundBeginEvent = {
+            battle:this
+        };
+
+        this.dispatch(BattleEvent.RoundBegin,eventData);
+
+        this.bpcs.forEach((bpc)=>{
+            bpc.pc._tempEffects.forEach((roundsLeft,effect)=>{
+                if(effect.onRoundBegin){
+                    effect.onRoundBegin({
+                        target:this.opponent,
+                        sendBattleEmbed:this.sendEffectApplied
+                    });
+                }
+
+                if(roundsLeft==1){
+                    bpc.pc._removeTemporaryEffect(effect);
+
+                    if(effect.onRemoved){
+                        effect.onRemoved({
+                            target: bpc.pc,
+                            sendBattleEmbed: this.sendEffectApplied,
+                        });
+                    }
+                }
+                else{
+                    bpc.pc._tempEffects.set(effect,roundsLeft-1);
+                }
+            });
+        });
+
+        this.opponent._tempEffects.forEach((roundsLeft,effect)=>{
+            if(effect.onRoundBegin){
+                effect.onRoundBegin({
+                    target:this.opponent,
+                    sendBattleEmbed:this.sendEffectApplied
+                });
+            }
+
+            if(roundsLeft==1){
+                this.opponent._removeTemporaryEffect(effect);
+
+                if(effect.onRemoved){
+                    effect.onRemoved({
+                        target: this.opponent,
+                        sendBattleEmbed: this.sendEffectApplied,
+                    });
+                }
+            }
+            else{
+                this.opponent._tempEffects.set(effect,roundsLeft-1);
+            }
+        });
 
         if(!this._opponentCurrentAttack){
             this._opponentCurrentAttack = this.opponent.getRandomAttack();
@@ -73,7 +128,7 @@ export default class CoopBattle extends PlayerBattle{
 
         this.attackPlayers(attackStep);
 
-        setTimeout(this._attackTick,ATTACK_TICK_MS);
+        setTimeout(this._tick,ATTACK_TICK_MS);
     }
 
     attackPlayers(attackStep:WeaponAttackStep){
@@ -100,8 +155,36 @@ export default class CoopBattle extends PlayerBattle{
         const pcDamages:IDamageSet = attackStep.getDamages({
             attacker: this.opponent,
             defender: playerToAttack.pc,
-            battle:this,
+            battle: this,
         });
+
+        let attackCancelled = false;
+
+        this.opponent._tempEffects.forEach((roundsLeft,effect)=>{
+            if (effect.onAttack && !effect.onAttack({
+                target: this.opponent,
+                sendBattleEmbed: this.sendEffectApplied
+            }, pcDamages)) {
+                attackCancelled = true;
+            }
+        });
+
+        if(attackCancelled){
+            return;
+        }
+
+        playerToAttack.pc._tempEffects.forEach((roundsLeft,effect)=>{
+            if (effect.onAttacked && !effect.onAttacked({
+                target: playerToAttack.pc,
+                sendBattleEmbed: this.sendEffectApplied
+            }, pcDamages)) {
+                attackCancelled = true;
+            }
+        });
+
+        if(attackCancelled){
+            return;
+        }
 
         if(playerToAttack.blocking){
             Object.keys(pcDamages).forEach(function(type){
@@ -175,6 +258,34 @@ export default class CoopBattle extends PlayerBattle{
         });
 
         bpc.exhaustion += step.exhaustion;
+
+        let attackCancelled = false;
+
+        bpc.pc._tempEffects.forEach((roundsLeft,effect)=>{
+            if (effect.onAttack && !effect.onAttack({
+                target: bpc.pc,
+                sendBattleEmbed: this.sendEffectApplied
+            }, damages)) {
+                attackCancelled = true;
+            }
+        });
+
+        if(attackCancelled){
+            return;
+        }
+
+        this.opponent._tempEffects.forEach((roundsLeft,effect)=>{
+            if (effect.onAttacked && !effect.onAttacked({
+                target: this.opponent,
+                sendBattleEmbed: this.sendEffectApplied
+            }, damages)) {
+                attackCancelled = true;
+            }
+        });
+
+        if(attackCancelled){
+            return;
+        }
 
         this.opponent.HPCurrent -= Math.round(damagesTotal(damages));
 

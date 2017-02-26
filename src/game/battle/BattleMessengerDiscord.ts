@@ -3,7 +3,7 @@ import Creature from '../creature/Creature';
 import IDamageSet from '../damage/IDamageSet';
 import CoopBattle from './CoopBattle';
 import PlayerCharacter from '../creature/player/PlayerCharacter';
-import { BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, ICoopBattleEndEvent, IBattleBlockEvent, IPvPBattleEndEvent, IBattleRoundBeginEvent, IBattleEffectEvent } from './PlayerBattle';
+import { BattleEvent, IBattleAttackEvent, IBattlePlayerDefeatedEvent, ICoopBattleEndEvent, IBattleBlockEvent, IPvPBattleEndEvent, IBattleRoundBeginEvent, IBattleEffectEvent, IPvPBattleExpiredEvent } from './PlayerBattle';
 import PlayerBattle from './PlayerBattle';
 
 export default function BattleMessengerDiscord(battle:PlayerBattle,channel:DiscordTextChannel){
@@ -34,6 +34,10 @@ export default function BattleMessengerDiscord(battle:PlayerBattle,channel:Disco
     battle.on(BattleEvent.PvPBattleEnd,function(e:IPvPBattleEndEvent){
         sendPvPBattleEnded(channel,e);
     });
+
+    battle.on(BattleEvent.PvPBattleExpired,function(e:IPvPBattleExpiredEvent){
+        sendPvPBattleExpired(channel,e);
+    });
 }
 
 function sendRoundBegan(channel:DiscordTextChannel){
@@ -44,13 +48,14 @@ function sendAttacked(channel:DiscordTextChannel,attack:IBattleAttackEvent){
     let embed = attack.message;
 
     attack.attacked.forEach(function(attacked){
-
-        embed += '\n'+getDamagesLine(
-            attacked.creature,
-            attacked.damages,
-            attacked.blocked,
-            attacked.exhaustion
-        );
+        if(Object.keys(attacked.damages).length > 0){
+            embed += '\n'+getDamagesLine(
+                attacked.creature,
+                attacked.damages,
+                attacked.blocked,
+                attacked.exhaustion
+            );
+        }
     });
 
     channel.sendMessage('',getEmbed(embed,EMBED_COLORS.attack));
@@ -74,6 +79,16 @@ function sendPvPBattleEnded(channel:DiscordTextChannel,e:IPvPBattleEndEvent){
     channel.sendMessage('```fix\nBattle Over\n```');
 
     channel.sendMessage('',getEmbed(`:tada: ${e.winner.pc.title} has defeated ${e.loser.pc.title} :tada:`));
+
+    channel.sendMessage('',getEmbed(`Channel will expire in 1 minute`));
+}
+
+function sendPvPBattleExpired(channel:DiscordTextChannel,e:IPvPBattleExpiredEvent){
+    channel.sendMessage('```fix\nBattle Expired\n```');
+
+    channel.sendMessage('',getEmbed(`Neither player participated so the battle ended in a draw`));
+
+    channel.sendMessage('',getEmbed(`Channel will expire in 1 minute`));
 }
 
 function sendCoopBattleEnded(channel:DiscordTextChannel,e:ICoopBattleEndEvent){

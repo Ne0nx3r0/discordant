@@ -4,4 +4,5 @@ export default {
     DANGER: 0xCE4E09,
     POISON: 0x6D066A,
     ERROR: 0xAA1100,
+    TEST: 0xE1F4EF,
 }

@@ -27,6 +27,7 @@ const playerPermissions = [
     PermissionId.Item,
     PermissionId.Echo,
     PermissionId.Embed,
+    PermissionId.Grant,
 ].sort();
 
 const testerPermissions = [
@@ -36,7 +37,6 @@ const testerPermissions = [
 ].concat(playerPermissions).sort();
 
 const adminPermissions = [
-    PermissionId.Grant,
 ].concat(testerPermissions).sort();
 
 export class PermissionRole{

@@ -18,12 +18,14 @@ export default class PlayerBattle{
     _battleEnded:boolean;
     _events:EventDispatcher;
     channel:DiscordTextChannel;
+    lastActionRoundsAgo:number;
 
     constructor(id:number,channel:DiscordTextChannel,pcs:Array<PlayerCharacter>){
         this.id = id;
         this._battleEnded = false;
         this._events = new EventDispatcher();
         this.channel = channel;
+        this.lastActionRoundsAgo = 0;
 
         BattleMessengerDiscord(this,channel);
 
@@ -68,6 +70,8 @@ export default class PlayerBattle{
 
             this._sendAttackStep(bpc,attack.steps[0]);
 
+            this.lastActionRoundsAgo = 0;
+
             if(!this._battleEnded && attack.steps.length>1){
                 bpc.queuedAttacks = attack.steps.slice(1);
             }
@@ -107,6 +111,8 @@ export default class PlayerBattle{
             };
 
             this.dispatch(BattleEvent.Block,eventData);
+
+            this.lastActionRoundsAgo = 0;
         })();
     }
 
@@ -133,6 +139,8 @@ export default class PlayerBattle{
         }
         
         bpc.exhaustion += item.battleExhaustion;
+
+        this.lastActionRoundsAgo = 0;
     }
 
     sendEffectApplied(msg:string,color:number){
@@ -146,37 +154,25 @@ export default class PlayerBattle{
     }
 
     addTemporaryEffect(target:Creature,effect:BattleTemporaryEffect,rounds:number){
-        const bpc = this.bpcs.get(target);
-
-        if(!bpc){
-            throw 'You are not in this battle';
-        }
-
-        bpc.pc._addTemporaryEffect(effect,rounds);
+        target._addTemporaryEffect(effect,rounds);
 
         if(effect.onAdded){
             effect.onAdded({
-                target:bpc.pc,
-                sendBattleEmbed:this.sendEffectApplied
+                target: target,
+                sendBattleEmbed: this.sendEffectApplied
             });
         }
     }
 
     removeTemporaryEffect(target:Creature,effect:BattleTemporaryEffect){
-        const bpc = this.bpcs.get(target);
-
-        if(!bpc){
-            throw 'You are not in this battle';
-        }
-
         if(effect.onRemoved){
             effect.onRemoved({
-                target:bpc.pc,
+                target:target,
                 sendBattleEmbed:this.sendEffectApplied
             });
         }
 
-        bpc.pc._removeTemporaryEffect(effect);
+        target._removeTemporaryEffect(effect);
     }
 
     //Event methods
@@ -191,6 +187,7 @@ export enum BattleEvent{
     Block,
     PlayerDefeated,
     PvPBattleEnd,
+    PvPBattleExpired,
     CoopBattleEnd,
     EffectApplied,
 }
@@ -242,6 +239,10 @@ export interface IPvPBattleEndEvent{
     battle:PlayerBattle;
     winner:IBattlePlayerCharacter;
     loser:IBattlePlayerCharacter;
+}
+
+export interface IPvPBattleExpiredEvent{
+    battle:PlayerBattle;
 }
 
 export interface ICoopBattleEndEvent{

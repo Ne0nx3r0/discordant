@@ -7,7 +7,7 @@ export default class BattleTemporaryEffectPoison extends BattleTemporaryEffect{
         super({
             id: id,
             title: title,
-            onRoundEnd:function(bag){
+            onRoundBegin:function(bag){
                 bag.target.HPCurrent -= damagePerRound;
 
                 bag.sendBattleEmbed(`${bag.target.title} ${bag.target.HPCurrent}/${bag.target.stats.HPTotal} lost ${damagePerRound}HP from ${this.title}`,EmbedColors.POISON);
