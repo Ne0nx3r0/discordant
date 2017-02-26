@@ -610,8 +610,8 @@ export default class Game{
         return battle;
     }
 
-    getMonsterById(id:number){
-        return this.creatures.get(id);
+    createMonsterFromId(id:number){
+        return this.creatures.create(id);
     }
 
 /*

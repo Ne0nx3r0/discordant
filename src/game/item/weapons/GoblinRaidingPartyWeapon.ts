@@ -69,6 +69,7 @@ export default  new Weapon({
                     exhaustion: 1,
                     damageFunc: function(bag:DamageFuncBag){
                         bag.attacker.attributes.Vitality += 10;
+                        bag.attacker.updateStats();
                         bag.attacker.HPCurrent = bag.attacker.stats.HPTotal / 2;
                         return {};
                     }

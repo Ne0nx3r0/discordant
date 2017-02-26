@@ -2,8 +2,7 @@
     "encounterChance": 0.3,
     "encounters":[
         { "id": 1, "weight": 0.7 },
-        { "id": 2, "weight": 0.2 },
-        { "id": 3, "weight": 0.1 }
+        { "id": 2, "weight": 100 }
     ],
     "portals":[
         {

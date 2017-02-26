@@ -104,9 +104,9 @@ export default class PlayerParty{
 
         const opponentId = this.exploration.getRandomEncounterMonsterId();
 
-        const opponent = this.game.getMonsterById(opponentId);
+        const opponent = this.game.createMonsterFromId(opponentId);
 
-        this.channel.sendMessage('The party is attacked!');
+        this.channel.sendMessage(`The party is attacked by ${opponent.title}!`);
 
         this.game.createMonsterBattle(partyMembers,this.channel,opponent)
         .then((battle:CoopBattle)=>{

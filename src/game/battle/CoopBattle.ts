@@ -117,7 +117,7 @@ export default class CoopBattle extends PlayerBattle{
         if(this._opponentCurrentAttack){    
             attackStep = this._opponentCurrentAttack.steps[this._opponentCurrentAttackStep++];
     
-            if(this._opponentCurrentAttack.steps.length >= this._opponentCurrentAttackStep){
+            if(this._opponentCurrentAttackStep >= this._opponentCurrentAttack.steps.length){
                 this._opponentCurrentAttack = null;
             }   
         }
@@ -312,20 +312,20 @@ export default class CoopBattle extends PlayerBattle{
 
     endBattle(victory:boolean,killer?:IBattlePlayerCharacter){
         this._battleEnded = true;
-
+/*
         let xpEarned = 0;
 
         //Note: Game is responsible for listening for and adjusting player stats based on this event
         if(victory){
             xpEarned = this.opponent.xpDropped;
-        }
+        }*/
 
         const bpcs = [];
 
         this.bpcs.forEach(function(bpc){
             bpcs.push({
                 bpc: bpc,
-                xpEarned: xpEarned,
+                //xpEarned: xpEarned,
             });
         });
 
@@ -340,8 +340,10 @@ export default class CoopBattle extends PlayerBattle{
         this.dispatch(BattleEvent.CoopBattleEnd,eventData);
 
         //release players from the battle lock
-        this.bpcs.forEach((pc)=>{
-            pc.battle = null;
+        this.bpcs.forEach((bpc)=>{
+            bpc.pc.battle = null;
+            bpc.pc.status = 'inParty';
+            bpc.pc._clearTemporaryEffects();
         });
     }
 

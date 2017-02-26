@@ -3,29 +3,23 @@ import * as CreaturesIndex from './CreaturesIndex';
 import CreatureAIControlled from './CreatureAIControlled';
 
 export default class AllCreatures{
-    creatures:Map<number,CreatureAIControlled>;
+    creatures:Map<number,any>;//a bit hacky, but we need to create instances of these
 
     constructor(){
         this.creatures = new Map();
 
-        Object.keys(CreaturesIndex).forEach((itemKey)=>{
-            const creatures:CreatureAIControlled = CreaturesIndex[itemKey];
-        
-            this.creatures.set(creatures.id,creatures);
+        Object.keys(CreaturesIndex).forEach((creatureKey)=>{
+            const creatureClass = CreaturesIndex[creatureKey];
+
+            const creatureTemp:CreatureAIControlled = new creatureClass();
+
+            this.creatures.set(creatureTemp.id,creatureClass);
         });
     }
 
-    get(id:number):CreatureAIControlled{
-        return this.creatures.get(id);
-    }
+    create(id:number):CreatureAIControlled{
+        const creatureClass = this.creatures.get(id);
 
-    findByTitle(title:string){
-        const titleUpper = title.toUpperCase();
-
-        for(const [creatureId, creature] of this.creatures){
-            if(creature.title.toUpperCase() == titleUpper){
-                return creature;
-            }
-        }
+        return new creatureClass();
     }
 }
