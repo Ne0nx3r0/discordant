@@ -1,8 +1,26 @@
 {
     "encounterChance": 0.3,
-    "triggers":[
+    "encounters":[
+        { "id": 1, "weight": 0.7 },
+        { "id": 2, "weight": 0.2 },
+        { "id": 3, "weight": 0.1 }
+    ],
+    "portals":[
         {
-            
+            "x": 5,
+            "y": 5,
+            "map": "northArea",
+            "mapX": 0,
+            "mapY": 2
         }
+    ],
+    "scavengeItems":[
+
+    ],
+    "forageItems":[
+
+    ],
+    "scryItems":[
+
     ]
 }

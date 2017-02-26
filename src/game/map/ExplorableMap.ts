@@ -18,8 +18,23 @@ interface MapJson{
     tilewidth:number;
 }
 
+interface MapDataMonsterEncounter{
+    id:number;
+    weight:number;
+}
+
+interface MapDataTrigger{
+    x:number;
+    y:number;
+    map?:string;
+    mapX?:number;
+    mapY?:number;
+}
+
 interface MapDataJson{
     encounterChance:number;
+    encounters:Array<MapDataMonsterEncounter>;
+    portals:Array<MapDataTrigger>;
 }
 
 export default class{
@@ -72,5 +87,27 @@ export default class{
 
     getEncounterChance(){
         return this.mapDataJson.encounterChance;
+    }
+
+    getRandomEncounterMonsterId(){
+        let totalWeight = 0;
+        
+        this.mapDataJson.encounters
+        .forEach(function(encounter){
+            totalWeight += encounter.weight;
+        });
+
+        const roll = Math.random() * totalWeight;
+        let currentWeight = 0;
+
+        for(var i=0;i<this.mapDataJson.encounters.length;i++){
+            const encounter = this.mapDataJson.encounters[i];
+
+            currentWeight += encounter.weight;
+
+            if(roll < currentWeight){
+                return encounter.id;
+            }
+        }
     }
 }

@@ -23,6 +23,7 @@ import PvPBattle from './battle/PvPBattle';
 import PlayerBattle from './battle/PlayerBattle';
 import { BattleEvent, ICoopBattleEndEvent, IPvPBattleEndEvent } from './battle/PlayerBattle';
 import PermissionsService from '../permissions/PermissionsService';
+import AllCreatureAIControlleds from './creature/AllCreatureAIControlleds';
 
 const PVP_INVITE_EXPIRES_MS = 60000;
 
@@ -52,6 +53,7 @@ export interface PvPInvite{
 
 export default class Game{
     items:AllItems;
+    creatures:AllCreatureAIControlleds;
     db:DatabaseService;
     permissions:PermissionsService;
     cachedPlayers:Map<string,PlayerCharacter>;
@@ -74,6 +76,7 @@ export default class Game{
         this.battleCardinality = 1;
 
         this.items = new AllItems();
+        this.creatures = new AllCreatureAIControlleds();
     }
 
     registerPlayerCharacter(playerBag:IPlayerRegisterBag){
@@ -605,6 +608,10 @@ export default class Game{
         });
 
         return battle;
+    }
+
+    getMonsterById(id:number){
+        return this.creatures.get(id);
     }
 
 /*

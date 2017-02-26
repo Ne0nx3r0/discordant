@@ -102,9 +102,13 @@ export default class PlayerParty{
             partyMembers.push(pc);
         });
 
+        const opponentId = this.exploration.getRandomEncounterMonsterId();
+
+        const opponent = this.game.getMonsterById(opponentId);
+
         this.channel.sendMessage('The party is attacked!');
 
-        this.game.createMonsterBattle(partyMembers,this.channel,new Goblin())
+        this.game.createMonsterBattle(partyMembers,this.channel,opponent)
         .then((battle:CoopBattle)=>{
             this.currentBattle = battle; 
             this.partyStatus = PartyStatus.Battling;

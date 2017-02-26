@@ -39,4 +39,8 @@ export default class PartyExploringMap{
     getEncounterChance():number{
         return this.map.getEncounterChance();
     }
+
+    getRandomEncounterMonsterId():number{
+        return this.map.getRandomEncounterMonsterId();
+    }
 }
