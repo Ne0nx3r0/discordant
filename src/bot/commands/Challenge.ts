@@ -57,11 +57,11 @@ export default class Challenge extends Command{
             return;
         }
 
-        const userTag = this.getTagUID(params[0]);
+        const tagUserId = message.mentions.users.first().id;
 
         (async()=>{
             try{
-                const challengedPC = await bag.game.getPlayerCharacter(userTag);
+                const challengedPC = await bag.game.getPlayerCharacter(tagUserId);
 
                 if(!challengedPC){
                     bag.respond('That user has not registered yet, '+bag.pc.title);

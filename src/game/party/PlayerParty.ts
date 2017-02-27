@@ -147,8 +147,16 @@ export default class PlayerParty{
         const cachedCDNUrl = MapUrlCache.getSliceRemoteUrl(localUrl);
 
         if(cachedCDNUrl){
-            this.channel.sendMessage(msg, {
-                file: cachedCDNUrl,
+            this.channel.sendMessage('',{
+                embed: {
+                    color: 0x36393E,
+                    image: { 
+                        url: cachedCDNUrl, 
+                        height: 288, 
+                        width: 288,
+                    },   
+                    description: msg,      
+                }
             });
         }
         else{

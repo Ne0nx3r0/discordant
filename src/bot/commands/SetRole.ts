@@ -20,9 +20,9 @@ export default class EvalCommand extends Command{
             return;
         }
 
-        const userTagUID = this.getTagUID(params[0]);
+        const tagUserId = message.mentions.users.first().id;
 
-        if(!userTagUID){
+        if(!tagUserId){
             bag.respond('That player is not registered, '+bag.pc.title);
 
             return;
@@ -38,7 +38,7 @@ export default class EvalCommand extends Command{
 
         (async()=>{
             try{
-                const setRolePC = await bag.game.getPlayerCharacter(userTagUID);
+                const setRolePC = await bag.game.getPlayerCharacter(tagUserId);
 
                 if(!setRolePC){
                     bag.respond(`That user is not registered, ${bag.pc.title}`);

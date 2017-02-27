@@ -49,12 +49,4 @@ export default class Command{
             }
         }
     }
-
-    getTagUID(userTag:string):string{
-        if(!TagRegex.test(userTag)){
-            return null;
-        }
-
-        return TagRegex.exec(userTag)[1];
-    }
 }

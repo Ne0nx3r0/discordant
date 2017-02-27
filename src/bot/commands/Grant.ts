@@ -22,9 +22,9 @@ export default class Grant extends Command{
             return;
         }
 
-        const userTag = this.getTagUID(params[0]);
+        const tagUserId = message.mentions.users.first().id;
 
-        if(!userTag){
+        if(!tagUserId){
             message.channel.sendMessage(this.getUsage());
 
             return;
@@ -32,7 +32,7 @@ export default class Grant extends Command{
 
         (async function(){
             try{
-                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(userTag);
+                const giveItemTo:PlayerCharacter = await bag.game.getPlayerCharacter(tagUserId);
 
                 if(!giveItemTo){
                     message.channel.sendMessage('That player has not registered yet, '+bag.pc.title);

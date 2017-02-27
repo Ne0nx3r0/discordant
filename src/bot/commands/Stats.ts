@@ -15,25 +15,21 @@ export default class ChannelId extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        let statsUid;
-
         if(params.length == 0){
-            statsUid = message.author.id;
-
             message.channel.sendMessage("",getEmbed(bag.pc) as DiscordMessageOptions);
 
             return;
         }
 
-        const tag = this.getTagUID(params[0]);
+        const tagUserId = message.mentions.users.first().id;
         
-        if(!tag){
+        if(!tagUserId){
             message.channel.sendMessage(this.getUsage());
 
             return;
         }
 
-        bag.game.getPlayerCharacter(statsUid)
+        bag.game.getPlayerCharacter(tagUserId)
         .then((otherPC:PlayerCharacter)=>{
             if(!otherPC){
                 message.channel.sendMessage('No player found, '+message.author.username);
