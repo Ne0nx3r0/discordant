@@ -12,7 +12,7 @@ import InventoryItem from '../../item/InventoryItem';
 import PlayerBattle from '../../battle/PlayerBattle';
 import {PermissionRole} from '../../../permissions/PermissionsService';
 
-type PlayerStatus = 'inCity' | 'invitedToPVPBattle' | 'inBattle' | 'invitedToParty' | 'inParty' | 'leadingParty';
+type PlayerStatus = 'inCity' | 'invitedToPVPBattle' | 'inBattle' | 'invitedToParty' | 'inParty';
 
 export {PlayerStatus};
 
@@ -89,5 +89,9 @@ export default class PlayerCharacter extends Creature{
 
     calculateDeathXPLost():number{
         return this.xp * 0.01;
+    }
+
+    get isPartyLeader():boolean{
+        return this.party && this.party.leader == this;
     }
 }

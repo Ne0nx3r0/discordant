@@ -6,6 +6,13 @@ const TestMap = new ExplorableMap(
     require('../../../assets/maps/test/mapData.json')
 );
 
+const WesternGateMap = new ExplorableMap(
+    'WesternGate',
+    require('../../../assets/maps/WesternGate/map.json'),
+    require('../../../assets/maps/WesternGate/mapData.json')
+);
+
 export {
-    TestMap
+    TestMap,
+    WesternGateMap
 };

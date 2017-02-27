@@ -10,6 +10,8 @@ import CoopBattle from '../battle/CoopBattle';
 import Game from '../Game';
 import Goblin from '../creature/monsters/Goblin';
 import { BattleEvent, ICoopBattleEndEvent } from '../battle/PlayerBattle';
+import Logger from '../../util/Logger';
+import MapUrlCache from '../map/MapUrlCache';
 
 const INVITE_EXPIRES_MS = 60000;
 
@@ -53,7 +55,7 @@ export default class PlayerParty{
         this.currentBattle = null;
 
         this.leader.party = this;
-        this.leader.status = 'leadingParty';
+        this.leader.status = 'inParty';
         
         this._events = new EventDispatcher();
     }
@@ -70,9 +72,7 @@ export default class PlayerParty{
         this.exploration = new PartyExploringMap(map);
         this.partyStatus = PartyStatus.Exploring;
 
-        const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
-
-        this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party arrives...');
+        this.sendCurrentMapImageFile('Your party arrives outside the city...');
     }
 
     move(direction:PartyMoveDirection){
@@ -92,7 +92,7 @@ export default class PlayerParty{
 
         const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
 
-        this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party moved');
+        this.sendCurrentMapImageFile('Your party moved');
     }
 
     monsterEncounter(){
@@ -117,9 +117,7 @@ export default class PlayerParty{
                 if(e.victory){
                     this.partyStatus = PartyStatus.Exploring;
                 
-                    const startingLocationImageSrc = this.exploration.getCurrentLocationImage();
-
-                    this.channel.sendFile(startingLocationImageSrc,'slice.png','Your party survived!');
+                    this.sendCurrentMapImageFile('Your party survived!');
                 }
                 else{
                     this.channel.sendMessage('Your party was defeated!');
@@ -137,12 +135,38 @@ export default class PlayerParty{
                 this.members.forEach(function(member){
                     member.status = 'inParty';
                 });
-                this.leader.status = 'leadingParty';
             });
         })
         .catch((err)=>{
             this.channel.sendMessage('Error occured while finding encounter: '+err);
         });
+    }
+
+    sendCurrentMapImageFile(msg:string){
+        const localUrl = this.exploration.getCurrentLocationImage();
+        const cachedCDNUrl = MapUrlCache.getSliceRemoteUrl(localUrl);
+
+        if(cachedCDNUrl){
+            this.channel.sendMessage(msg, {
+                file: cachedCDNUrl,
+            });
+        }
+        else{
+            (async()=>{        
+                try{
+                    const resultMessage = await this.channel.sendFile(localUrl,'slice.png',msg);
+
+                    const cacheUrl = resultMessage.attachments.first().url;      
+
+                    MapUrlCache.setSliceRemoteUrl(localUrl,cacheUrl);              
+                }
+                catch(ex){
+                    const did = Logger.error(ex);
+
+                    this.channel.sendMessage("error loading map image "+did);
+                }
+            })();
+        }
     }
 
     playerActionInvite(pc:PlayerCharacter){

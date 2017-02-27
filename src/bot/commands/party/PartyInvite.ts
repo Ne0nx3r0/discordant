@@ -17,7 +17,7 @@ export default class PartyInvite extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){
-        if(bag.pc.status != 'leadingParty'){
+        if(!bag.pc.isPartyLeader){
             message.channel.sendMessage('You are not the party leader, '+bag.pc.title);
 
             return;

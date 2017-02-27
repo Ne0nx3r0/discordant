@@ -82,7 +82,7 @@ export default class{
     }
 
     isWalkable(x,y):boolean{
-        return this.mapJson.layers[1].data[(y-1)*this.mapJson.width+x-1] == 0;
+        return this.mapJson.layers[this.triggersLayer].data[(y-1)*this.mapJson.width+x-1] != 1;
     }
 
     getEncounterChance(){

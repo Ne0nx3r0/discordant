@@ -3,7 +3,7 @@ import Game from '../../../game/Game';
 import { DiscordMessage, CommandBag } from '../../Bot';
 import PermissionId from '../../../permissions/PermissionIds';
 import {PartyStatus} from '../../../game/party/PlayerParty';
-import {TestMap} from '../../../game/map/Maps';
+import {WesternGateMap} from '../../../game/map/Maps';
 
 export default class PartyExplore extends Command{
     constructor(){
@@ -16,7 +16,7 @@ export default class PartyExplore extends Command{
     }
 
     run(params:Array<string>,message:DiscordMessage,bag:CommandBag){       
-        if(bag.pc.status != 'leadingParty'){
+        if(!bag.pc.isPartyLeader){
             message.channel.sendMessage('Only the party leader can direct the party to explore, '+bag.pc.title);
 
             return;
@@ -36,6 +36,6 @@ export default class PartyExplore extends Command{
             return;
         }
 
-        party.explore(TestMap);
+        party.explore(WesternGateMap);
     }
 }
